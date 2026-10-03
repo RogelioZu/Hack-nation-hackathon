@@ -14,13 +14,12 @@ description: >-
   Agentic laboratory for ENUT time-use data: seven specialists coordinated by a
   Discovery Director through a Shared Research State persisted in Supabase.
 
-# Shared by every agent. Change the model here; check it exists in the workspace.
+# Shared by every agent. Open-source Omnigent with the team's Codex/OpenAI service-account
+# key: put OPENAI_API_KEY in .env and load it (set -a; source .env; set +a) before running.
+# Change the model here; check it is enabled for the key.
 executor: &executor
-  harness: claude-sdk
-  model: databricks-claude-sonnet-4-6
-  auth:
-    type: databricks
-    profile: DEFAULT   # Databricks CLI profile with access to the serving endpoint
+  harness: codex
+  model: gpt-5.4-mini
 
 prompt: |
   You are the Discovery Director of an agentic research lab. You own one scientific
