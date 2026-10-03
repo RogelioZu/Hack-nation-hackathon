@@ -1,0 +1,44 @@
+name: "hacknation-enut-lab"
+description: "Agentic laboratory for ENUT data analysis with a Shared Research State"
+
+# Global Configuration
+policies:
+  - require_human_approval_for_tools: false
+  - enforce_json_output: true
+
+agents:
+  # 1. Literature Agent
+  - name: literature_agent
+    role: "Literature Agent"
+    scientific_decision: "What prior evidence exists" #[cite: 5]
+    input: "question" #[cite: 5]
+    output: "evidence cards + citations" #[cite: 5]
+    model: "databricks/dbrx-instruct"
+    system_prompt: |
+      You are the Literature Agent. You will receive a research state in JSON format.
+      Your task is to search for relevant literature regarding the 'research_question' and 
+      add the findings to the 'evidence' array. 
+      You MUST return the fully updated JSON object, without adding extra markdown text or explanations.
+    tools:
+      - search_openalex
+
+  # 2. Discovery Director
+  - name: discovery_director
+    role: "Discovery Director"
+    scientific_decision: "What to investigate next" #[cite: 5]
+    input: "complete state" #[cite: 5]
+    output: "next action" #[cite: 5]
+    model: "databricks/dbrx-instruct"
+    system_prompt: |
+      You are the Discovery Director. You will receive the complete research state JSON 
+      including the results of the latest experiment.
+      Evaluate the progress and decide the next step by updating the 'next_decision' object.
+      You MUST return the updated JSON.
+    tools: []
+
+# Handoffs Configuration (Routing)
+handoffs:
+  - from: "user_input"
+    to: "literature_agent"
+  - from: "literature_agent"
+    to: "discovery_director"
