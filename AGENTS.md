@@ -1,6 +1,8 @@
 # AGENTS.md — Commute & Time Lab (Hack Nation × Databricks · Agentic Scientific Discovery)
 
-Fuente única de verdad para cualquier agente o integrante del equipo que trabaje en este repo. `CONTEXT.md` es la especificación original (larga); este archivo es su versión operativa. Si se contradicen, **gana este archivo**. Si alguno contradice el diccionario de datos ENUT, los microdatos o la documentación oficial, **ganan los datos**: corregir el supuesto aquí y registrarlo en el [Registro de decisiones](#registro-de-decisiones).
+> **Nota para asistentes de IA (Claude, Codex, Cursor, Copilot, etc.):** este documento es la **fuente única de verdad** para la arquitectura de agentes, el flujo de datos, las reglas científicas y las convenciones del repo.
+
+`CONTEXT.md` es la especificación original (larga); este archivo es su versión operativa. Si se contradicen, **gana este archivo**. Si alguno contradice el diccionario de datos ENUT, los microdatos o la documentación oficial, **ganan los datos**: corregir el supuesto aquí y registrarlo en el [Registro de decisiones](#registro-de-decisiones).
 
 **Presupuesto: 10 horas en total.**
 
@@ -10,25 +12,26 @@ Fuente única de verdad para cualquier agente o integrante del equipo que trabaj
 
 | Qué | Idioma |
 |---|---|
-| Documentación (`*.md`, READMEs, registro de decisiones, políticas de agentes) | **Español** |
+| Documentación (`*.md`, registro de decisiones, políticas de agentes) | **Español** |
 | Conversación con el equipo en sesiones de agentes (Claude Code, Codex, etc.) | **Español** |
 | Interfaz de la app web (`web/`: textos, etiquetas, mensajes) y demo | **Inglés** |
-| Código: identificadores, nombres de tablas/columnas, protocolos | Inglés |
+| `README.md` público, prompts de sistema de los agentes en `omnigent.yaml` y textos que los agentes guardan en Supabase | **Inglés** |
+| Código: identificadores, nombres de tablas/columnas, campos del JSON de estado, protocolos | Inglés |
 
 ---
 
 ## 1. Misión
 
-Construir un MVP web en el que **Omnigent orquesta en vivo agentes especialistas** para investigar una pregunta científica con microdatos reales:
+Construir un MVP web en el que **Omnigent orquesta en vivo agentes especialistas** para investigar una pregunta científica con microdatos reales de la **ENUT** (Encuesta Nacional sobre Uso del Tiempo, INEGI):
 
 > Entre trabajadores residentes en Ciudad de México (CDMX) y Estado de México (Edomex), ¿cómo se relacionan **60 minutos semanales adicionales de traslado laboral** con el tiempo **semanal** dedicado a sueño, convivencia familiar/social, cuidados a integrantes del hogar, ocio y cuidado personal? ¿Difiere la asociación por sexo?
 
 Ciclo obligatorio, con cada paso persistido en Supabase:
 
 ```
-pregunta → evidencia (RAG, con citas) → perfil de datos → hipótesis + ≥2 pruebas candidatas
+pregunta → evidencia (RAG, con citas) → hipótesis → ¿los datos permiten probarla? → ≥2 pruebas candidatas
         → elección registrada → ejecución reproducible (microdatos ENUT reales) → crítica
-        → decisión actualizada que DEPENDE del resultado → siguiente prueba
+        → decisión actualizada que DEPENDE del resultado → siguiente prueba (vuelve al ciclo)
 ```
 
 No ampliar a otras ciencias, mapas de rutas, recomendaciones de transporte, modelos causales, cuentas de usuario ni múltiples datasets.
@@ -38,7 +41,7 @@ No ampliar a otras ciencias, mapas de rutas, recomendaciones de transporte, mode
 - ENUT es **observacional y transversal**: decir "se asocia con", nunca "causa", "reduce" ni "provoca".
 - El traslado se mide en la **semana de referencia** de la encuesta. Las unidades son **minutos semanales**. Nunca llamar "una hora diaria" a una hora semanal.
 - La cobertura estatal (CDMX + Edomex) **no** es una muestra representativa de la Zona Metropolitana del Valle de México. No afirmarlo.
-- **No inventar cifras, variables ni citas.** Las cifras salen solo de `run_experiment`. Las afirmaciones factuales salen solo de pasajes RAG con `source_id` / `passage_id` / URL.
+- **No inventar cifras, variables ni citas.** Las cifras salen solo de `run_experiment`. Las afirmaciones factuales salen solo de pasajes RAG con `source_id` / `passage_id` / URL, o de registros de OpenAlex con DOI.
 - Las hipótesis generadas por agentes se **etiquetan** (`hypotheses.generated_by`).
 - Reportar siempre `n` antes y después de exclusiones, porcentaje de faltantes, distribución del traslado, método de incertidumbre y qué elementos del diseño muestral se usaron (`FAC_PER`, `UPM_DIS`, `EST_DIS`). Si los intervalos no son plenamente consistentes con el diseño, etiquetar el resultado como **exploratorio** y explicar por qué.
 - No forzar que las actividades sumen 24 h/día ni 168 h/semana (ENUT capta cuidados simultáneos o pasivos).
@@ -47,11 +50,11 @@ No ampliar a otras ciencias, mapas de rutas, recomendaciones de transporte, mode
   - **R1**: hay diferencia por sexo suficientemente sustentada y los subgrupos tienen tamaño adecuado → probar composición del hogar / presencia de menores.
   - **R2**: no aparece diferencia por sexo → sensibilidad a traslados largos / relación no lineal.
   - **R3**: la calidad o el tamaño de muestra impiden concluir → revisar variables, cohorte y medición.
-- No declarar aceleraciones (p. ej. "10×") sin medirlas. Cronometrar una línea base manual con el mismo corpus y dataset.
+- No declarar aceleraciones (p. ej. "10×") sin medirlas. El 10× del `README.md` es una **meta**, no un resultado. Cronometrar una línea base manual con el mismo corpus y dataset.
 
 ## 3. Requisitos del track y evaluación
 
-Omnigent es **obligatorio** (administrado por Databricks o de código abierto). Debe coordinar el flujo real, los traspasos, el uso de herramientas y el cambio de plan tras el resultado. Ponderación: orquestación Omnigent 30 % · potencial científico 25 % · aceleración y aprendizaje 20 % · rigor 15 % · creatividad y responsabilidad 10 %.
+Hack-Nation 7th Global AI Hackathon, Challenge 03. Omnigent es **obligatorio** (administrado por Databricks o de código abierto). Debe coordinar el flujo real, los traspasos, el uso de herramientas y el cambio de plan tras el resultado. Ponderación: orquestación Omnigent 30 % · potencial científico 25 % · aceleración y aprendizaje 20 % · rigor 15 % · creatividad y responsabilidad 10 %.
 
 Entregables: repositorio, configuraciones y políticas de agentes, código y resultados del experimento, evidencia citada, mejora medida, siguiente experimento y un **demo de 2 minutos**.
 
@@ -59,16 +62,21 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 
 | Área | Elección |
 |---|---|
-| Orquestación | Omnigent (agentes YAML + herramientas Python) → `agents/` |
-| Backend / estado | Supabase Postgres + **pgvector**, RLS, migraciones SQL versionadas → `supabase/` |
+| Orquestación | Omnigent con `omnigent.yaml` (7 agentes) + estado inicial `initial_state.json` |
+| Herramientas de agentes | Python (wrappers sobre `analysis/`) → `agents/` |
+| Backend / estado persistente | Supabase Postgres + **pgvector**, RLS, migraciones SQL versionadas → `supabase/` |
 | RAG + host del experimento | Python 3.12 con **uv** → `analysis/` |
 | Web | Next.js 16 App Router + TypeScript + Tailwind 4 → `web/` (despliegue en Vercel) |
 | Embeddings | `intfloat/multilingual-e5-small`, 384 dimensiones, CPU |
+| LLM de los agentes | `databricks/dbrx-instruct` según `omnigent.yaml` (verificar disponibilidad, ver [Decisiones abiertas](#decisiones-abiertas)) |
 
 ```
-AGENTS.md / CLAUDE.md      este archivo (CLAUDE.md solo lo importa)
+AGENTS.md / CLAUDE.md      este archivo (CLAUDE.md lo importa junto con MEMORY.md)
 MEMORY.md                  estado actual, decisiones y trampas; leer antes de tocar nada
 CONTEXT.md                 especificación original (larga)
+README.md                  presentación pública del proyecto (inglés)
+omnigent.yaml              7 agentes, políticas y handoffs de Omnigent
+initial_state.json         Shared Research State vacío con el que arranca la sesión
 .env.example               SOLO nombres de variables; copiar a .env (raíz) y web/.env.local
 supabase/
   config.toml
@@ -82,7 +90,7 @@ analysis/
   rag/search.py            search_evidence() → RPC hybrid_search
   rag/corpus.json          manifiesto del corpus (docs INEGI; agregar aquí papers de OpenAlex)
   enut/                    pipeline ENUT — LO PROPORCIONA EL USUARIO (pendiente)
-agents/                    YAML de Omnigent + políticas + wrappers de herramientas (ver agents/README.md)
+agents/                    herramientas Python de los agentes y políticas (ver agents/README.md)
 web/
   lib/supabase.ts          cliente de solo lectura (clave publishable, solo servidor)
   lib/data.ts              getProjects(), getResearch(id)
@@ -132,26 +140,84 @@ La web dibuja esta forma (ver `web/lib/types.ts`) y el pipeline ENUT debe emitir
 
 - Modelo: `intfloat/multilingual-e5-small`, normalizado. Se ingiere como `"passage: …"` y se consulta como `"query: …"`. **Usar el mismo modelo en ingesta y consulta.** Cambiarlo obliga a re-embeber todo y a cambiar `vector(384)`.
 - Recuperación: `public.hybrid_search(query_text, query_embedding, match_count=5, full_text_weight=1, semantic_weight=1, rrf_k=50)`. Combina texto completo (`websearch_to_tsquery('simple')`) y coseno (HNSW) con Reciprocal Rank Fusion. Devuelve `passage_id, source_id, source_title, source_kind, url, doi, section, locator, content, score`.
-- Punto de entrada en Python: `rag.search.search_evidence(query, k=5) -> list[EvidenceHit]`.
-- Corpus deliberadamente pequeño: cuestionario ENUT, diccionario/descriptor, diseño conceptual y diseño muestral, más 10–20 papers pertinentes de OpenAlex. Guardar texto completo **solo si la licencia lo permite**. Si no, guardar título + resumen.
+- Punto de entrada en Python: `rag.search.search_evidence(query, k=5) -> list[EvidenceHit]`. El corpus actual está en español, así que **consultar en español**.
+- Corpus deliberadamente pequeño: cuestionario ENUT, diccionario/descriptor, diseño conceptual y diseño muestral, más 10–20 papers pertinentes de OpenAlex (los encuentra `search_openalex` del Literature Agent). Guardar texto completo **solo si la licencia lo permite**. Si no, guardar título + resumen.
 - El RAG fundamenta conceptos, literatura y decisiones de método. **Nunca produce cifras de resultados.**
 - Control de calidad: revisar a mano 5 consultas de recuperación y 10 afirmaciones factuales del panel.
 
-## 7. Agentes (Omnigent)
+## 7. Arquitectura de agentes (Omnigent)
 
-Roles mínimos: **coordinador + evidencia + método/datos + crítico**. El ejecutor estadístico es una **herramienta Python determinista**, no un agente conversacional.
+Arquitectura definida por el equipo en `omnigent.yaml` (commits `bda27fc` y `b9e6e74`).
 
-| Rol | Entrada | Herramientas permitidas | Salida estructurada |
-|---|---|---|---|
-| Coordinador | `project_id`, objetivo, presupuesto de tiempo, estado previo | subagentes, `run_experiment`, `log_event` | secuencia de traspasos y decisión final; verifica que la decisión cite el `experiment_run_id` real |
-| Evidencia | pregunta, alcance | `search_evidence`, `inspect_enut_variables` | `EvidencePack {passages_for[], passages_against[], variables[], open_questions[]}` |
-| Método/datos | `EvidencePack`, cohorte, presupuesto | `get_dataset_profile`, `save_hypothesis`, `save_proposals` | `ExperimentProposal[] (≥2) {label, protocol, learning_value, feasibility, cost}` + criterio de elección |
-| Crítico | `ExperimentResult`, propuestas, reglas de decisión | `read_run`, `record_decision` | `DecisionUpdate {interpretation, uncertainty, limitations, rule_applied, next_test, rationale}` |
+### 7.1 Restricción central: el Shared Research State
 
-- `run_experiment(protocol, parameters)` acepta **solo protocolos cerrados** (p. ej. `weighted_means_by_group`, `wls_commute_by_sex`) con parámetros validados. Registra hash del dataset, versión de código (SHA de git), entradas y salidas. **Los agentes no tienen SQL ni shell arbitrario sobre los datos.**
+Los agentes **NO** se comunican por chat de texto libre. Se comunican **exclusivamente** recibiendo, modificando y devolviendo **un único objeto JSON**: el *Shared Research State*. El prompt de sistema de cada agente debe obligar a que su salida sea estrictamente ese objeto JSON, sin markdown ni texto conversacional (`policies: enforce_json_output: true`).
+
+Esquema actual (`initial_state.json`):
+
+```json
+{
+  "research_question": "String",
+  "population": "Object",
+  "hypotheses": [
+    { "id": "String", "claim": "String", "status": "untested | tested" }
+  ],
+  "evidence": ["Array of evidence cards"],
+  "variables": "Object mapping concepts to data columns",
+  "experiments": [
+    { "id": "String", "hypothesis_id": "String", "method": "String", "status": "String" }
+  ],
+  "results": ["Array of metrics and artifacts"],
+  "limitations": ["Array of strings"],
+  "next_decision": { "experiment": "String", "reason": "String" }
+}
+```
+
+### 7.2 Los 7 agentes
+
+Omnigent gestiona el enrutamiento. Cada agente es dueño de **una decisión científica**:
+
+| # | Agente (`name`) | Decisión científica | Entrada | Salida en el estado | Herramientas | Persistencia en Supabase |
+|---|---|---|---|---|---|---|
+| 1 | Literature Agent (`literature_agent`) | Qué evidencia previa existe | `research_question` | `evidence[]` (tarjetas + citas) | `search_openalex` (definida, sin implementar); **agregar** `search_evidence` (RAG) | `sources`, `passages` |
+| 2 | Hypothesis Agent (`hypothesis_agent`) | Qué explicación falsable probar | `evidence` | `hypotheses[]` ordenadas | — (propuesta: `save_hypothesis`) | `hypotheses` |
+| 3 | Data Steward (`data_steward`) | Si los datos permiten probarla | hipótesis líder | `variables` + `limitations` (reporte de calidad) | — (propuesta: `inspect_enut_variables`, `get_dataset_profile`) | `projects.cohort_definition`; reporte en `agent_events` |
+| 4 | Experiment Planner (`experiment_planner`) | Qué prueba maximiza el aprendizaje | hipótesis + datos | `experiments[]` (status `planned`) | — (propuesta: `save_proposals`) | `experiment_proposals` (**≥2**, una `selected` con `selection_rationale`) |
+| 5 | Experiment Runner (`experiment_runner`) | Ejecutar la prueba de forma reproducible | especificación del experimento | `results[]`; experimento `completed` | `execute_python_sandbox` (definida); **debe ser** `run_experiment` con protocolos cerrados | `experiment_runs` |
+| 6 | Scientific Critic (`scientific_critic`) | Si la interpretación es confiable | `results` | `limitations[]` + solicitudes de validación | — (propuesta: `read_run`, `record_decision`) | `decisions` (`interpretation`, `uncertainty`, `limitations`) |
+| 7 | Discovery Director (`discovery_director`) | Qué investigar después | estado completo | `next_decision` | — | `decisions` (`next_test`, `rationale`, `rule_applied`), `projects.status` |
+
+Handoffs actuales en `omnigent.yaml` (lineales):
+
+```
+user_input → literature_agent → hypothesis_agent → data_steward → experiment_planner
+           → experiment_runner → scientific_critic → discovery_director
+```
+
+### 7.3 Cómo se conecta el estado JSON con Supabase
+
+El **JSON es el contrato de mensajes** entre agentes durante la sesión. **Supabase es el registro persistente** que lee la web y que sirve de auditoría. Cada agente persiste su sección mediante herramientas Python (service_role) y registra una fila en `agent_events`; el JSON viaja con los IDs resultantes.
+
+| Campo del estado | Tabla / columna | Nota |
+|---|---|---|
+| `research_question` | `projects.question` | Fijada al crear el proyecto |
+| `population` | `projects.cohort_definition` | El Data Steward la confirma contra el diccionario |
+| `evidence[]` | `sources` + `passages` | Cada tarjeta debe llevar `source_id`, `passage_id` (o DOI), `url`, `locator` y la cita textual |
+| `hypotheses[]` | `hypotheses` | `claim` → `statement`; `untested` → `proposed`; `tested` → `supported`·`not_supported`·`inconclusive` |
+| `variables` | sin tabla propia | Guardar en `experiment_runs.parameters.variables` (ver Decisiones abiertas) |
+| `experiments[]` | `experiment_proposals` + `experiment_runs` | El planner propone ≥2; el runner crea el run de la elegida |
+| `results[]` | `experiment_runs.results` | Debe cumplir el [contrato de resultados](#contrato-de-resultados-experiment_runsresults) |
+| `limitations[]` | `decisions.limitations` | También el reporte de calidad del Data Steward |
+| `next_decision` | `decisions.next_test` / `rationale` / `rule_applied` | Debe citar el `experiment_run_id` real y la regla R1–R3 aplicada |
+
+**Extensiones propuestas al esquema JSON** (aditivas, pendientes de acuerdo del equipo antes de tocar `initial_state.json`): `project_id`; `decision_rules` (R1–R3); en `experiments[]`, los campos `protocol`, `learning_value`, `feasibility`, `cost`, `selected` y `selection_rationale`; en `next_decision`, los campos `rule_applied` y `run_id`.
+
+### 7.4 Reglas de los agentes
+
+- El Experiment Runner ejecuta **solo protocolos cerrados** (p. ej. `weighted_means_by_group`, `wls_commute_by_sex`) con parámetros validados vía `run_experiment(protocol, parameters)`, que registra hash del dataset, versión de código (SHA de git), entradas y salidas. **Ningún agente tiene SQL ni shell arbitrario sobre los datos.**
 - Cada llamada a herramienta escribe una fila en `agent_events`. Las acciones relevantes (lanzar una ejecución, decisión final) emiten un evento `approval` para que un humano las apruebe.
-- Los textos que los agentes guardan en la base (`summary`, `statement`, `interpretation`, `next_test`, etc.) van **en inglés**, porque los muestra la web.
-- Las sesiones se inician desde la web de Omnigent y se guarda `projects.omnigent_session_url`. Un botón "Start research" (Route Handler del servidor → API de Omnigent) se agrega **solo después** de que el ciclo funcione. Nunca llamar a Omnigent desde el navegador con credenciales.
+- Los textos que los agentes guardan (en el JSON y en Supabase) van **en inglés**, porque los muestra la web.
+- La sesión se inicia desde Omnigent y se guarda `projects.omnigent_session_url`. Un botón "Start research" (Route Handler del servidor → API de Omnigent) se agrega **solo después** de que el ciclo funcione. Nunca llamar a Omnigent desde el navegador con credenciales.
 - Preflight en la hora 0–1: confirmar acceso a Omnigent administrado y a un host que ejecute Python y llegue a Supabase. Si no, usar Omnigent de código abierto. Docs: [quickstart](https://developers.databricks.com/docs/omnigent/quickstart), [API programática](https://developers.databricks.com/docs/omnigent/programmatic), [spec YAML de agentes](https://github.com/omnigent-ai/omnigent/blob/main/docs/AGENT_YAML_SPEC.md).
 
 ## 8. Dataset (ENUT, INEGI)
@@ -163,15 +229,16 @@ Lo que el pipeline debe hacer, sin importar el año de la encuesta:
 - Filtrar CDMX + Edomex tras comprobar los códigos geográficos (`ENT` en 2019, `CVE_ENT` en 2024; CDMX = `09`, Edomex = `15`).
 - Comprobar en el descriptor los códigos de faltantes y saltos, las llaves y los filtros de ocupación **antes** de transformar.
 - Conservar `FAC_PER`, `UPM_DIS` y `EST_DIS`.
-- Emitir el [contrato de resultados](#contrato-de-resultados-experiment_runsresults).
+- Exponerse como protocolos cerrados de `run_experiment` y emitir el [contrato de resultados](#contrato-de-resultados-experiment_runsresults).
 
 ⚠️ **Los nombres de variables cambian entre años.** En **ENUT 2019** (codebook DDI revisado), el traslado al trabajo es `P5_4_1..4` (lun–vie h/min, sáb–dom h/min). Las horas trabajadas son `P5_3_*`, el sueño `P6_1_1_*`, la convivencia `P6_21A_*`, la edad `EDAD_V` y el sexo `SEXO`. En 2019, `P5_9_*` es **tiempo buscando trabajo, NO traslado**. CONTEXT.md da `P5_9_*` como traslado para **2024**. Verificarlo contra el diccionario 2024 antes de usarlo.
 
 ## 9. Seguridad y secretos
 
 - `.env` (raíz, lo usa Python) y `web/.env.local` están en `.gitignore`. `.env.example` solo tiene nombres.
-- `SUPABASE_SERVICE_ROLE_KEY` vive solo en `analysis/` y en Route Handlers del servidor. **Nunca** en una variable `NEXT_PUBLIC_*` ni en código del navegador.
+- `SUPABASE_SERVICE_ROLE_KEY` vive solo en `analysis/`, en las herramientas de agentes y en Route Handlers del servidor. **Nunca** en una variable `NEXT_PUBLIC_*` ni en código del navegador.
 - La web lee con `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, que RLS limita a SELECT.
+- Las credenciales de Databricks/Omnigent van en variables de entorno, nunca en `omnigent.yaml`.
 - Ejecutar `get_advisors(security)` después de cada cambio DDL.
 
 ## 10. Comandos
@@ -186,7 +253,11 @@ supabase gen types typescript --linked > web/lib/database.types.ts
 # Python (desde analysis/)
 uv sync
 uv run python -m rag.ingest                       # ingiere rag/corpus.json
-uv run python -m rag.search "weekly commute time and sleep" -k 5
+uv run python -m rag.search "tiempo de traslado al trabajo" -k 5
+
+# Omnigent (según README.md; comando aún no verificado contra la spec oficial)
+uv tool install "omnigent[databricks]"            # o: pip install "omnigent[databricks]"
+omnigent run --config omnigent.yaml --state initial_state.json
 
 # Web (desde web/)
 npm run dev                                       # http://localhost:3000/research/00000000-0000-0000-0000-000000000001
@@ -201,7 +272,7 @@ npx next typegen && npx tsc --noEmit && npm run lint && npm run build
 | 1–3 | Migraciones, RLS, seed, ingesta + búsqueda RAG | `hybrid_search` devuelve pasajes con cita |
 | 3–4.5 | Panel Next.js lee la BD (`/research/[id]`) | La web muestra estado real de la BD |
 | 4.5–6.5 | Pipeline ENUT del usuario → `run_experiment` → `experiment_runs` | **Resultado real persistido** |
-| 6.5–8 | Omnigent: coordinador + evidencia + método + crítico, ciclo completo | **Decisión dependiente del resultado guardada** |
+| 6.5–8 | Omnigent: los 7 agentes de `omnigent.yaml` con herramientas que persisten en Supabase, ciclo completo | **Decisión dependiente del resultado guardada** |
 | 8–9 | El panel muestra el ciclo completo; reejecutar para reproducibilidad; cronometrar manual vs asistido | Reproducción y medición honestas |
 | 9–10 | Desplegar en Vercel, README, grabar demo de 2 minutos | Entrega completa |
 
@@ -224,6 +295,7 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 - Leer `MEMORY.md` al empezar y actualizarlo al terminar si cambió el estado (migraciones, ingestas, pendientes, trampas nuevas).
 - Leer antes de escribir. Imitar el código existente. Cambios mínimos.
 - Nunca editar una migración ya aplicada. Agregar un archivo nuevo con timestamp en `supabase/migrations/`.
+- No cambiar `omnigent.yaml` ni `initial_state.json` sin resolver antes la decisión abierta correspondiente con el equipo.
 - El contenido de seed/demo se marca (`is_demo`, prefijo `[DEMO]`) para que nunca se confunda con hallazgos.
 - En `web/`, leer `web/AGENTS.md` (Next.js 16 trae cambios incompatibles) y la documentación incluida en `web/node_modules/next/dist/docs/`.
 - Nunca commitear secretos, microdatos crudos ni `analysis/.cache/`.
@@ -236,9 +308,23 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | El índice de texto usa la configuración `'simple'` | El corpus mezcla español e inglés |
 | 2026-10-03 | Embeddings calculados en Python (e5-small, CPU), no en la BD | Un solo modelo para ingesta y consulta; las herramientas de los agentes son Python |
 | 2026-10-03 | Web de solo lectura (clave publishable + RLS) que consulta cada 5 s | Sin secretos en el navegador; tiempo real es opcional |
-| 2026-10-03 | Documentación y sesiones en español; UI web y demo en inglés | Preferencia del equipo |
+| 2026-10-03 | Documentación y sesiones en español; UI web, demo, README y prompts en inglés | Preferencia del equipo |
 | 2026-10-03 | Año y pipeline ENUT: **pendiente del usuario** | El usuario entregará el pipeline completo |
+| 2026-10-03 | Se adopta la arquitectura de **7 agentes + Shared Research State** de `omnigent.yaml`. Reemplaza los 4 roles iniciales (coordinador → Discovery Director; evidencia → Literature Agent; método/datos → Hypothesis Agent + Data Steward + Experiment Planner; crítico → Scientific Critic) | Decisión del equipo; da más traspasos visibles (orquestación = 30 %) |
+| 2026-10-03 | El JSON de estado es el contrato entre agentes; Supabase es la persistencia que lee la web | Ambos diseños se complementan: uno para la sesión, otro para auditoría y panel |
 
+## Decisiones abiertas
+
+Diferencias entre `omnigent.yaml` y las reglas de este documento. **Resolverlas con el equipo antes de la hora 6.5.** La primera opción es la recomendada.
+
+1. **Experiment Runner con `execute_python_sandbox`.** Ejecutar código arbitrario rompe la regla de protocolos cerrados y la reproducibilidad. → Cambiar la herramienta a `run_experiment(protocol, parameters)`.
+2. **`require_human_approval_for_tools: false`.** Choca con la regla de aprobación humana para ejecuciones y decisión final. → Activar la aprobación al menos para `run_experiment` y para el Discovery Director.
+3. **Handoffs lineales sin regreso.** El ciclo termina en el Discovery Director y no vuelve a empezar. El track exige que la decisión cambie la siguiente prueba, y una segunda ejecución fortalece el demo. → Agregar un handoff condicional `discovery_director → experiment_planner` (o `hypothesis_agent`) según `next_decision`.
+4. **Sin persistencia.** Los agentes solo devuelven JSON y ninguna herramienta escribe en Supabase, así que la web no vería nada. → Herramientas `save_*`, `record_decision` y `log_event` en `agents/` (o un hook tras cada handoff que persista el estado).
+5. **Literature Agent solo con `search_openalex`, que no está implementada.** → Implementarla y agregar `search_evidence` (RAG en Supabase con documentos INEGI) para citas con `passage_id`.
+6. **Modelo `databricks/dbrx-instruct`.** → Verificar en el workspace que el endpoint exista y soporte tool calling antes de construir sobre él.
+7. **Formato de `omnigent.yaml` y comando `omnigent run --config … --state …`.** Campos como `role`, `scientific_decision`, `input`, `output` y `policies` no están verificados contra la spec oficial. → Validarlos con el quickstart antes de la hora 6.5.
+8. **Dónde guardar `variables`** (el mapa de conceptos a columnas del Data Steward). → En `experiment_runs.parameters.variables`; si hace falta mostrarlo antes de la ejecución, crear una migración con `projects.variable_map jsonb`.
 
 ## Para los commits
 
