@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "EXP-001",
+  "research_question": "Which dimension of personal time shows the strongest negative association with an additional five hours of weekday commuting among workers aged 18–65 living in Mexico City and the State of Mexico?",
+  "hypothesis_ids": [
+    "H1",
+    "H2"
+  ],
+  "dataset_version": "analytic_v1",
+  "population": {
+    "source": "approved_analytic_v1",
+    "states": [
+      "09",
+      "15"
+    ],
+    "age_min": 18,
+    "age_max": 65,
+    "sexes": [
+      "male",
+      "female"
+    ],
+    "expected_n": 2563
+  },
+  "exposure": "commute_5h",
+  "outcomes": [
+    "sleep_weekday_min",
+    "personal_hygiene_weekday_min",
+    "household_conversation_weekday_min",
+    "leisure_weekday_min"
+  ],
+  "covariates": [
+    "work_weekday_min",
+    "age",
+    "sex",
+    "state"
+  ],
+  "method": "weighted_linear_regression",
+  "survey_weight": "weight",
+  "cluster": "cluster",
+  "stratum": "stratum",
+  "sensitivity_analyses": [
+    "exclude_zero_weekday_work"
+  ],
+  "missingness_policy": "model_specific_complete_case",
+  "uncertainty": "psu_cluster_CR1_t",
+  "confidence_level": 0.95,
+  "include_unadjusted": true
+}

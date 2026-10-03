@@ -1,0 +1,589 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "Coefficient": {
+      "additionalProperties": false,
+      "properties": {
+        "term": {
+          "title": "Term",
+          "type": "string"
+        },
+        "estimate": {
+          "title": "Estimate",
+          "type": "number"
+        },
+        "standard_error": {
+          "minimum": 0,
+          "title": "Standard Error",
+          "type": "number"
+        },
+        "interval": {
+          "$ref": "#/$defs/Interval"
+        }
+      },
+      "required": [
+        "term",
+        "estimate",
+        "standard_error",
+        "interval"
+      ],
+      "title": "Coefficient",
+      "type": "object"
+    },
+    "Estimate": {
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "variant": {
+          "title": "Variant",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "sleep_weekday_min",
+            "personal_hygiene_weekday_min",
+            "household_conversation_weekday_min",
+            "leisure_weekday_min"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "exposure": {
+          "const": "commute_5h",
+          "title": "Exposure",
+          "type": "string"
+        },
+        "coefficient": {
+          "title": "Coefficient",
+          "type": "number"
+        },
+        "standard_error": {
+          "minimum": 0,
+          "title": "Standard Error",
+          "type": "number"
+        },
+        "direction": {
+          "enum": [
+            "negative",
+            "zero",
+            "positive"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/Interval"
+        },
+        "simultaneous_outcome_interval": {
+          "$ref": "#/$defs/Interval"
+        },
+        "units": {
+          "title": "Units",
+          "type": "string"
+        },
+        "n": {
+          "exclusiveMinimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "weighted_population": {
+          "exclusiveMinimum": 0,
+          "title": "Weighted Population",
+          "type": "number"
+        },
+        "coefficients": {
+          "items": {
+            "$ref": "#/$defs/Coefficient"
+          },
+          "title": "Coefficients",
+          "type": "array"
+        },
+        "covariance": {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "title": "Covariance",
+          "type": "array"
+        },
+        "provenance": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Provenance",
+          "type": "object"
+        }
+      },
+      "required": [
+        "model_id",
+        "variant",
+        "outcome",
+        "exposure",
+        "coefficient",
+        "standard_error",
+        "direction",
+        "interval",
+        "simultaneous_outcome_interval",
+        "units",
+        "n",
+        "weighted_population",
+        "coefficients",
+        "covariance",
+        "provenance"
+      ],
+      "title": "Estimate",
+      "type": "object"
+    },
+    "ExperimentResult": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "status": {
+          "const": "EXPERIMENT_COMPLETED",
+          "title": "Status",
+          "type": "string"
+        },
+        "dataset_version": {
+          "const": "analytic_v1",
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "sample_size": {
+          "exclusiveMinimum": 0,
+          "title": "Sample Size",
+          "type": "integer"
+        },
+        "weighted_population": {
+          "exclusiveMinimum": 0,
+          "title": "Weighted Population",
+          "type": "number"
+        },
+        "estimates": {
+          "items": {
+            "$ref": "#/$defs/Estimate"
+          },
+          "title": "Estimates",
+          "type": "array"
+        },
+        "confidence_intervals": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Interval"
+          },
+          "title": "Confidence Intervals",
+          "type": "object"
+        },
+        "model_diagnostics": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Model Diagnostics",
+          "type": "object"
+        },
+        "sensitivity_results": {
+          "items": {
+            "additionalProperties": {
+              "$ref": "#/$defs/JsonValue"
+            },
+            "type": "object"
+          },
+          "title": "Sensitivity Results",
+          "type": "array"
+        },
+        "quality_flags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Quality Flags",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "scientific_interpretation": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Scientific Interpretation",
+          "type": "array"
+        },
+        "supported_hypotheses": {
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Supported Hypotheses",
+          "type": "array"
+        },
+        "unsupported_hypotheses": {
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Unsupported Hypotheses",
+          "type": "array"
+        },
+        "inconclusive_hypotheses": {
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Inconclusive Hypotheses",
+          "type": "array"
+        },
+        "candidate_next_experiments": {
+          "items": {
+            "additionalProperties": {
+              "$ref": "#/$defs/JsonValue"
+            },
+            "type": "object"
+          },
+          "title": "Candidate Next Experiments",
+          "type": "array"
+        },
+        "ranking": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Ranking",
+          "type": "object"
+        },
+        "population_counts": {
+          "items": {
+            "additionalProperties": {
+              "$ref": "#/$defs/JsonValue"
+            },
+            "type": "object"
+          },
+          "title": "Population Counts",
+          "type": "array"
+        },
+        "missingness": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Missingness",
+          "type": "object"
+        },
+        "transformations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Transformations",
+          "type": "array"
+        },
+        "provenance": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Provenance",
+          "type": "object"
+        },
+        "review_status": {
+          "const": "REQUIRES_HUMAN_REVIEW",
+          "title": "Review Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "experiment_id",
+        "status",
+        "dataset_version",
+        "sample_size",
+        "weighted_population",
+        "estimates",
+        "confidence_intervals",
+        "model_diagnostics",
+        "sensitivity_results",
+        "quality_flags",
+        "limitations",
+        "scientific_interpretation",
+        "supported_hypotheses",
+        "unsupported_hypotheses",
+        "inconclusive_hypotheses",
+        "candidate_next_experiments",
+        "ranking",
+        "population_counts",
+        "missingness",
+        "transformations",
+        "provenance",
+        "review_status"
+      ],
+      "title": "ExperimentResult",
+      "type": "object"
+    },
+    "ExperimentSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "experiment_id": {
+          "pattern": "^EXP-[0-9]{3,}$",
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "research_question": {
+          "minLength": 10,
+          "title": "Research Question",
+          "type": "string"
+        },
+        "hypothesis_ids": {
+          "items": {
+            "enum": [
+              "H1",
+              "H2"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Hypothesis Ids",
+          "type": "array"
+        },
+        "dataset_version": {
+          "const": "analytic_v1",
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "population": {
+          "$ref": "#/$defs/Population"
+        },
+        "exposure": {
+          "const": "commute_5h",
+          "title": "Exposure",
+          "type": "string"
+        },
+        "outcomes": {
+          "items": {
+            "enum": [
+              "sleep_weekday_min",
+              "personal_hygiene_weekday_min",
+              "household_conversation_weekday_min",
+              "leisure_weekday_min"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Outcomes",
+          "type": "array"
+        },
+        "covariates": {
+          "items": {
+            "enum": [
+              "work_weekday_min",
+              "age",
+              "sex",
+              "state"
+            ],
+            "type": "string"
+          },
+          "title": "Covariates",
+          "type": "array"
+        },
+        "method": {
+          "const": "weighted_linear_regression",
+          "title": "Method",
+          "type": "string"
+        },
+        "survey_weight": {
+          "const": "weight",
+          "title": "Survey Weight",
+          "type": "string"
+        },
+        "cluster": {
+          "const": "cluster",
+          "title": "Cluster",
+          "type": "string"
+        },
+        "stratum": {
+          "const": "stratum",
+          "title": "Stratum",
+          "type": "string"
+        },
+        "sensitivity_analyses": {
+          "items": {
+            "const": "exclude_zero_weekday_work",
+            "type": "string"
+          },
+          "title": "Sensitivity Analyses",
+          "type": "array"
+        },
+        "missingness_policy": {
+          "const": "model_specific_complete_case",
+          "title": "Missingness Policy",
+          "type": "string"
+        },
+        "uncertainty": {
+          "const": "psu_cluster_CR1_t",
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence_level": {
+          "const": 0.95,
+          "title": "Confidence Level",
+          "type": "number"
+        },
+        "include_unadjusted": {
+          "title": "Include Unadjusted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "experiment_id",
+        "research_question",
+        "hypothesis_ids",
+        "dataset_version",
+        "population",
+        "exposure",
+        "outcomes",
+        "covariates",
+        "method",
+        "survey_weight",
+        "cluster",
+        "stratum",
+        "sensitivity_analyses",
+        "missingness_policy",
+        "uncertainty",
+        "confidence_level",
+        "include_unadjusted"
+      ],
+      "title": "ExperimentSpec",
+      "type": "object"
+    },
+    "Interval": {
+      "additionalProperties": false,
+      "properties": {
+        "lower": {
+          "title": "Lower",
+          "type": "number"
+        },
+        "upper": {
+          "title": "Upper",
+          "type": "number"
+        },
+        "confidence_level": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Confidence Level",
+          "type": "number"
+        },
+        "adjustment": {
+          "title": "Adjustment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lower",
+        "upper",
+        "confidence_level",
+        "adjustment"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Population": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "const": "approved_analytic_v1",
+          "title": "Source",
+          "type": "string"
+        },
+        "states": {
+          "items": {
+            "enum": [
+              "09",
+              "15"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "States",
+          "type": "array"
+        },
+        "age_min": {
+          "maximum": 65,
+          "minimum": 18,
+          "title": "Age Min",
+          "type": "integer"
+        },
+        "age_max": {
+          "maximum": 65,
+          "minimum": 18,
+          "title": "Age Max",
+          "type": "integer"
+        },
+        "sexes": {
+          "items": {
+            "enum": [
+              "male",
+              "female"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Sexes",
+          "type": "array"
+        },
+        "expected_n": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected N"
+        }
+      },
+      "required": [
+        "source",
+        "states",
+        "age_min",
+        "age_max",
+        "sexes"
+      ],
+      "title": "Population",
+      "type": "object"
+    }
+  },
+  "title": "Time Poverty Lab Experiment Contract 1.0",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ExperimentSpec"
+    },
+    {
+      "$ref": "#/$defs/ExperimentResult"
+    }
+  ]
+}

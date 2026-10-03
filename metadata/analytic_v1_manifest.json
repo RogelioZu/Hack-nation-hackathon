@@ -1,0 +1,4141 @@
+{
+  "dataset_version": "analytic_v1",
+  "schema_version": "1.0",
+  "creation_timestamp": "2026-10-03T22:03:56.018831+00:00",
+  "dataset_path": "data/processed/analytic_v1.parquet",
+  "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+  "row_count": 2563,
+  "population_rules": {
+    "states": [
+      "09",
+      "15"
+    ],
+    "age_min": 18,
+    "age_max": 65,
+    "active_worker": "P5_1 == \"1\" OR P5_2 in {\"1\",\"2\",\"3\",\"4\",\"5\",\"6\"}",
+    "employment_reference_week_absent": false,
+    "commute_required": "resolved weekday minutes",
+    "expected_n": 2563,
+    "additional_exclusions": "none; zeros/extremes/unknown household indicators retained"
+  },
+  "raw_data_hashes": {
+    "thogar.csv": "bfda08f3db45be38be41618fdf8549b11e9ad9a02d739f98cc57be70d4f05144",
+    "tmodulo.csv": "9a11eb9cda375b16cd797b4740a7c7014d24b5451c85979f1eee670d320cdb25",
+    "tsdem.csv": "ba36de1c3c39fb55a8a4812dc7a730a918d64ac0c416c699a7c3b605607f9fba",
+    "tvar_crea.csv": "29130c4e18f6bf5fa12622937cdc83814146ac0e030b47689950e27400078181",
+    "tvivienda.csv": "ad2ca2048dbf310778ead3e202fc8df71c60db2f809c9776f6cf9014e723c3b7"
+  },
+  "staging_sha256": "f63b6fbfd449dd7a4edadc0830c7e935f7edd1e45b888cdea0f4d1fca33ef232",
+  "pipeline_code_version": {
+    "method": "SHA256 of sorted code/config/test/protocol fingerprints",
+    "sha256": "8f5e6ecd18fa3235c8336bf8e5235ce1a13f9f0227522196e94036716f35561f",
+    "git_commit": null
+  },
+  "pipeline_fingerprints": {
+    "AGENTS.md": "4071cd92a725fc16e0cd6fd02552421e8ddc0bb837fd9f0eee9adea937ae2b41",
+    "docs/DATA_CONTRACT.md": "c5d6d2edfe2cc6e708dfe7db8e30b62296668053459049b61a0516f1f32ede36",
+    "docs/DECISIONS.md": "5af03d12ccf4a548a03b7f62cb09847f76d5a001974e0dab1280f8c44daabaef",
+    "docs/EXPERIMENT_PROTOCOL.md": "cd13971300f6a625a7c736cda473e7c7db53e3e8b5cb99f9fc7fc8d7e30e723f",
+    "docs/SCIENTIFIC_PROTOCOL.md": "e04ce7330c1eecb075e60212792a40ab6cfde7713afb083e77d23505ef2caff7",
+    "metadata/mappings/analytic_v1_leisure.json": "8ea433786167674c283e3256fd7af4bfa69432b0ea06ef89e141513db318251e",
+    "metadata/mappings/staging_v1_features.json": "94b57ac2a684efca38fa2016d186687fbf0e46510e00d8c4aec3a3fd36347ddc",
+    "requirements.txt": "9f95b92c0d9e51ac765fdc9f04bbbabc7d295a0556ab52fded5d29925a742d24",
+    "scripts/build_analytic_v1.py": "f80b128524a038f8fefb37f68e04fa65efb48433d31cc06733ce08a34879cb34",
+    "scripts/validate_analytic_v1.py": "16505e98aaf694a9801151e7497306e1d00bd4479bdc2253b8085f7956e53394",
+    "src/pipeline/__init__.py": "b58b52deba3f7af7936d341668db4f6bec22002b39de3f4eec58528432f9b1c2",
+    "src/pipeline/analytic.py": "90fb7c7f36fe7bb5ce4fe7974ce6f3563688bfd96a6b54d7daf894555da83197",
+    "src/pipeline/build.py": "721baeefdc927fd9e78c8da180266ccef4628b4f6678c6851ef63a51e34f3e0c",
+    "src/pipeline/clean.py": "7d9c7f2333b44b129f8d5d0c6fd16bea51abe66905391c302fc3811ad8aaf225",
+    "src/pipeline/features.py": "ad56495697e02b72d7f4bc29f6c4b60cd9885c01ba56cd28b980b5a22e902101",
+    "src/pipeline/households.py": "8f415b7c452867de75ec009792129c7648b07089614be036b0506e00e65c753a",
+    "src/pipeline/inspect.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/pipeline/load.py": "bc56dbb5616a43d00c35af8619f9e7749de77864eff8abe821d024b2dd124fb6",
+    "src/pipeline/report.py": "c520773a4dbc0189cb9ead72ca578eaad1f0264ff6be3fe105c507b719aa5124",
+    "src/pipeline/semantics.py": "fe56177c682c8497251578f59308c32f4d57b74657cd8ac0eac0ef6795a4126a",
+    "src/pipeline/validate.py": "f81587ef979996198b16b1faaa34f56b5db5e7731db6520453406ac41e062136",
+    "tests/test_analytic.py": "23d1b946d49b4f9a9662c8fd2b74c8218b5a76e15b83f016c54b2a34831f9727",
+    "tests/test_semantic_staging.py": "e52d117793d36a84bbba0d34859745abc0735308fc1a6008af17ad86587263ed"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "pandas": "3.0.1",
+    "pyarrow": "23.0.1",
+    "numpy": "2.3.5"
+  },
+  "feature_definitions": {
+    "person_id": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEMOD"
+      ],
+      "transformation": "Exact string alias; unique and nonempty required",
+      "units": "identifier",
+      "missing": "fail",
+      "approval": "Human-approved Phase 2B"
+    },
+    "household_id": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEHOG"
+      ],
+      "transformation": "Exact string alias",
+      "units": "identifier",
+      "missing": "fail",
+      "approval": "Human-approved Phase 2B"
+    },
+    "state": {
+      "table": "TMODULO",
+      "columns": [
+        "CVE_ENT"
+      ],
+      "transformation": "Exact string; analytic domain 09/15",
+      "units": "state code",
+      "missing": "fail",
+      "approval": "Human-approved Phase 2B"
+    },
+    "sex": {
+      "table": "TMODULO",
+      "columns": [
+        "SEXO"
+      ],
+      "transformation": "1=male, 2=female; original SEXO retained",
+      "units": "category",
+      "missing": "unknown code becomes null and is counted",
+      "approval": "Human-approved Phase 2B"
+    },
+    "age": {
+      "table": "TMODULO",
+      "columns": [
+        "EDAD_V"
+      ],
+      "transformation": "Exact integer age 00..96; 97 is retained as lower bound 97+; 98/99 are unknown, not ages",
+      "units": "completed years; 97 top-coded",
+      "missing": "null for special/invalid/empty; outside primary domain",
+      "approval": "Human-approved Phase 2B"
+    },
+    "active_worker": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_1",
+        "P5_2"
+      ],
+      "transformation": "P5_1 == 1 OR P5_2 in 1..6; exact approved rule",
+      "units": "boolean",
+      "missing": "unrecognized employment codes fail validation rather than silently redefine eligibility",
+      "approval": "Human-approved Phase 2B"
+    },
+    "employment_reference_week_absent": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_2"
+      ],
+      "transformation": "P5_2 == 7; retained but excluded from primary_commuting_population",
+      "units": "boolean",
+      "missing": "blank is not code 7",
+      "approval": "Human-approved Phase 2B"
+    },
+    "work_modality": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_7",
+        "P5_5",
+        "P5_1",
+        "P5_2"
+      ],
+      "transformation": "P5_7: 1=in_person, 2=virtual, 3=hybrid; applies to employees P5_5=1",
+      "units": "category",
+      "missing": "null for skips, with work_modality_status; never infer in-person for other occupations",
+      "evidence": "questionnaire p12, filter 5.7; DDI V3524",
+      "approval": "Human-approved Phase 2B"
+    },
+    "commute_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ],
+      "transformation": "60*hours+minutes for valid observed pair; zero for confirmed virtual-only skip; includes trips for all jobs",
+      "units": "total minutes Monday-Friday",
+      "missing": "other skips remain null: P5_2=7, P5_2=8, total weekly work <60min; unexplained or partial blanks unresolved; special/invalid/conflicting pairs null",
+      "evidence": "questionnaire p12, filters 5.8/5.9; DDI V3533/V3534",
+      "approval": "Human-approved Phase 2B"
+    },
+    "commute_5h": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ],
+      "transformation": "commute_weekday_min / 300; inherits all commute dependencies",
+      "units": "300-minute units",
+      "missing": "propagate commute null",
+      "approval": "Human-approved Phase 2B"
+    },
+    "commute_structural_zero": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ],
+      "transformation": "true only for blank time pair on approved active virtual-only branch",
+      "units": "boolean",
+      "missing": "false otherwise; reported zero remains observed",
+      "approval": "Human-approved Phase 2B"
+    },
+    "sleep_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_1",
+        "P6_1_1_2"
+      ],
+      "transformation": "60*hours+minutes; exclusive sleep including naps",
+      "units": "total minutes Monday-Friday",
+      "missing": "99 in either field means No sabe: null; preserve pair and special_code status",
+      "evidence": "questionnaire p14; DDI V3544/V3545",
+      "approval": "Human-approved Phase 2B"
+    },
+    "personal_hygiene_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_1",
+        "P6_1_3_2"
+      ],
+      "transformation": "60*hours+minutes for exclusive personal hygiene/grooming; excludes eating, sleep, health care and resting",
+      "units": "total minutes Monday-Friday",
+      "missing": "special/invalid/unresolved pairs null; no blanket zero",
+      "evidence": "questionnaire p14 item 6.1.3; DDI V3552/V3553",
+      "approval": "Human-approved Phase 2B",
+      "staging_alias": "selfcare_weekday_min"
+    },
+    "household_conversation_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1",
+        "P6_21A_1_1",
+        "P6_21A_1_2"
+      ],
+      "transformation": "60*hours+minutes for exclusive conversation with household members, in person or virtual; P6_21_1=2 and blank pair gives flagged structural zero",
+      "units": "total minutes Monday-Friday",
+      "missing": "P6_21_1=1 with blanks unresolved; No with reported time is a conflict; special/invalid null",
+      "evidence": "questionnaire p24 item 6.21.1; DDI V4096/V4097/V4098",
+      "approval": "Human-approved Phase 2B",
+      "staging_alias": "family_weekday_min"
+    },
+    "work_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ],
+      "transformation": "Sum required weekday branches: P5_7=1 first, =2 second, =3 both. P5_5=2..6 with P5_7 blank: first branch holds all work without modality distinction. Includes all jobs and meal time during work; excludes home-work commuting",
+      "units": "total minutes Monday-Friday",
+      "missing": "inactive/absent structural null; unused branches remain structural blanks, not generic zeros; required missing component makes sum null",
+      "evidence": "questionnaire p12; DDI V3525..V3530 interview instructions",
+      "approval": "Human-approved Phase 2B"
+    },
+    "has_child_u15": {
+      "table": "TSDEM",
+      "columns": [
+        "LLAVEHOG",
+        "LLAVESDE",
+        "EDAD"
+      ],
+      "transformation": "Any known roster age <15 per household, then validated many-to-one join",
+      "units": "nullable boolean",
+      "missing": "true if known child; null if none known and any unknown age; otherwise false",
+      "approval": "Human-approved Phase 2B"
+    },
+    "has_minor_u18": {
+      "table": "TSDEM",
+      "columns": [
+        "LLAVEHOG",
+        "LLAVESDE",
+        "EDAD"
+      ],
+      "transformation": "Any known roster age <18 per household, then validated many-to-one join",
+      "units": "nullable boolean",
+      "missing": "true if known minor; null if none known and any unknown age; otherwise false",
+      "approval": "Human-approved Phase 2B"
+    },
+    "household_size": {
+      "table": "TSDEM",
+      "columns": [
+        "LLAVEHOG",
+        "LLAVESDE"
+      ],
+      "transformation": "Number of unique roster persons per household; all ages; no exclusions; duplicate person IDs fail",
+      "units": "persons",
+      "missing": "unmatched household fails staging validation",
+      "approval": "Human-approved Phase 2B"
+    },
+    "weight": {
+      "table": "TMODULO",
+      "columns": [
+        "FAC_PER"
+      ],
+      "transformation": "Numeric alias; raw FAC_PER retained",
+      "units": "person expansion factor",
+      "missing": "missing/nonfinite/nonpositive fails",
+      "approval": "Human-approved Phase 2B"
+    },
+    "stratum": {
+      "table": "TMODULO",
+      "columns": [
+        "EST_DIS"
+      ],
+      "transformation": "Exact string alias, retaining leading zeros",
+      "units": "survey stratum",
+      "missing": "fail",
+      "approval": "Human-approved Phase 2B"
+    },
+    "cluster": {
+      "table": "TMODULO",
+      "columns": [
+        "UPM_DIS"
+      ],
+      "transformation": "Exact string alias, retaining leading zeros",
+      "units": "primary sampling unit",
+      "missing": "fail",
+      "approval": "Human-approved Phase 2B"
+    },
+    "leisure_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2",
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2",
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2",
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2",
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2",
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2",
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2",
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2",
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2",
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2",
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ],
+      "transformation": "Sum all 11 resolved components. Never skip missing components. Stop publication for unresolved semantics, invalid data or flow conflicts.",
+      "units": "total weekday minutes",
+      "missing": "No=2 + two blank fields -> explicit zero per component; missing/invalid/conflicting component stops publication",
+      "definition": "Discretionary leisure time reported Monday-Friday",
+      "components": [
+        {
+          "name": "sport",
+          "indicator": "P6_18",
+          "hours": "P6_18A_1",
+          "minutes": "P6_18A_2",
+          "ddi_ids": [
+            "V4071",
+            "V4072",
+            "V4073"
+          ],
+          "nonparticipation_rule": "P6_18=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "arts",
+          "indicator": "P6_19_1",
+          "hours": "P6_19A_1_1",
+          "minutes": "P6_19A_1_2",
+          "ddi_ids": [
+            "V4076",
+            "V4077",
+            "V4078"
+          ],
+          "nonparticipation_rule": "P6_19_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "games_hobbies",
+          "indicator": "P6_19_2",
+          "hours": "P6_19A_2_1",
+          "minutes": "P6_19A_2_2",
+          "ddi_ids": [
+            "V4081",
+            "V4082",
+            "V4083"
+          ],
+          "nonparticipation_rule": "P6_19_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "entertainment_venues",
+          "indicator": "P6_20_1",
+          "hours": "P6_20A_1_1",
+          "minutes": "P6_20A_1_2",
+          "ddi_ids": [
+            "V4086",
+            "V4087",
+            "V4088"
+          ],
+          "nonparticipation_rule": "P6_20_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "cultural_venues",
+          "indicator": "P6_20_2",
+          "hours": "P6_20A_2_1",
+          "minutes": "P6_20A_2_2",
+          "ddi_ids": [
+            "V4091",
+            "V4092",
+            "V4093"
+          ],
+          "nonparticipation_rule": "P6_20_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "screen_entertainment",
+          "indicator": "P6_22_1",
+          "hours": "P6_22A_1_1",
+          "minutes": "P6_22A_1_2",
+          "ddi_ids": [
+            "V4116",
+            "V4117",
+            "V4118"
+          ],
+          "nonparticipation_rule": "P6_22_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "audio_entertainment",
+          "indicator": "P6_22_2",
+          "hours": "P6_22A_2_1",
+          "minutes": "P6_22A_2_2",
+          "ddi_ids": [
+            "V4121",
+            "V4122",
+            "V4123"
+          ],
+          "nonparticipation_rule": "P6_22_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "recreational_reading",
+          "indicator": "P6_22_3",
+          "hours": "P6_22A_3_1",
+          "minutes": "P6_22A_3_2",
+          "ddi_ids": [
+            "V4126",
+            "V4127",
+            "V4128"
+          ],
+          "nonparticipation_rule": "P6_22_3=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "unpaid_social_posting",
+          "indicator": "P6_22_4",
+          "hours": "P6_22A_4_1",
+          "minutes": "P6_22A_4_2",
+          "ddi_ids": [
+            "V4131",
+            "V4132",
+            "V4133"
+          ],
+          "nonparticipation_rule": "P6_22_4=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "recreational_social_browsing",
+          "indicator": "P6_22_5",
+          "hours": "P6_22A_5_1",
+          "minutes": "P6_22A_5_2",
+          "ddi_ids": [
+            "V4136",
+            "V4137",
+            "V4138"
+          ],
+          "nonparticipation_rule": "P6_22_5=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        },
+        {
+          "name": "other_recreational_internet",
+          "indicator": "P6_22_6",
+          "hours": "P6_22A_6_1",
+          "minutes": "P6_22A_6_2",
+          "ddi_ids": [
+            "V4141",
+            "V4142",
+            "V4143"
+          ],
+          "nonparticipation_rule": "P6_22_6=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+        }
+      ],
+      "exclusions": [
+        "all P6_21",
+        "all P6_23",
+        "all weekend time components"
+      ],
+      "approval": "Human-approved Phase 2B specification, 2026-10-03"
+    },
+    "CVE_ENT": {
+      "table": "TMODULO",
+      "columns": [
+        "CVE_ENT"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "EDAD_V": {
+      "table": "TMODULO",
+      "columns": [
+        "EDAD_V"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "EST_DIS": {
+      "table": "TMODULO",
+      "columns": [
+        "EST_DIS"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "FAC_PER": {
+      "table": "TMODULO",
+      "columns": [
+        "FAC_PER"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "LLAVEHOG": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEHOG"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "LLAVEMOD": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEMOD"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_5": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_5"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_7": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_7"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_1_3": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_3"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_1_4": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_4"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_2_3": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_3"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_8_2_4": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_4"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_9_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P5_9_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_18": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_18A_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18A_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_18A_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18A_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_19A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_1_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_19A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_1_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_19A_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_2_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_19A_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_2_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_19_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_19_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_1_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_1_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_1_3_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_1_3_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_20A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_1_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_20A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_1_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_20A_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_2_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_20A_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_2_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_20_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_20_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_21A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21A_1_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_21A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21A_1_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_21_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_1_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_1_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_2_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_2_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_3_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_3_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_3_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_3_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_4_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_4_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_4_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_4_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_5_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_5_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_5_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_5_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_6_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_6_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22A_6_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_6_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22_3": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22_4": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22_5": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "P6_22_6": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "SEXO": {
+      "table": "TMODULO",
+      "columns": [
+        "SEXO"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "UPM_DIS": {
+      "table": "TMODULO",
+      "columns": [
+        "UPM_DIS"
+      ],
+      "transformation": "Exact original string copied unchanged",
+      "units": "raw code/string",
+      "missing": "Empty string preserved; no automatic NA conversion",
+      "role": "raw_source"
+    },
+    "commute_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of commute_weekday_status",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "commute_weekday_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of commute_weekday_reason",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "work_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of work_weekday_status",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "work_weekday_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of work_weekday_reason",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "work_modality_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_7",
+        "P5_5",
+        "P5_1",
+        "P5_2"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of work_modality_status",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "sleep_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_1",
+        "P6_1_1_2"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of sleep_weekday_status",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "personal_hygiene_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_1",
+        "P6_1_3_2"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of selfcare_weekday_status",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "household_conversation_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1",
+        "P6_21A_1_1",
+        "P6_21A_1_2"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of family_weekday_status",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "household_conversation_weekday_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1",
+        "P6_21A_1_1",
+        "P6_21A_1_2"
+      ],
+      "transformation": "Approved phase2a parser status/reason; unchanged alias of family_weekday_reason",
+      "units": "status/reason category",
+      "missing": "Explicit unresolved/special/structural classification",
+      "role": "diagnostic"
+    },
+    "leisure_sport_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2"
+      ],
+      "transformation": "P6_18=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_sport_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2"
+      ],
+      "transformation": "P6_18=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_sport_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2"
+      ],
+      "transformation": "P6_18=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_arts_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2"
+      ],
+      "transformation": "P6_19_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_arts_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2"
+      ],
+      "transformation": "P6_19_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_arts_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2"
+      ],
+      "transformation": "P6_19_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_games_hobbies_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2"
+      ],
+      "transformation": "P6_19_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_games_hobbies_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2"
+      ],
+      "transformation": "P6_19_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_games_hobbies_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2"
+      ],
+      "transformation": "P6_19_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_entertainment_venues_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2"
+      ],
+      "transformation": "P6_20_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_entertainment_venues_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2"
+      ],
+      "transformation": "P6_20_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_entertainment_venues_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2"
+      ],
+      "transformation": "P6_20_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_cultural_venues_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2"
+      ],
+      "transformation": "P6_20_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_cultural_venues_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2"
+      ],
+      "transformation": "P6_20_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_cultural_venues_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2"
+      ],
+      "transformation": "P6_20_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_screen_entertainment_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2"
+      ],
+      "transformation": "P6_22_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_screen_entertainment_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2"
+      ],
+      "transformation": "P6_22_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_screen_entertainment_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2"
+      ],
+      "transformation": "P6_22_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_audio_entertainment_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2"
+      ],
+      "transformation": "P6_22_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_audio_entertainment_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2"
+      ],
+      "transformation": "P6_22_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_audio_entertainment_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2"
+      ],
+      "transformation": "P6_22_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_recreational_reading_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2"
+      ],
+      "transformation": "P6_22_3=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_recreational_reading_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2"
+      ],
+      "transformation": "P6_22_3=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_recreational_reading_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2"
+      ],
+      "transformation": "P6_22_3=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_unpaid_social_posting_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2"
+      ],
+      "transformation": "P6_22_4=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_unpaid_social_posting_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2"
+      ],
+      "transformation": "P6_22_4=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_unpaid_social_posting_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2"
+      ],
+      "transformation": "P6_22_4=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_recreational_social_browsing_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2"
+      ],
+      "transformation": "P6_22_5=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_recreational_social_browsing_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2"
+      ],
+      "transformation": "P6_22_5=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_recreational_social_browsing_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2"
+      ],
+      "transformation": "P6_22_5=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_other_recreational_internet_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ],
+      "transformation": "P6_22_6=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "weekday minutes",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_other_recreational_internet_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ],
+      "transformation": "P6_22_6=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_other_recreational_internet_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ],
+      "transformation": "P6_22_6=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication; observed minutes = 60*hours+minutes",
+      "units": "parser status/reason",
+      "missing": "Unresolved/invalid propagates missing and stops publication",
+      "role": "leisure_component"
+    },
+    "leisure_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2",
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2",
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2",
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2",
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2",
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2",
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2",
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2",
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2",
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2",
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ],
+      "transformation": "resolved only if all 11 components resolved",
+      "units": "status",
+      "missing": "unresolved_component otherwise",
+      "role": "diagnostic"
+    },
+    "review_zero_work": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ],
+      "transformation": "work_weekday_min == 0; review flag, never exclusion",
+      "units": "boolean",
+      "missing": "propagate source null",
+      "role": "review_flag"
+    },
+    "review_zero_commute": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ],
+      "transformation": "commute_weekday_min == 0; review flag, never exclusion",
+      "units": "boolean",
+      "missing": "propagate source null",
+      "role": "review_flag"
+    }
+  },
+  "canonical_variables": [
+    "person_id",
+    "household_id",
+    "state",
+    "sex",
+    "age",
+    "active_worker",
+    "employment_reference_week_absent",
+    "work_modality",
+    "commute_weekday_min",
+    "commute_5h",
+    "commute_structural_zero",
+    "sleep_weekday_min",
+    "personal_hygiene_weekday_min",
+    "household_conversation_weekday_min",
+    "work_weekday_min",
+    "has_child_u15",
+    "has_minor_u18",
+    "household_size",
+    "weight",
+    "stratum",
+    "cluster",
+    "leisure_weekday_min"
+  ],
+  "primary_outcomes": [
+    "sleep_weekday_min",
+    "personal_hygiene_weekday_min",
+    "household_conversation_weekday_min",
+    "leisure_weekday_min"
+  ],
+  "source_columns": {
+    "person_id": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEMOD"
+      ]
+    },
+    "household_id": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEHOG"
+      ]
+    },
+    "state": {
+      "table": "TMODULO",
+      "columns": [
+        "CVE_ENT"
+      ]
+    },
+    "sex": {
+      "table": "TMODULO",
+      "columns": [
+        "SEXO"
+      ]
+    },
+    "age": {
+      "table": "TMODULO",
+      "columns": [
+        "EDAD_V"
+      ]
+    },
+    "active_worker": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_1",
+        "P5_2"
+      ]
+    },
+    "employment_reference_week_absent": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_2"
+      ]
+    },
+    "work_modality": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_7",
+        "P5_5",
+        "P5_1",
+        "P5_2"
+      ]
+    },
+    "commute_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ]
+    },
+    "commute_5h": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ]
+    },
+    "commute_structural_zero": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ]
+    },
+    "sleep_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_1",
+        "P6_1_1_2"
+      ]
+    },
+    "personal_hygiene_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_1",
+        "P6_1_3_2"
+      ]
+    },
+    "household_conversation_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1",
+        "P6_21A_1_1",
+        "P6_21A_1_2"
+      ]
+    },
+    "work_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ]
+    },
+    "has_child_u15": {
+      "table": "TSDEM",
+      "columns": [
+        "LLAVEHOG",
+        "LLAVESDE",
+        "EDAD"
+      ]
+    },
+    "has_minor_u18": {
+      "table": "TSDEM",
+      "columns": [
+        "LLAVEHOG",
+        "LLAVESDE",
+        "EDAD"
+      ]
+    },
+    "household_size": {
+      "table": "TSDEM",
+      "columns": [
+        "LLAVEHOG",
+        "LLAVESDE"
+      ]
+    },
+    "weight": {
+      "table": "TMODULO",
+      "columns": [
+        "FAC_PER"
+      ]
+    },
+    "stratum": {
+      "table": "TMODULO",
+      "columns": [
+        "EST_DIS"
+      ]
+    },
+    "cluster": {
+      "table": "TMODULO",
+      "columns": [
+        "UPM_DIS"
+      ]
+    },
+    "leisure_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2",
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2",
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2",
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2",
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2",
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2",
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2",
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2",
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2",
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2",
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ]
+    },
+    "CVE_ENT": {
+      "table": "TMODULO",
+      "columns": [
+        "CVE_ENT"
+      ]
+    },
+    "EDAD_V": {
+      "table": "TMODULO",
+      "columns": [
+        "EDAD_V"
+      ]
+    },
+    "EST_DIS": {
+      "table": "TMODULO",
+      "columns": [
+        "EST_DIS"
+      ]
+    },
+    "FAC_PER": {
+      "table": "TMODULO",
+      "columns": [
+        "FAC_PER"
+      ]
+    },
+    "LLAVEHOG": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEHOG"
+      ]
+    },
+    "LLAVEMOD": {
+      "table": "TMODULO",
+      "columns": [
+        "LLAVEMOD"
+      ]
+    },
+    "P5_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_1"
+      ]
+    },
+    "P5_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_2"
+      ]
+    },
+    "P5_5": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_5"
+      ]
+    },
+    "P5_7": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_7"
+      ]
+    },
+    "P5_8_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1"
+      ]
+    },
+    "P5_8_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_2"
+      ]
+    },
+    "P5_8_1_3": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_3"
+      ]
+    },
+    "P5_8_1_4": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_4"
+      ]
+    },
+    "P5_8_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_1"
+      ]
+    },
+    "P5_8_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_2"
+      ]
+    },
+    "P5_8_2_3": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_3"
+      ]
+    },
+    "P5_8_2_4": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_2_4"
+      ]
+    },
+    "P5_9_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1"
+      ]
+    },
+    "P5_9_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_2"
+      ]
+    },
+    "P6_18": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18"
+      ]
+    },
+    "P6_18A_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18A_1"
+      ]
+    },
+    "P6_18A_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18A_2"
+      ]
+    },
+    "P6_19A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_1_1"
+      ]
+    },
+    "P6_19A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_1_2"
+      ]
+    },
+    "P6_19A_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_2_1"
+      ]
+    },
+    "P6_19A_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19A_2_2"
+      ]
+    },
+    "P6_19_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1"
+      ]
+    },
+    "P6_19_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2"
+      ]
+    },
+    "P6_1_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_1"
+      ]
+    },
+    "P6_1_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_2"
+      ]
+    },
+    "P6_1_3_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_1"
+      ]
+    },
+    "P6_1_3_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_2"
+      ]
+    },
+    "P6_20A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_1_1"
+      ]
+    },
+    "P6_20A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_1_2"
+      ]
+    },
+    "P6_20A_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_2_1"
+      ]
+    },
+    "P6_20A_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20A_2_2"
+      ]
+    },
+    "P6_20_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1"
+      ]
+    },
+    "P6_20_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2"
+      ]
+    },
+    "P6_21A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21A_1_1"
+      ]
+    },
+    "P6_21A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21A_1_2"
+      ]
+    },
+    "P6_21_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1"
+      ]
+    },
+    "P6_22A_1_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_1_1"
+      ]
+    },
+    "P6_22A_1_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_1_2"
+      ]
+    },
+    "P6_22A_2_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_2_1"
+      ]
+    },
+    "P6_22A_2_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_2_2"
+      ]
+    },
+    "P6_22A_3_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_3_1"
+      ]
+    },
+    "P6_22A_3_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_3_2"
+      ]
+    },
+    "P6_22A_4_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_4_1"
+      ]
+    },
+    "P6_22A_4_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_4_2"
+      ]
+    },
+    "P6_22A_5_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_5_1"
+      ]
+    },
+    "P6_22A_5_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_5_2"
+      ]
+    },
+    "P6_22A_6_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_6_1"
+      ]
+    },
+    "P6_22A_6_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22A_6_2"
+      ]
+    },
+    "P6_22_1": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1"
+      ]
+    },
+    "P6_22_2": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2"
+      ]
+    },
+    "P6_22_3": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3"
+      ]
+    },
+    "P6_22_4": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4"
+      ]
+    },
+    "P6_22_5": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5"
+      ]
+    },
+    "P6_22_6": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6"
+      ]
+    },
+    "SEXO": {
+      "table": "TMODULO",
+      "columns": [
+        "SEXO"
+      ]
+    },
+    "UPM_DIS": {
+      "table": "TMODULO",
+      "columns": [
+        "UPM_DIS"
+      ]
+    },
+    "commute_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ]
+    },
+    "commute_weekday_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ]
+    },
+    "work_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ]
+    },
+    "work_weekday_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ]
+    },
+    "work_modality_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_7",
+        "P5_5",
+        "P5_1",
+        "P5_2"
+      ]
+    },
+    "sleep_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_1_1",
+        "P6_1_1_2"
+      ]
+    },
+    "personal_hygiene_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_1_3_1",
+        "P6_1_3_2"
+      ]
+    },
+    "household_conversation_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1",
+        "P6_21A_1_1",
+        "P6_21A_1_2"
+      ]
+    },
+    "household_conversation_weekday_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_21_1",
+        "P6_21A_1_1",
+        "P6_21A_1_2"
+      ]
+    },
+    "leisure_sport_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2"
+      ]
+    },
+    "leisure_sport_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2"
+      ]
+    },
+    "leisure_sport_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2"
+      ]
+    },
+    "leisure_arts_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2"
+      ]
+    },
+    "leisure_arts_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2"
+      ]
+    },
+    "leisure_arts_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2"
+      ]
+    },
+    "leisure_games_hobbies_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2"
+      ]
+    },
+    "leisure_games_hobbies_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2"
+      ]
+    },
+    "leisure_games_hobbies_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2"
+      ]
+    },
+    "leisure_entertainment_venues_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2"
+      ]
+    },
+    "leisure_entertainment_venues_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2"
+      ]
+    },
+    "leisure_entertainment_venues_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2"
+      ]
+    },
+    "leisure_cultural_venues_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2"
+      ]
+    },
+    "leisure_cultural_venues_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2"
+      ]
+    },
+    "leisure_cultural_venues_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2"
+      ]
+    },
+    "leisure_screen_entertainment_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2"
+      ]
+    },
+    "leisure_screen_entertainment_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2"
+      ]
+    },
+    "leisure_screen_entertainment_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2"
+      ]
+    },
+    "leisure_audio_entertainment_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2"
+      ]
+    },
+    "leisure_audio_entertainment_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2"
+      ]
+    },
+    "leisure_audio_entertainment_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2"
+      ]
+    },
+    "leisure_recreational_reading_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2"
+      ]
+    },
+    "leisure_recreational_reading_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2"
+      ]
+    },
+    "leisure_recreational_reading_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2"
+      ]
+    },
+    "leisure_unpaid_social_posting_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2"
+      ]
+    },
+    "leisure_unpaid_social_posting_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2"
+      ]
+    },
+    "leisure_unpaid_social_posting_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2"
+      ]
+    },
+    "leisure_recreational_social_browsing_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2"
+      ]
+    },
+    "leisure_recreational_social_browsing_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2"
+      ]
+    },
+    "leisure_recreational_social_browsing_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2"
+      ]
+    },
+    "leisure_other_recreational_internet_weekday_min": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ]
+    },
+    "leisure_other_recreational_internet_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ]
+    },
+    "leisure_other_recreational_internet_reason": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ]
+    },
+    "leisure_weekday_status": {
+      "table": "TMODULO",
+      "columns": [
+        "P6_18",
+        "P6_18A_1",
+        "P6_18A_2",
+        "P6_19_1",
+        "P6_19A_1_1",
+        "P6_19A_1_2",
+        "P6_19_2",
+        "P6_19A_2_1",
+        "P6_19A_2_2",
+        "P6_20_1",
+        "P6_20A_1_1",
+        "P6_20A_1_2",
+        "P6_20_2",
+        "P6_20A_2_1",
+        "P6_20A_2_2",
+        "P6_22_1",
+        "P6_22A_1_1",
+        "P6_22A_1_2",
+        "P6_22_2",
+        "P6_22A_2_1",
+        "P6_22A_2_2",
+        "P6_22_3",
+        "P6_22A_3_1",
+        "P6_22A_3_2",
+        "P6_22_4",
+        "P6_22A_4_1",
+        "P6_22A_4_2",
+        "P6_22_5",
+        "P6_22A_5_1",
+        "P6_22A_5_2",
+        "P6_22_6",
+        "P6_22A_6_1",
+        "P6_22A_6_2"
+      ]
+    },
+    "review_zero_work": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_7"
+      ]
+    },
+    "review_zero_commute": {
+      "table": "TMODULO",
+      "columns": [
+        "P5_9_1",
+        "P5_9_2",
+        "P5_7",
+        "P5_1",
+        "P5_2",
+        "P5_5",
+        "P5_8_1_1",
+        "P5_8_1_2",
+        "P5_8_1_3",
+        "P5_8_1_4",
+        "P5_8_2_1",
+        "P5_8_2_2",
+        "P5_8_2_3",
+        "P5_8_2_4"
+      ]
+    }
+  },
+  "dtypes": {
+    "person_id": "str",
+    "household_id": "str",
+    "state": "str",
+    "sex": "str",
+    "age": "Int64",
+    "active_worker": "bool",
+    "employment_reference_week_absent": "bool",
+    "work_modality": "str",
+    "commute_weekday_min": "Int64",
+    "commute_5h": "Float64",
+    "commute_structural_zero": "bool",
+    "sleep_weekday_min": "Int64",
+    "personal_hygiene_weekday_min": "Int64",
+    "household_conversation_weekday_min": "Int64",
+    "work_weekday_min": "Int64",
+    "has_child_u15": "boolean",
+    "has_minor_u18": "boolean",
+    "household_size": "Int64",
+    "weight": "Float64",
+    "stratum": "str",
+    "cluster": "str",
+    "CVE_ENT": "str",
+    "EDAD_V": "str",
+    "EST_DIS": "str",
+    "FAC_PER": "str",
+    "LLAVEHOG": "str",
+    "LLAVEMOD": "str",
+    "P5_1": "str",
+    "P5_2": "str",
+    "P5_5": "str",
+    "P5_7": "str",
+    "P5_8_1_1": "str",
+    "P5_8_1_2": "str",
+    "P5_8_1_3": "str",
+    "P5_8_1_4": "str",
+    "P5_8_2_1": "str",
+    "P5_8_2_2": "str",
+    "P5_8_2_3": "str",
+    "P5_8_2_4": "str",
+    "P5_9_1": "str",
+    "P5_9_2": "str",
+    "P6_18": "str",
+    "P6_18A_1": "str",
+    "P6_18A_2": "str",
+    "P6_19A_1_1": "str",
+    "P6_19A_1_2": "str",
+    "P6_19A_2_1": "str",
+    "P6_19A_2_2": "str",
+    "P6_19_1": "str",
+    "P6_19_2": "str",
+    "P6_1_1_1": "str",
+    "P6_1_1_2": "str",
+    "P6_1_3_1": "str",
+    "P6_1_3_2": "str",
+    "P6_20A_1_1": "str",
+    "P6_20A_1_2": "str",
+    "P6_20A_2_1": "str",
+    "P6_20A_2_2": "str",
+    "P6_20_1": "str",
+    "P6_20_2": "str",
+    "P6_21A_1_1": "str",
+    "P6_21A_1_2": "str",
+    "P6_21_1": "str",
+    "P6_22A_1_1": "str",
+    "P6_22A_1_2": "str",
+    "P6_22A_2_1": "str",
+    "P6_22A_2_2": "str",
+    "P6_22A_3_1": "str",
+    "P6_22A_3_2": "str",
+    "P6_22A_4_1": "str",
+    "P6_22A_4_2": "str",
+    "P6_22A_5_1": "str",
+    "P6_22A_5_2": "str",
+    "P6_22A_6_1": "str",
+    "P6_22A_6_2": "str",
+    "P6_22_1": "str",
+    "P6_22_2": "str",
+    "P6_22_3": "str",
+    "P6_22_4": "str",
+    "P6_22_5": "str",
+    "P6_22_6": "str",
+    "SEXO": "str",
+    "UPM_DIS": "str",
+    "commute_weekday_status": "str",
+    "commute_weekday_reason": "str",
+    "work_weekday_status": "str",
+    "work_weekday_reason": "str",
+    "work_modality_status": "str",
+    "sleep_weekday_status": "str",
+    "personal_hygiene_weekday_status": "str",
+    "household_conversation_weekday_status": "str",
+    "household_conversation_weekday_reason": "str",
+    "leisure_sport_weekday_min": "Int64",
+    "leisure_sport_status": "str",
+    "leisure_sport_reason": "str",
+    "leisure_arts_weekday_min": "Int64",
+    "leisure_arts_status": "str",
+    "leisure_arts_reason": "str",
+    "leisure_games_hobbies_weekday_min": "Int64",
+    "leisure_games_hobbies_status": "str",
+    "leisure_games_hobbies_reason": "str",
+    "leisure_entertainment_venues_weekday_min": "Int64",
+    "leisure_entertainment_venues_status": "str",
+    "leisure_entertainment_venues_reason": "str",
+    "leisure_cultural_venues_weekday_min": "Int64",
+    "leisure_cultural_venues_status": "str",
+    "leisure_cultural_venues_reason": "str",
+    "leisure_screen_entertainment_weekday_min": "Int64",
+    "leisure_screen_entertainment_status": "str",
+    "leisure_screen_entertainment_reason": "str",
+    "leisure_audio_entertainment_weekday_min": "Int64",
+    "leisure_audio_entertainment_status": "str",
+    "leisure_audio_entertainment_reason": "str",
+    "leisure_recreational_reading_weekday_min": "Int64",
+    "leisure_recreational_reading_status": "str",
+    "leisure_recreational_reading_reason": "str",
+    "leisure_unpaid_social_posting_weekday_min": "Int64",
+    "leisure_unpaid_social_posting_status": "str",
+    "leisure_unpaid_social_posting_reason": "str",
+    "leisure_recreational_social_browsing_weekday_min": "Int64",
+    "leisure_recreational_social_browsing_status": "str",
+    "leisure_recreational_social_browsing_reason": "str",
+    "leisure_other_recreational_internet_weekday_min": "Int64",
+    "leisure_other_recreational_internet_status": "str",
+    "leisure_other_recreational_internet_reason": "str",
+    "leisure_weekday_min": "Int64",
+    "leisure_weekday_status": "str",
+    "review_zero_work": "boolean",
+    "review_zero_commute": "boolean"
+  },
+  "missingness": {
+    "person_id": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "household_id": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "state": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "sex": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "age": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "active_worker": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "employment_reference_week_absent": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "work_modality": {
+      "n": 2563,
+      "missing": 957,
+      "percent": 37.33905579399141
+    },
+    "commute_weekday_min": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "commute_5h": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "commute_structural_zero": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "sleep_weekday_min": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "personal_hygiene_weekday_min": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "household_conversation_weekday_min": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "work_weekday_min": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "has_child_u15": {
+      "n": 2563,
+      "missing": 3,
+      "percent": 0.11705033164260631
+    },
+    "has_minor_u18": {
+      "n": 2563,
+      "missing": 3,
+      "percent": 0.11705033164260631
+    },
+    "household_size": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "weight": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "stratum": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "cluster": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    },
+    "leisure_weekday_min": {
+      "n": 2563,
+      "missing": 0,
+      "percent": 0.0
+    }
+  },
+  "survey_design_fields": {
+    "weight": "weight",
+    "stratum": "stratum",
+    "cluster": "cluster",
+    "raw_preserved": [
+      "FAC_PER",
+      "EST_DIS",
+      "UPM_DIS"
+    ]
+  },
+  "official_sources": [
+    {
+      "path": "metadata/official/enut_2024_ddi.xml",
+      "title": "INEGI ENUT 2024, DDI completo",
+      "url": "https://www.inegi.org.mx/rnm/index.php/metadata/export/1127/ddi",
+      "sha256": "1928ef3ef1cc69f7d4db3727a3d66c109d85836288f499ab05800130d63136d5",
+      "consulted_date": "2026-10-03"
+    },
+    {
+      "path": "metadata/official/enut_2024_cuestionario.pdf",
+      "title": "INEGI ENUT 2024, cuestionario",
+      "url": "https://www.inegi.org.mx/contenidos/programas/enut/2024/doc/enut_2024_cuestionario.pdf",
+      "sha256": "949752e35fbc54fbe513466eb7caab32cef5010f046cb7777aa8490832769a62",
+      "consulted_date": "2026-10-03"
+    }
+  ],
+  "leisure_metadata_evidence": {
+    "P6_18": {
+      "id": "V4071",
+      "label": "Hizo deporte o ejercicio físico (fútbol, basquetbol, natación, box, karate, caminar, correr, patinar, andar en bicicleta, yoga, zumba), durante la semana pasada",
+      "definition": "Objetivo. Obtener el tiempo que destinaron las personas del hogar de 12 años y más en la semana de refe­rencia a la práctica no profesional de deportes y al ejercicio físico.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4071?name=P6_18",
+      "special_codes": []
+    },
+    "P6_18A_1": {
+      "id": "V4072",
+      "label": "Total de tiempo dedicado a hacer deporte o ejercicio físico (fútbol, basquetbol, natación, box, karate, caminar, correr, patinar, andar en bicicleta, yoga, zumba), de lunes a viernes (horas)",
+      "definition": "Objetivo. Obtener el tiempo que destinaron las personas del hogar de 12 años y más en la semana de refe­rencia a la práctica no profesional de deportes y al ejercicio físico.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "17": "Diecisiete horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "19": "Diecinueve horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "21": "Veintiuna horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "28": "Veintiocho horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "32": "Treinta y dos horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "49": "Cuarenta y nueve horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "88": "Ochenta y ocho horas de lunes a viernes",
+        "90": "Noventa horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4072?name=P6_18A_1",
+      "special_codes": []
+    },
+    "P6_18A_2": {
+      "id": "V4073",
+      "label": "Total de tiempo dedicado a hacer deporte o ejercicio físico (fútbol, basquetbol, natación, box, karate, caminar, correr, patinar, andar en bicicleta, yoga, zumba), de lunes a viernes (minutos)",
+      "definition": "Objetivo. Obtener el tiempo que destinaron las personas del hogar de 12 años y más en la semana de refe­rencia a la práctica no profesional de deportes y al ejercicio físico.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "09": "Nueve minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "15": "Quince minutos",
+        "16": "Dieciséis minutos",
+        "19": "Diecinueve minutos",
+        "20": "Veinte minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "30": "Treinta minutos",
+        "35": "Treinta y cinco minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "42": "Cuarenta y dos minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "55": "Cincuenta y cinco minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4073?name=P6_18A_2",
+      "special_codes": []
+    },
+    "P6_19_1": {
+      "id": "V4076",
+      "label": "Realizó actividades artísticas o culturales (tocar un instrumento musical, pintar o realizar artes plásticas, gráficas, literarias o escénicas; incluye danza), durante la semana pasada",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a las actividades artísticas, culturales, juegos y aficiones.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4076?name=P6_19_1",
+      "special_codes": []
+    },
+    "P6_19A_1_1": {
+      "id": "V4077",
+      "label": "Total de tiempo dedicado a realizar actividades artísticas o culturales (tocar un instrumento musical, pintar o realizar artes plásticas, gráficas, literarias o escénicas; incluye danza), de lunes a viernes (horas)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a las actividades artísticas, culturales, juegos y aficiones.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4077?name=P6_19A_1_1",
+      "special_codes": []
+    },
+    "P6_19A_1_2": {
+      "id": "V4078",
+      "label": "Total de tiempo dedicado a realizar actividades artísticas o culturales (tocar un instrumento musical, pintar o realizar artes plásticas, gráficas, literarias o escénicas; incluye danza), de lunes a viernes (minutos)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a las actividades artísticas, culturales, juegos y aficiones.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "09": "Nueve minutos",
+        "10": "Diez minutos",
+        "15": "Quince minutos",
+        "20": "Veinte minutos",
+        "25": "Veinticinco minutos",
+        "30": "Treinta minutos",
+        "35": "Treinta y cinco minutos",
+        "36": "Treinta y seis minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "50": "Cincuenta minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4078?name=P6_19A_1_2",
+      "special_codes": []
+    },
+    "P6_19_2": {
+      "id": "V4081",
+      "label": "Participó en juegos de mesa o azar (cartas, ajedrez, dominó, ruleta, etcétera), videojuegos, aficiones o pasatiempos (manualidades), durante la semana pasada",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a las actividades artísticas, culturales, juegos y aficiones.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4081?name=P6_19_2",
+      "special_codes": []
+    },
+    "P6_19A_2_1": {
+      "id": "V4082",
+      "label": "Total de tiempo dedicado a participar en juegos de mesa o azar (cartas, ajedrez, dominó, ruleta, etcétera), videojuegos, aficiones o pasatiempos (manualidades), de lunes a vienes (horas)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a las actividades artísticas, culturales, juegos y aficiones.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "17": "Diecisiete horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "21": "Veintiuna horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "23": "Veintitrés horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "26": "Veintiséis horas de lunes a viernes",
+        "27": "Veintisiete horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "31": "Treinta y una horas de lunes a viernes",
+        "32": "Treinta y dos horas de lunes a viernes",
+        "34": "Treinta y cuatro horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "36": "Treinta y seis horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "75": "Setenta y cinco horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4082?name=P6_19A_2_1",
+      "special_codes": []
+    },
+    "P6_19A_2_2": {
+      "id": "V4083",
+      "label": "Total de tiempo dedicado a participar en juegos de mesa o azar (cartas, ajedrez, dominó, ruleta, etcétera), videojuegos, aficiones o pasatiempos (manualidades), de lunes a viernes (minutos)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a las actividades artísticas, culturales, juegos y aficiones.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "10": "Diez minutos",
+        "15": "Quince minutos",
+        "20": "Veinte minutos",
+        "22": "Veintidós minutos",
+        "25": "Veinticinco minutos",
+        "30": "Treinta minutos",
+        "33": "Treinta y tres minutos",
+        "35": "Treinta y cinco minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4083?name=P6_19A_2_2",
+      "special_codes": []
+    },
+    "P6_20_1": {
+      "id": "V4086",
+      "label": "Asistió a estadios, parques, ferias u otros sitios de entretenimiento, durante la semana pasada",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a asistir como espectadoras a eventos culturales, deportivos, de entretenimiento y competitivos. \n\nEspectáculo. Hace referencia a una función o diversión pública en cualquier lugar donde se congrega la gente para presenciarla (cine, teatro, corrida de toros, obra musical o evento deportivo, entre otros).",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4086?name=P6_20_1",
+      "special_codes": []
+    },
+    "P6_20A_1_1": {
+      "id": "V4087",
+      "label": "Total de tiempo dedicado a asistir a estadios, parques, ferias u  otros sitios de entretenimiento, de lunes a viernes (horas)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a asistir como espectadoras a eventos culturales, deportivos, de entretenimiento y competitivos. \n\nEspectáculo. Hace referencia a una función o diversión pública en cualquier lugar donde se congrega la gente para presenciarla (cine, teatro, corrida de toros, obra musical o evento deportivo, entre otros).",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "17": "Diecisiete horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "21": "Veintiuna horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "60": "Sesenta horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4087?name=P6_20A_1_1",
+      "special_codes": []
+    },
+    "P6_20A_1_2": {
+      "id": "V4088",
+      "label": "Total de tiempo dedicado a asistir a estadios, parques, ferias u  otros sitios de entretenimiento, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a asistir como espectadoras a eventos culturales, deportivos, de entretenimiento y competitivos. \n\nEspectáculo. Hace referencia a una función o diversión pública en cualquier lugar donde se congrega la gente para presenciarla (cine, teatro, corrida de toros, obra musical o evento deportivo, entre otros).",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "15": "Quince minutos",
+        "20": "Veinte minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "30": "Treinta minutos",
+        "35": "Treinta y cinco minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4088?name=P6_20A_1_2",
+      "special_codes": []
+    },
+    "P6_20_2": {
+      "id": "V4091",
+      "label": "Asistió al cine, museo, teatro u otros sitios culturales, durante la semana pasada",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a asistir como espectadoras a eventos culturales, deportivos, de entretenimiento y competitivos. \n\nEspectáculo. Hace referencia a una función o diversión pública en cualquier lugar donde se congrega la gente para presenciarla (cine, teatro, corrida de toros, obra musical o evento deportivo, entre otros).",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4091?name=P6_20_2",
+      "special_codes": []
+    },
+    "P6_20A_2_1": {
+      "id": "V4092",
+      "label": "Total de tiempo dedicado a asistir al cine, museo, teatro u otros sitios culturales, de lunes a viernes (horas)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a asistir como espectadoras a eventos culturales, deportivos, de entretenimiento y competitivos. \n\nEspectáculo. Hace referencia a una función o diversión pública en cualquier lugar donde se congrega la gente para presenciarla (cine, teatro, corrida de toros, obra musical o evento deportivo, entre otros).",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4092?name=P6_20A_2_1",
+      "special_codes": []
+    },
+    "P6_20A_2_2": {
+      "id": "V4093",
+      "label": "Total de tiempo dedicado a asistir al cine, museo, teatro u otros sitios culturales, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Captar el tiempo que destinaron durante la semana de referencia las personas del hogar de 12 años y más a asistir como espectadoras a eventos culturales, deportivos, de entretenimiento y competitivos. \n\nEspectáculo. Hace referencia a una función o diversión pública en cualquier lugar donde se congrega la gente para presenciarla (cine, teatro, corrida de toros, obra musical o evento deportivo, entre otros).",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "10": "Diez minutos",
+        "15": "Quince minutos",
+        "20": "Veinte minutos",
+        "30": "Treinta minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "46": "Cuarenta y seis minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4093?name=P6_20A_2_2",
+      "special_codes": []
+    },
+    "P6_22_1": {
+      "id": "V4116",
+      "label": "Vio películas, novelas, series, programas, videos o documentales en televisión, tablet, celular o computadora, para entretenerse sin hacer otra actividad, durante la semana pasada",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4116?name=P6_22_1",
+      "special_codes": []
+    },
+    "P6_22A_1_1": {
+      "id": "V4117",
+      "label": "Total de tiempo dedicado exclusivamente a ver películas, novelas, series, programas, videos o documentales en televisión, tablet, celular o computadora, para entretenerse sin hacer otra actividad, de lunes a viernes (horas)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "17": "Diecisiete horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "19": "Diecinueve horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "21": "Veintiuna horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "23": "Veintitrés horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "26": "Veintiséis horas de lunes a viernes",
+        "27": "Veintisiete horas de lunes a viernes",
+        "28": "Veintiocho horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "32": "Treinta y dos horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "36": "Treinta y seis horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "42": "Cuarenta y dos horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "60": "Sesenta horas de lunes a viernes",
+        "90": "Noventa horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4117?name=P6_22A_1_1",
+      "special_codes": []
+    },
+    "P6_22A_1_2": {
+      "id": "V4118",
+      "label": "Total de tiempo dedicado exclusivamente a ver películas, novelas, series, programas, videos o documentales en televisión, tablet, celular o computadora, para entretenerse sin hacer otra actividad, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "15": "Quince minutos",
+        "16": "Dieciséis minutos",
+        "18": "Dieciocho minutos",
+        "20": "Veinte minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "29": "Veintinueve minutos",
+        "30": "Treinta minutos",
+        "31": "Treinta un minutos",
+        "35": "Treinta y cinco minutos",
+        "36": "Treinta y seis minutos",
+        "37": "Treinta y siete minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "42": "Cuarenta y dos minutos",
+        "44": "Cuarenta y cuatro minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "49": "Cuarenta y nueve minutos",
+        "50": "Cincuenta minutos",
+        "54": "Cincuenta y cuatro minutos",
+        "55": "Cincuenta y cinco minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4118?name=P6_22A_1_2",
+      "special_codes": []
+    },
+    "P6_22_2": {
+      "id": "V4121",
+      "label": "Escuchó música, noticias u otro programa de radio en cualquier dispositivo o aparato de audio, para entretenerse sin hacer otra actividad, durante la semana pasada",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4121?name=P6_22_2",
+      "special_codes": []
+    },
+    "P6_22A_2_1": {
+      "id": "V4122",
+      "label": "Total de tiempo dedicado exclusivamente a escuchar música, noticias u otro programa de radio en cualquier dispositivo o aparato de audio para entretenerse, de lunes a viernes (horas)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "28": "Veintiocho horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "32": "Treinta y dos horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "36": "Treinta y seis horas de lunes a viernes",
+        "37": "Treinta y siete horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "42": "Cuarenta y dos  horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "60": "Sesenta horas de lunes a viernes",
+        "65": "Sesenta y cinco horas de lunes a viernes",
+        "70": "Setenta horas de lunes a viernes",
+        "78": "Setenta y ocho horas de lunes a viernes",
+        "88": "Ochenta y ocho horas de lunes a viernes",
+        "95": "Noventa y cinco horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4122?name=P6_22A_2_1",
+      "special_codes": []
+    },
+    "P6_22A_2_2": {
+      "id": "V4123",
+      "label": "Total de tiempo dedicado exclusivamente a escuchar música, noticias u otro programa de radio en cualquier dispositivo o aparato de audio para entretenerse, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "08": "Ocho minutos",
+        "09": "Nueve minutos",
+        "10": "Diez minutos",
+        "11": "Once minutos",
+        "12": "Doce minutos",
+        "14": "Catorce minutos",
+        "15": "Quince minutos",
+        "18": "Dieciocho minutos",
+        "20": "Veinte minutos",
+        "22": "Veintidós minutos",
+        "24": "Veinticuatro minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "30": "Treinta minutos",
+        "33": "Treinta y tres minutos",
+        "34": "Treinta y cuatro minutos",
+        "35": "Treinta y cinco minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "42": "Cuarenta y dos minutos",
+        "43": "Cuarenta y tres minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "55": "Cincuenta y cinco minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4123?name=P6_22A_2_2",
+      "special_codes": []
+    },
+    "P6_22_3": {
+      "id": "V4126",
+      "label": "Leyó algún libro, revista, periódico o artículo mediante algún dispositivo digital o impreso, para entretenerse, durante la semana pasada",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4126?name=P6_22_3",
+      "special_codes": []
+    },
+    "P6_22A_3_1": {
+      "id": "V4127",
+      "label": "Total de tiempo dedicado a leer algún libro, revista, periódico o artículo mediante algún dispositivo digital o impreso, para entretenerse, de lunes a viernes (horas)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "75": "Setenta y cinco horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4127?name=P6_22A_3_1",
+      "special_codes": []
+    },
+    "P6_22A_3_2": {
+      "id": "V4128",
+      "label": "Total de tiempo dedicado a leer algún libro, revista, periódico o artículo mediante algún dispositivo digital o impreso, para entretenerse, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "07": "Siete minutos",
+        "08": "Ocho minutos",
+        "09": "Nueve minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "13": "Trece minutos",
+        "15": "Quince minutos",
+        "16": "Dieciséis minutos",
+        "17": "Diecisiete minutos",
+        "18": "Dieciocho minutos",
+        "20": "Veinte minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "30": "Treinta minutos",
+        "33": "Treinta y tres minutos",
+        "35": "Treinta y cinco minutos",
+        "36": "Treinta y seis minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "46": "Cuarenta y seis minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "55": "Cincuenta y cinco minutos",
+        "56": "Cincuenta y seis minutos",
+        "58": "Cincuenta y ocho minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4128?name=P6_22A_3_2",
+      "special_codes": []
+    },
+    "P6_22_4": {
+      "id": "V4131",
+      "label": "Subió fotos, historias, videos, etcétera, a través de Facebook, Twitter, Instagram, YouTube, TikTok, u otras plataformas para entretenerse, durante la semana pasada",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4131?name=P6_22_4",
+      "special_codes": []
+    },
+    "P6_22A_4_1": {
+      "id": "V4132",
+      "label": "Total de tiempo dedicado exclusivamente a subió fotos, historias, videos, etcétera, a través de Facebook, Twitter, Instagram, YouTube, TikTok, u otras plataformas para entretenerse, de lunes a viernes (horas)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "28": "Veintiocho horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "36": "Treinta y seis horas de lunes a viernes",
+        "38": "Treinta y ocho horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "62": "Sesenta y dos horas de lunes a viernes",
+        "80": "Ochenta horas de lunes a viernes",
+        "90": "Noventa horas de lunes a viernes",
+        "\"": "Blanco por pase"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4132?name=P6_22A_4_1",
+      "special_codes": []
+    },
+    "P6_22A_4_2": {
+      "id": "V4133",
+      "label": "Total de tiempo dedicado exclusivamente a subió fotos, historias, videos, etcétera, a través de Facebook, Twitter, Instagram, YouTube, TikTok, u otras plataformas para entretenerse, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "07": "Siete minutos",
+        "08": "Ocho minutos",
+        "09": "Nueve minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "13": "Trece minutos",
+        "14": "Catorce minutos",
+        "15": "Quince minutos",
+        "16": "Dieciséis minutos",
+        "18": "Dieciocho minutos",
+        "20": "Veinte minutos",
+        "21": "Veintiún minutos",
+        "22": "Veintidós minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "30": "Treinta minutos",
+        "32": "Treinta y dos minutos",
+        "33": "Treinta y tres minutos",
+        "35": "Treinta y cinco minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "55": "Cincuenta y cinco minutos",
+        "58": "Cincuenta y ocho minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4133?name=P6_22A_4_2",
+      "special_codes": []
+    },
+    "P6_22_5": {
+      "id": "V4136",
+      "label": "Revisó su correo electrónico o consultó redes sociales como Facebook, Twitter, WhatsApp, Instagram, entre otros, para entretenerse sin hacer otra actividad, durante la semana pasada",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4136?name=P6_22_5",
+      "special_codes": []
+    },
+    "P6_22A_5_1": {
+      "id": "V4137",
+      "label": "Total de tiempo dedicado exclusivamente a revisar su correo electrónico o consultó redes sociales como Facebook, Twitter, WhatsApp, Instagram, entre otros, para entretenerse de lunes a viernes (horas)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "13": "Trece horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "16": "Dieciséis horas de lunes a viernes",
+        "17": "Diecisiete horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "19": "Diecinueve horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "21": "Veintiuna horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "23": "Veintitrés horas de lunes a viernes",
+        "24": "Veinticuatro horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "27": "Veintisiete horas de lunes a viernes",
+        "28": "Veintiocho horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "31": "Treinta y una horas de lunes a viernes",
+        "32": "Treinta y dos horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "36": "Treinta y seis horas de lunes a viernes",
+        "38": "Treinta y ocho horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "42": "Cuarenta y dos horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "48": "Cuarenta y ocho horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "52": "Cincuenta y dos horas de lunes a viernes",
+        "60": "Sesenta horas de lunes a viernes",
+        "61": "Sesenta y una horas de lunes a viernes",
+        "70": "Setenta horas de lunes a viernes",
+        "72": "Setenta y dos horas de lunes a viernes",
+        "75": "Setenta y cinco horas de lunes a viernes",
+        "80": "Ochenta horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4137?name=P6_22A_5_1",
+      "special_codes": []
+    },
+    "P6_22A_5_2": {
+      "id": "V4138",
+      "label": "Total de tiempo dedicado exclusivamente a revisar su correo electrónico o consultó redes sociales como Facebook, Twitter, WhatsApp, Instagram, entre otros, para entretenerse de lunes a viernes (minutos)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "07": "Siete minutos",
+        "08": "Ocho minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "13": "Trece minutos",
+        "14": "Catorce minutos",
+        "15": "Quince minutos",
+        "16": "Dieciséis minutos",
+        "18": "Dieciocho minutos",
+        "20": "Veinte minutos",
+        "22": "Veintidós minutos",
+        "23": "Veintitrés minutos",
+        "24": "Veinticuatro minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "29": "Veintinueve minutos",
+        "30": "Treinta minutos",
+        "32": "Treinta y dos minutos",
+        "33": "Treinta y tres minutos",
+        "35": "Treinta y cinco minutos",
+        "38": "Treinta y  ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "51": "Cincuenta y un minutos",
+        "54": "Cincuenta y cuatro minutos",
+        "55": "Cincuenta y cinco minutos",
+        "58": "Cincuenta y ocho minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4138?name=P6_22A_5_2",
+      "special_codes": []
+    },
+    "P6_22_6": {
+      "id": "V4141",
+      "label": "Realizó alguna otra actividad relacionada con el uso de internet como descargar archivos o consultar información en cualquier aparato o dispositivo, para entretenerse, durante la semana pasada",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado ‘Radio online’, ‘TV online’, ‘Transmisión en directo’ o ‘WebTV’.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "",
+      "categories": {
+        "1": "Sí",
+        "2": "No"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4141?name=P6_22_6",
+      "special_codes": []
+    },
+    "P6_22A_6_1": {
+      "id": "V4142",
+      "label": "Total de tiempo dedicado a realizar alguna actividad relacionada con el uso del internet como descargar archivos o consultar información, de lunes a viernes (horas)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero horas de lunes a viernes",
+        "01": "Una hora de lunes a viernes",
+        "02": "Dos horas de lunes a viernes",
+        "03": "Tres horas de lunes a viernes",
+        "04": "Cuatro horas de lunes a viernes",
+        "05": "Cinco horas de lunes a viernes",
+        "06": "Seis horas de lunes a viernes",
+        "07": "Siete horas de lunes a viernes",
+        "08": "Ocho horas de lunes a viernes",
+        "09": "Nueve horas de lunes a viernes",
+        "10": "Diez horas de lunes a viernes",
+        "11": "Once horas de lunes a viernes",
+        "12": "Doce horas de lunes a viernes",
+        "14": "Catorce horas de lunes a viernes",
+        "15": "Quince horas de lunes a viernes",
+        "17": "Diecisiete horas de lunes a viernes",
+        "18": "Dieciocho horas de lunes a viernes",
+        "20": "Veinte horas de lunes a viernes",
+        "22": "Veintidós horas de lunes a viernes",
+        "25": "Veinticinco horas de lunes a viernes",
+        "30": "Treinta horas de lunes a viernes",
+        "35": "Treinta y cinco horas de lunes a viernes",
+        "40": "Cuarenta horas de lunes a viernes",
+        "45": "Cuarenta y cinco horas de lunes a viernes",
+        "50": "Cincuenta horas de lunes a viernes",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4142?name=P6_22A_6_1",
+      "special_codes": []
+    },
+    "P6_22A_6_2": {
+      "id": "V4143",
+      "label": "Total de tiempo dedicado a realizar alguna actividad relacionada con el uso del internet como descargar archivos o consultar información, de lunes a viernes (minutos)",
+      "definition": "Objetivo. Identificar a las personas del hogar de 12 años y más que dedicaron tiempo en la semana de refe­rencia, al uso de medios de comunicación masiva y redes sociales como una actividad exclusiva. \n\nStreaming. Término actualmente utilizado para hacer referencia al hecho de escuchar música o ver videos sin necesidad de descargarlos, también llamado 'Radio online', 'TV online', 'Transmisión en directo' o 'WebTV'.\n\nRedes sociales: Son sitios en internet en donde las y los usuarios establecen una identidad que les identifica de manera única, y con la que pueden interactuar con otras personas participantes de la misma red. La información que cada usuario puede difundir puede ser (imágenes, video, texto, voz) dependiendo del tipo de red, aunque se encuentra sujeta a las regulaciones establecidas por las y los administradores de la red y las normas jurídicas aplicables. Las redes sociales más conocidas son: Facebook, X (antes Twitter), Instagram, YouTube, etcétera.\n\nAplicación: Es un programa informático diseñado como herramienta para realizar operaciones o funciones específicas. Una aplicación móvil es un programa o aplicación informática diseñada para ser descargada y ejecutada en el teléfono inteligente (Smartphone), Tablet o desde algún otro dispositivo móvil. Estas aplicaciones permiten a la persona usuaria realizar diversas actividades, acceder a servicios, buscar información, entre otras.",
+      "notes": "El tiempo se integra con las horas y minutos dedicados a la actividad.",
+      "categories": {
+        "00": "Cero minutos",
+        "01": "Un minuto",
+        "02": "Dos minutos",
+        "03": "Tres minutos",
+        "04": "Cuatro minutos",
+        "05": "Cinco minutos",
+        "06": "Seis minutos",
+        "07": "Siete minutos",
+        "08": "Ocho minutos",
+        "09": "Nueve minutos",
+        "10": "Diez minutos",
+        "12": "Doce minutos",
+        "13": "Trece minutos",
+        "14": "Catorce minutos",
+        "15": "Quince minutos",
+        "18": "Dieciocho minutos",
+        "20": "Veinte minutos",
+        "25": "Veinticinco minutos",
+        "28": "Veintiocho minutos",
+        "30": "Treinta minutos",
+        "35": "Treinta y cinco minutos",
+        "36": "Treinta y seis minutos",
+        "38": "Treinta y ocho minutos",
+        "40": "Cuarenta minutos",
+        "45": "Cuarenta y cinco minutos",
+        "48": "Cuarenta y ocho minutos",
+        "50": "Cincuenta minutos",
+        "55": "Cincuenta y cinco minutos",
+        "\"": "Blanco por secuencia"
+      },
+      "url": "https://www.inegi.org.mx/rnm/index.php/catalog/1127/variable/F22/V4143?name=P6_22A_6_2",
+      "special_codes": []
+    }
+  },
+  "scientific_limitations": [
+    "Observational survey: supports associations, not causal effects.",
+    "Technical readiness does not authorize execution. Final human approval remains pending; no regressions, H1-H4 tests or EXP-001 were run.",
+    "34 persons have zero weekday work; retained and flagged. Eligibility refers to active work in the reference week, not positive weekday hours.",
+    "957 work_modality values are unasked structural missing values; do not silently treat as in-person or apply complete-case population changes.",
+    "Three persons retain unknown child/minor indicators; no imputation. Models using them must specify and report missingness handling.",
+    "Leisure components exclude P6_21/P6_23/weekends by definition; no source overlap with conversation, but reported time simultaneity cannot be ruled out.",
+    "Extreme observations are preserved; descriptive QA flags are not exclusion rules.",
+    "Thirty-four TSDEM domain persons without TMODULO remain outside the canonical module population but contribute to household composition.",
+    "Survey-aware inference and domain variance estimation are future experiment responsibilities. Full staging remains available; this report uses unweighted sample descriptions."
+  ],
+  "experiment_readiness": "EXPERIMENT_READY",
+  "final_human_approval": "pending",
+  "validations": {
+    "one_row_per_person": true,
+    "expected_2563_persons": true,
+    "same_persons_as_approved_population": true,
+    "approved_population_rules": true,
+    "no_negative_time": true,
+    "finite_times": true,
+    "exposure_resolved": true,
+    "survey_fields_complete": true,
+    "positive_finite_weights": true,
+    "survey_aliases_exact": true,
+    "canonical_renames_exact": true,
+    "deprecated_outcome_names_absent": true,
+    "unknown_children_not_imputed": true,
+    "leisure_resolved": true,
+    "all_columns_have_provenance": true,
+    "no_leisure_conversation_overlap": true,
+    "no_weekend_in_leisure": true,
+    "zero_work_and_commute_retained": true,
+    "leisure_sum_complete": true,
+    "raw_files_unchanged": true,
+    "approved_staging_unchanged": true,
+    "parquet_roundtrip_exact": true
+  },
+  "test_result": "PASS: 25 pipeline tests",
+  "change_from_previous_build": null
+}

@@ -1,0 +1,4048 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "EXP-001",
+  "status": "EXPERIMENT_COMPLETED",
+  "dataset_version": "analytic_v1",
+  "sample_size": 2563,
+  "weighted_population": 12737236.0,
+  "estimates": [
+    {
+      "model_id": "adjusted:sleep_weekday_min",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -48.71059252182508,
+      "standard_error": 7.509857390060727,
+      "direction": "negative",
+      "interval": {
+        "lower": -63.48071721309243,
+        "upper": -33.94046783055772,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -67.56546355289333,
+        "upper": -29.85572149075682,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 2311.4705397549565,
+          "standard_error": 42.57138412854372,
+          "interval": {
+            "lower": 2227.7426313274773,
+            "upper": 2395.1984481824356,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -48.71059252182508,
+          "standard_error": 7.509857390060727,
+          "interval": {
+            "lower": -63.48071721309243,
+            "upper": -33.94046783055772,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.053164881562146604,
+          "standard_error": 0.012624430379232224,
+          "interval": {
+            "lower": -0.07799416941310748,
+            "upper": -0.028335593711185724,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -1.4643236348791662,
+          "standard_error": 0.624163213662692,
+          "interval": {
+            "lower": -2.69190599958577,
+            "upper": -0.23674127017256263,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": -26.942900734802294,
+          "standard_error": 15.96545286428564,
+          "interval": {
+            "lower": -58.34319468314631,
+            "upper": 4.4573932135417245,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": 62.52231854013692,
+          "standard_error": 17.655014438718066,
+          "interval": {
+            "lower": 27.799054017016232,
+            "upper": 97.24558306325761,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          1812.3227466200242,
+          -41.562429999078404,
+          -0.35199091930568627,
+          -16.47851293086731,
+          -238.65943059102682,
+          -96.20741705357673
+        ],
+        [
+          -41.562429999078404,
+          56.39795801904972,
+          -0.02192657541062255,
+          0.5220278455460869,
+          1.723934687793125,
+          6.941128990120242
+        ],
+        [
+          -0.35199091930568627,
+          -0.02192657541062255,
+          0.00015937624240008148,
+          -0.00015521245544337442,
+          0.0422507826498792,
+          -0.022054297230247523
+        ],
+        [
+          -16.47851293086731,
+          0.5220278455460869,
+          -0.00015521245544337442,
+          0.38957971728973934,
+          0.5486027627485248,
+          -0.3962294316969432
+        ],
+        [
+          -238.65943059102682,
+          1.723934687793125,
+          0.0422507826498792,
+          0.5486027627485248,
+          254.8956851617265,
+          -27.68783105715982
+        ],
+        [
+          -96.20741705357673,
+          6.941128990120242,
+          -0.022054297230247523,
+          -0.3962294316969432,
+          -27.68783105715982,
+          311.6995348313433
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "sleep_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "sleep_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "adjusted:personal_hygiene_weekday_min",
+      "variant": "adjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": 3.093668266778693,
+      "standard_error": 1.9596104704016915,
+      "direction": "positive",
+      "interval": {
+        "lower": -0.7604250256522587,
+        "upper": 6.947761559209645,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -1.826292362494471,
+        "upper": 8.013628896051857,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 280.00880702235077,
+          "standard_error": 12.237986812522681,
+          "interval": {
+            "lower": 255.93956285397596,
+            "upper": 304.07805119072555,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": 3.093668266778693,
+          "standard_error": 1.9596104704016915,
+          "interval": {
+            "lower": -0.7604250256522587,
+            "upper": 6.947761559209645,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": 0.000579975295506685,
+          "standard_error": 0.0031369949842173887,
+          "interval": {
+            "lower": -0.005589756653610452,
+            "upper": 0.006749707244623822,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -0.9026635712690093,
+          "standard_error": 0.19461554572264642,
+          "interval": {
+            "lower": -1.285426615609494,
+            "upper": -0.5199005269285246,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": 46.77738484696112,
+          "standard_error": 4.740194761680209,
+          "interval": {
+            "lower": 37.454535682931535,
+            "upper": 56.100234010990704,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": -8.793515415239156,
+          "standard_error": 6.882723710976201,
+          "interval": {
+            "lower": -22.33021553436603,
+            "upper": 4.743184703887717,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          149.76832122347906,
+          -1.785023350389241,
+          -0.022275653923118845,
+          -1.5202037000108166,
+          -5.562898101412657,
+          -22.085744333800122
+        ],
+        [
+          -1.785023350389241,
+          3.8400731957079386,
+          -0.0011777667787155374,
+          -0.023987972659563195,
+          0.3528428725088124,
+          -1.4847484948613194
+        ],
+        [
+          -0.022275653923118845,
+          -0.0011777667787155374,
+          9.840737531005056e-06,
+          -1.8820807924625804e-05,
+          0.0008808549936837165,
+          -0.00031348398809535557
+        ],
+        [
+          -1.5202037000108166,
+          -0.023987972659563195,
+          -1.8820807924625804e-05,
+          0.03787521063692348,
+          -0.1265971275108227,
+          0.0005160030741907518
+        ],
+        [
+          -5.562898101412657,
+          0.3528428725088124,
+          0.0008808549936837165,
+          -0.1265971275108227,
+          22.469446378660493,
+          0.9360678760762005
+        ],
+        [
+          -22.085744333800122,
+          -1.4847484948613194,
+          -0.00031348398809535557,
+          0.0005160030741907518,
+          0.9360678760762005,
+          47.37188568163401
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "personal_hygiene_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "personal_hygiene_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "adjusted:household_conversation_weekday_min",
+      "variant": "adjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -3.816105261856255,
+      "standard_error": 3.319096705627132,
+      "direction": "negative",
+      "interval": {
+        "lower": -10.343988503603276,
+        "upper": 2.7117779798907655,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -12.149304825281927,
+        "upper": 4.517094301569416,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 126.45868754174356,
+          "standard_error": 21.07406258747639,
+          "interval": {
+            "lower": 85.01095877653972,
+            "upper": 167.9064163069474,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -3.816105261856255,
+          "standard_error": 3.319096705627132,
+          "interval": {
+            "lower": -10.343988503603276,
+            "upper": 2.7117779798907655,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.0005238290096998277,
+          "standard_error": 0.00527235002024053,
+          "interval": {
+            "lower": -0.010893302512355634,
+            "upper": 0.009845644492955979,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": 0.13652356264537402,
+          "standard_error": 0.31070964706442655,
+          "interval": {
+            "lower": -0.4745692972530138,
+            "upper": 0.7476164225437618,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": 24.508528567023944,
+          "standard_error": 8.38854558460594,
+          "interval": {
+            "lower": 8.010230686295738,
+            "upper": 41.00682644775215,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": 3.096272220097917,
+          "standard_error": 12.564684548500242,
+          "interval": {
+            "lower": -21.61550962191229,
+            "upper": 27.808054062108123,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          444.1161139408721,
+          -18.37652997687102,
+          -0.07360036169565196,
+          -4.285897911563618,
+          -59.44691375036013,
+          -36.16165598461508
+        ],
+        [
+          -18.37652997687102,
+          11.016402941304879,
+          0.00014706950798495932,
+          0.07195595488074014,
+          -4.682473054104967,
+          -1.9942782887216426
+        ],
+        [
+          -0.07360036169565196,
+          0.00014706950798495932,
+          2.7797674735930314e-05,
+          0.00012512721505944318,
+          0.01167744335612749,
+          -0.011997537112469082
+        ],
+        [
+          -4.285897911563618,
+          0.07195595488074014,
+          0.00012512721505944318,
+          0.09654048477890051,
+          0.23178624676506432,
+          -0.009718860880309283
+        ],
+        [
+          -59.44691375036013,
+          -4.682473054104967,
+          0.01167744335612749,
+          0.23178624676506432,
+          70.3676970250118,
+          26.322059507217762
+        ],
+        [
+          -36.16165598461508,
+          -1.9942782887216426,
+          -0.011997537112469082,
+          -0.009718860880309283,
+          26.322059507217762,
+          157.87129780332074
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "household_conversation_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "household_conversation_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "adjusted:leisure_weekday_min",
+      "variant": "adjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -20.396420184108077,
+      "standard_error": 11.714640688780262,
+      "direction": "negative",
+      "interval": {
+        "lower": -43.436365511922006,
+        "upper": 2.6435251437058547,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -49.808169021654294,
+        "upper": 9.015328653438143,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 1343.9067471523017,
+          "standard_error": 72.58260233391582,
+          "interval": {
+            "lower": 1201.1538250651965,
+            "upper": 1486.6596692394069,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -20.396420184108077,
+          "standard_error": 11.714640688780262,
+          "interval": {
+            "lower": -43.436365511922006,
+            "upper": 2.6435251437058547,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.06325389231778189,
+          "standard_error": 0.017507207783997118,
+          "interval": {
+            "lower": -0.09768645588520708,
+            "upper": -0.028821328750356694,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -8.562419457024754,
+          "standard_error": 1.082295973123618,
+          "interval": {
+            "lower": -10.691041299704395,
+            "upper": -6.433797614345114,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": -92.15684883189017,
+          "standard_error": 24.000360083682494,
+          "interval": {
+            "lower": -139.35991710059932,
+            "upper": -44.95378056318104,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": -151.72479245404006,
+          "standard_error": 36.51787285515739,
+          "interval": {
+            "lower": -223.54686676458306,
+            "upper": -79.90271814349704,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          5268.234161563361,
+          -67.006317113368,
+          -0.7940693896056374,
+          -52.569930235634686,
+          -586.5833923507861,
+          -625.0215953663467
+        ],
+        [
+          -67.006317113368,
+          137.23280646722608,
+          -0.047709726495233064,
+          0.8892531731865703,
+          4.116060724642093,
+          -90.92136774115885
+        ],
+        [
+          -0.7940693896056374,
+          -0.047709726495233064,
+          0.00030650232439204925,
+          0.0003425827725316466,
+          0.1338679568849756,
+          0.06169528358136855
+        ],
+        [
+          -52.569930235634686,
+          0.8892531731865703,
+          0.0003425827725316466,
+          1.1713645734395992,
+          -0.9626033848853488,
+          -0.7689400821259595
+        ],
+        [
+          -586.5833923507861,
+          4.116060724642093,
+          0.1338679568849756,
+          -0.9626033848853488,
+          576.0172841464199,
+          -59.41946938990686
+        ],
+        [
+          -625.0215953663467,
+          -90.92136774115885,
+          0.06169528358136855,
+          -0.7689400821259595,
+          -59.41946938990686,
+          1333.5550378654414
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "leisure_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "leisure_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "unadjusted:sleep_weekday_min",
+      "variant": "unadjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -56.41363471216445,
+      "standard_error": 7.639334635886693,
+      "direction": "negative",
+      "interval": {
+        "lower": -71.43841071918948,
+        "upper": -41.38885870513943,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -75.59358205889451,
+        "upper": -37.23368736543439,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 2166.537234281384,
+          "standard_error": 13.147134682339047,
+          "interval": {
+            "lower": 2140.6799099002264,
+            "upper": 2192.3945586625414,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -56.41363471216445,
+          "standard_error": 7.639334635886693,
+          "interval": {
+            "lower": -71.43841071918948,
+            "upper": -41.38885870513943,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          172.84715035556223,
+          -70.44029021978523
+        ],
+        [
+          -70.44029021978523,
+          58.35943367905807
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "sleep_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "sleep_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "unadjusted:personal_hygiene_weekday_min",
+      "variant": "unadjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": 2.040669385547407,
+      "standard_error": 2.028886805096561,
+      "direction": "positive",
+      "interval": {
+        "lower": -1.949674177488073,
+        "upper": 6.031012948582887,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -3.0532221572349303,
+        "upper": 7.134560928329744,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 261.4712095880373,
+          "standard_error": 4.932710605785632,
+          "interval": {
+            "lower": 251.76972699932446,
+            "upper": 271.17269217675016,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": 2.040669385547407,
+          "standard_error": 2.028886805096561,
+          "interval": {
+            "lower": -1.949674177488073,
+            "upper": 6.031012948582887,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          24.33163392043005,
+          -7.050905415573707
+        ],
+        [
+          -7.050905415573707,
+          4.116381667894931
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "personal_hygiene_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "personal_hygiene_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "unadjusted:household_conversation_weekday_min",
+      "variant": "unadjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -4.395302396147223,
+      "standard_error": 3.4301940462681664,
+      "direction": "negative",
+      "interval": {
+        "lower": -11.141687999378236,
+        "upper": 2.351083207083791,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -13.00743216035856,
+        "upper": 4.216827368064115,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 144.18893873234376,
+          "standard_error": 9.074102050830781,
+          "interval": {
+            "lower": 126.34231238635775,
+            "upper": 162.03556507832977,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -4.395302396147223,
+          "standard_error": 3.4301940462681664,
+          "interval": {
+            "lower": -11.141687999378236,
+            "upper": 2.351083207083791,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          82.3393280288914,
+          -21.227965704954112
+        ],
+        [
+          -21.227965704954112,
+          11.766231195053575
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "household_conversation_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "household_conversation_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "unadjusted:leisure_weekday_min",
+      "variant": "unadjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -27.223472620260015,
+      "standard_error": 11.982855245753939,
+      "direction": "negative",
+      "interval": {
+        "lower": -50.79093295198831,
+        "upper": -3.6560122885317163,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -57.30862317740305,
+        "upper": 2.861677936883023,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 725.8256558565942,
+          "standard_error": 26.281057588355786,
+          "interval": {
+            "lower": 674.1369915535754,
+            "upper": 777.5143201596129,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -27.223472620260015,
+          "standard_error": 11.982855245753939,
+          "interval": {
+            "lower": -50.79093295198831,
+            "upper": -3.6560122885317163,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          690.6939879624733,
+          -210.18609702746159
+        ],
+        [
+          -210.18609702746159,
+          143.58881984069268
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "leisure_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "leisure_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:adjusted:sleep_weekday_min",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -49.25302559377981,
+      "standard_error": 7.494125894256145,
+      "direction": "negative",
+      "interval": {
+        "lower": -63.992210129656016,
+        "upper": -34.513841057903605,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -68.06839982629185,
+        "upper": -30.437651361267775,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 2332.263896234469,
+          "standard_error": 44.51902811312916,
+          "interval": {
+            "lower": 2244.7054297800696,
+            "upper": 2419.8223626888685,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -49.25302559377981,
+          "standard_error": 7.494125894256145,
+          "interval": {
+            "lower": -63.992210129656016,
+            "upper": -34.513841057903605,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.05758591956035275,
+          "standard_error": 0.013217015919442958,
+          "interval": {
+            "lower": -0.08358068391300306,
+            "upper": -0.031591155207702434,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -1.5964799114714945,
+          "standard_error": 0.625738369202804,
+          "interval": {
+            "lower": -2.827160236968457,
+            "upper": -0.365799585974532,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": -29.195177178148302,
+          "standard_error": 16.130205327902402,
+          "interval": {
+            "lower": -60.91950050606931,
+            "upper": 2.5291461497727106,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": 58.87758329386218,
+          "standard_error": 17.70208962080482,
+          "interval": {
+            "lower": 24.061732950109835,
+            "upper": 93.69343363761453,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          1981.9438641375848,
+          -38.15704342917813,
+          -0.405441287867565,
+          -17.255103710343402,
+          -241.56908028083612,
+          -88.88044653944743
+        ],
+        [
+          -38.15704342917813,
+          56.161922918960464,
+          -0.02126689545580602,
+          0.4287633292986398,
+          -0.23552122032797707,
+          6.528185818785723
+        ],
+        [
+          -0.405441287867565,
+          -0.02126689545580602,
+          0.0001746895098148086,
+          0.00015229258647535293,
+          0.04141626108907344,
+          -0.022171449873284996
+        ],
+        [
+          -17.255103710343402,
+          0.4287633292986398,
+          0.00015229258647535293,
+          0.3915485066925846,
+          0.6587857926931384,
+          -0.5924614141776675
+        ],
+        [
+          -241.56908028083612,
+          -0.23552122032797707,
+          0.04141626108907344,
+          0.6587857926931384,
+          260.183523920291,
+          -29.40856256604954
+        ],
+        [
+          -88.88044653944743,
+          6.528185818785723,
+          -0.022171449873284996,
+          -0.5924614141776675,
+          -29.40856256604954,
+          313.3639769430057
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "sleep_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "sleep_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:adjusted:personal_hygiene_weekday_min",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": 3.31780090556855,
+      "standard_error": 1.9545029616530256,
+      "direction": "positive",
+      "interval": {
+        "lower": -0.5262471174037064,
+        "upper": 7.161848928540806,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -1.5893363884874097,
+        "upper": 8.22493819962451,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 272.6104670398834,
+          "standard_error": 13.265818780111312,
+          "interval": {
+            "lower": 246.51971892883097,
+            "upper": 298.70121515093587,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": 3.31780090556855,
+          "standard_error": 1.9545029616530256,
+          "interval": {
+            "lower": -0.5262471174037064,
+            "upper": 7.161848928540806,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": 0.0025189101129661218,
+          "standard_error": 0.0035184398646024065,
+          "interval": {
+            "lower": -0.004401034277413726,
+            "upper": 0.009438854503345969,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -0.8580185875431556,
+          "standard_error": 0.1986889538157053,
+          "interval": {
+            "lower": -1.2487930683634496,
+            "upper": -0.4672441067228617,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": 47.470570220457944,
+          "standard_error": 4.756512304097074,
+          "interval": {
+            "lower": 38.11562828507013,
+            "upper": 56.82551215584576,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": -8.868830442492227,
+          "standard_error": 6.892726620043688,
+          "interval": {
+            "lower": -22.42520393309986,
+            "upper": 4.687543048115405,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          175.981947906754,
+          -1.9195488660778806,
+          -0.02969256813762721,
+          -1.6512587495229936,
+          -4.388241085808315,
+          -25.901060140520933
+        ],
+        [
+          -1.9195488660778806,
+          3.8200818271104486,
+          -0.0011389625571578182,
+          -0.021955668148305966,
+          0.17176785084853893,
+          -1.3781669300466286
+        ],
+        [
+          -0.02969256813762721,
+          -0.0011389625571578182,
+          1.23794190808234e-05,
+          1.7161505052745353e-06,
+          0.00018498066307760309,
+          0.0002725035117453504
+        ],
+        [
+          -1.6512587495229936,
+          -0.021955668148305966,
+          1.7161505052745353e-06,
+          0.03947730036837947,
+          -0.1240452415097781,
+          0.03332299680174054
+        ],
+        [
+          -4.388241085808315,
+          0.17176785084853893,
+          0.00018498066307760309,
+          -0.1240452415097781,
+          22.624409299026848,
+          1.442405094029882
+        ],
+        [
+          -25.901060140520933,
+          -1.3781669300466286,
+          0.0002725035117453504,
+          0.03332299680174054,
+          1.442405094029882,
+          47.50968025865889
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "personal_hygiene_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "personal_hygiene_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:adjusted:household_conversation_weekday_min",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -3.964800779741166,
+      "standard_error": 3.3024549743897014,
+      "direction": "negative",
+      "interval": {
+        "lower": -10.459953646903347,
+        "upper": 2.530352087421016,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -12.256218232013737,
+        "upper": 4.326616672531404,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 127.14472159346506,
+          "standard_error": 20.68455737670828,
+          "interval": {
+            "lower": 86.46305804523291,
+            "upper": 167.82638514169722,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -3.964800779741166,
+          "standard_error": 3.3024549743897014,
+          "interval": {
+            "lower": -10.459953646903347,
+            "upper": 2.530352087421016,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.0016449650211431965,
+          "standard_error": 0.005369112841045301,
+          "interval": {
+            "lower": -0.012204748253336178,
+            "upper": 0.008914818211049785,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": 0.20396060445275055,
+          "standard_error": 0.3074331568178643,
+          "interval": {
+            "lower": -0.400688169096475,
+            "upper": 0.8086093780019761,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": 24.084780326646033,
+          "standard_error": 8.486119944373455,
+          "interval": {
+            "lower": 7.394576609950267,
+            "upper": 40.7749840433418,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": 2.9245575307525713,
+          "standard_error": 12.50679902463837,
+          "interval": {
+            "lower": -21.673377088753686,
+            "upper": 27.52249215025883,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          427.85091387033697,
+          -16.196727798862476,
+          -0.07223593747908438,
+          -3.914899866050836,
+          -63.703662224922404,
+          -48.75798074112926
+        ],
+        [
+          -16.196727798862476,
+          10.906208857871285,
+          -0.00023551055369854337,
+          0.035808628200335826,
+          -4.386284366168558,
+          -1.4489102108950234
+        ],
+        [
+          -0.07223593747908438,
+          -0.00023551055369854337,
+          2.882737269987754e-05,
+          1.407522598750073e-05,
+          0.012315535867885197,
+          -0.010172592165035008
+        ],
+        [
+          -3.914899866050836,
+          0.035808628200335826,
+          1.407522598750073e-05,
+          0.09451514591099754,
+          0.26666675202188,
+          0.1879718103071948
+        ],
+        [
+          -63.703662224922404,
+          -4.386284366168558,
+          0.012315535867885197,
+          0.26666675202188,
+          72.01423171029293,
+          25.60693016768761
+        ],
+        [
+          -48.75798074112926,
+          -1.4489102108950234,
+          -0.010172592165035008,
+          0.1879718103071948,
+          25.60693016768761,
+          156.4200218426953
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "household_conversation_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "household_conversation_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:adjusted:leisure_weekday_min",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -21.568186792348765,
+      "standard_error": 11.69147978808823,
+      "direction": "negative",
+      "interval": {
+        "lower": -44.56258007124681,
+        "upper": 1.4262064865492796,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -50.921785951035616,
+        "upper": 7.78541236633809,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 1390.0541623696615,
+          "standard_error": 75.7867102428728,
+          "interval": {
+            "lower": 1240.9995129818217,
+            "upper": 1539.1088117575014,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -21.568186792348765,
+          "standard_error": 11.69147978808823,
+          "interval": {
+            "lower": -44.56258007124681,
+            "upper": 1.4262064865492796,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.07308312184185439,
+          "standard_error": 0.01868704938719124,
+          "interval": {
+            "lower": -0.10983615658336418,
+            "upper": -0.03633008710034461,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -8.902404205384952,
+          "standard_error": 1.099227503582549,
+          "interval": {
+            "lower": -11.064326389616136,
+            "upper": -6.740482021153769,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": -96.66874605233521,
+          "standard_error": 24.454453504215724,
+          "interval": {
+            "lower": -144.76490936857968,
+            "upper": -48.57258273609074,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": -157.1117508954815,
+          "standard_error": 36.42962587939979,
+          "interval": {
+            "lower": -228.76026414249588,
+            "upper": -85.46323764846709,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          5743.625449437161,
+          -71.61213429911612,
+          -0.9347326391755939,
+          -55.005119441060515,
+          -661.2815242299564,
+          -595.5312846673897
+        ],
+        [
+          -71.61213429911612,
+          136.69069963527562,
+          -0.044503415186902734,
+          0.8446760480573734,
+          3.458516878395109,
+          -92.5714904379476
+        ],
+        [
+          -0.9347326391755939,
+          -0.044503415186902734,
+          0.00034920581479932453,
+          0.0007990326577209224,
+          0.15243430698692712,
+          0.05966386954694534
+        ],
+        [
+          -55.005119441060515,
+          0.8446760480573734,
+          0.0007990326577209224,
+          1.2083011046323227,
+          -0.4698693741409221,
+          -1.1203520156080833
+        ],
+        [
+          -661.2815242299564,
+          3.458516878395109,
+          0.15243430698692712,
+          -0.4698693741409221,
+          598.0202961898488,
+          -59.86098549230985
+        ],
+        [
+          -595.5312846673897,
+          -92.5714904379476,
+          0.05966386954694534,
+          -1.1203520156080833,
+          -59.86098549230985,
+          1327.1176417130346
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "leisure_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "leisure_weekday_min ~ commute_5h + work_weekday_min + age + sex + state",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex[female]",
+          "state[15]"
+        ],
+        "categorical_references": {
+          "sex": "male",
+          "state": "09"
+        },
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:unadjusted:sleep_weekday_min",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -55.99352383760275,
+      "standard_error": 7.674806390217815,
+      "direction": "negative",
+      "interval": {
+        "lower": -71.08806444963639,
+        "upper": -40.89898322556911,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -75.26252951372855,
+        "upper": -36.72451816147695,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 2165.5080667897473,
+          "standard_error": 13.224020468822696,
+          "interval": {
+            "lower": 2139.499526134516,
+            "upper": 2191.5166074449785,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -55.99352383760275,
+          "standard_error": 7.674806390217815,
+          "interval": {
+            "lower": -71.08806444963639,
+            "upper": -40.89898322556911,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          174.8747173598416,
+          -71.50022659421961
+        ],
+        [
+          -71.50022659421961,
+          58.9026531273282
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "sleep_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "sleep_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:unadjusted:personal_hygiene_weekday_min",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": 2.602042720224649,
+      "standard_error": 2.030668976366655,
+      "direction": "positive",
+      "interval": {
+        "lower": -1.391805954893961,
+        "upper": 6.595891395343259,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -2.4963232896091365,
+        "upper": 7.7004087300584345,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 260.09598408994685,
+          "standard_error": 4.9154655748288505,
+          "interval": {
+            "lower": 250.4284184245931,
+            "upper": 269.76354975530063,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": 2.602042720224649,
+          "standard_error": 2.030668976366655,
+          "interval": {
+            "lower": -1.391805954893961,
+            "upper": 6.595891395343259,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          24.16180181732752,
+          -7.027052201482144
+        ],
+        [
+          -7.027052201482144,
+          4.123616491577998
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "personal_hygiene_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "personal_hygiene_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:unadjusted:household_conversation_weekday_min",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -4.59374301587884,
+      "standard_error": 3.368707157513652,
+      "direction": "negative",
+      "interval": {
+        "lower": -11.219198358172513,
+        "upper": 2.031712326414832,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -13.05149869582296,
+        "upper": 3.8640126640652808,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 144.67506905463415,
+          "standard_error": 8.92768881217066,
+          "interval": {
+            "lower": 127.11640314240077,
+            "upper": 162.23373496686753,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -4.59374301587884,
+          "standard_error": 3.368707157513652,
+          "interval": {
+            "lower": -11.219198358172513,
+            "upper": 2.031712326414832,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          79.70362752695715,
+          -20.17955319932573
+        ],
+        [
+          -20.17955319932573,
+          11.34818791308371
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "household_conversation_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "household_conversation_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    },
+    {
+      "model_id": "exclude_zero_weekday_work:unadjusted:leisure_weekday_min",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -27.168548383681664,
+      "standard_error": 12.06459115844811,
+      "direction": "negative",
+      "interval": {
+        "lower": -50.89676404797397,
+        "upper": -3.4403327193893602,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -57.458911904588156,
+        "upper": 3.1218151372248286,
+        "confidence_level": 0.9875,
+        "adjustment": "Bonferroni family of 4"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2529,
+      "weighted_population": 12561985.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 725.6911050934224,
+          "standard_error": 26.5568101258278,
+          "interval": {
+            "lower": 673.4601003502529,
+            "upper": 777.9221098365919,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -27.168548383681664,
+          "standard_error": 12.06459115844811,
+          "interval": {
+            "lower": -50.89676404797397,
+            "upper": -3.4403327193893602,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          705.2641640592699,
+          -215.56932795379646
+        ],
+        [
+          -215.56932795379646,
+          145.55435982050432
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+        "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+        "source_variables": [
+          "leisure_weekday_min",
+          "commute_5h",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "leisure_weekday_min ~ commute_5h",
+        "terms": [
+          "intercept",
+          "commute_5h"
+        ],
+        "categorical_references": {},
+        "sample_ids_sha256": "bef1f92c1d6770cd32f02884b448efe4386d4e1db6124a9c9942d8052af215df",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering"
+      }
+    }
+  ],
+  "confidence_intervals": {
+    "adjusted:sleep_weekday_min": {
+      "lower": -63.48071721309243,
+      "upper": -33.94046783055772,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "adjusted:personal_hygiene_weekday_min": {
+      "lower": -0.7604250256522587,
+      "upper": 6.947761559209645,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "adjusted:household_conversation_weekday_min": {
+      "lower": -10.343988503603276,
+      "upper": 2.7117779798907655,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "adjusted:leisure_weekday_min": {
+      "lower": -43.436365511922006,
+      "upper": 2.6435251437058547,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "unadjusted:sleep_weekday_min": {
+      "lower": -71.43841071918948,
+      "upper": -41.38885870513943,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "unadjusted:personal_hygiene_weekday_min": {
+      "lower": -1.949674177488073,
+      "upper": 6.031012948582887,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "unadjusted:household_conversation_weekday_min": {
+      "lower": -11.141687999378236,
+      "upper": 2.351083207083791,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "unadjusted:leisure_weekday_min": {
+      "lower": -50.79093295198831,
+      "upper": -3.6560122885317163,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:adjusted:sleep_weekday_min": {
+      "lower": -63.992210129656016,
+      "upper": -34.513841057903605,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:adjusted:personal_hygiene_weekday_min": {
+      "lower": -0.5262471174037064,
+      "upper": 7.161848928540806,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:adjusted:household_conversation_weekday_min": {
+      "lower": -10.459953646903347,
+      "upper": 2.530352087421016,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:adjusted:leisure_weekday_min": {
+      "lower": -44.56258007124681,
+      "upper": 1.4262064865492796,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:unadjusted:sleep_weekday_min": {
+      "lower": -71.08806444963639,
+      "upper": -40.89898322556911,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:unadjusted:personal_hygiene_weekday_min": {
+      "lower": -1.391805954893961,
+      "upper": 6.595891395343259,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:unadjusted:household_conversation_weekday_min": {
+      "lower": -11.219198358172513,
+      "upper": 2.031712326414832,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    },
+    "exclude_zero_weekday_work:unadjusted:leisure_weekday_min": {
+      "lower": -50.89676404797397,
+      "upper": -3.4403327193893602,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    }
+  },
+  "model_diagnostics": {
+    "adjusted:sleep_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "sleep_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0048181462651546,
+      "weighted_design_condition_number": 12177.447153713641,
+      "weighted_r_squared": 0.058110717649934474,
+      "weighted_rmse": 360.4833548280805,
+      "max_weighted_leverage": 0.028198381456067394,
+      "high_leverage_count_above_2p_over_n": 168,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "adjusted:personal_hygiene_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "personal_hygiene_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0048181462651546,
+      "weighted_design_condition_number": 12177.447153713641,
+      "weighted_r_squared": 0.04940832316447974,
+      "weighted_rmse": 114.30145021681557,
+      "max_weighted_leverage": 0.028198381456067394,
+      "high_leverage_count_above_2p_over_n": 168,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "adjusted:household_conversation_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "household_conversation_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0048181462651546,
+      "weighted_design_condition_number": 12177.447153713641,
+      "weighted_r_squared": 0.005123669463162339,
+      "weighted_rmse": 188.56338602516425,
+      "max_weighted_leverage": 0.028198381456067394,
+      "high_leverage_count_above_2p_over_n": 168,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "adjusted:leisure_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "leisure_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0048181462651546,
+      "weighted_design_condition_number": 12177.447153713641,
+      "weighted_r_squared": 0.061793788576704145,
+      "weighted_rmse": 566.4840277992618,
+      "max_weighted_leverage": 0.028198381456067394,
+      "high_leverage_count_above_2p_over_n": 168,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "unadjusted:sleep_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "sleep_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.003248730964467,
+      "weighted_design_condition_number": 2.950447091740501,
+      "weighted_r_squared": 0.034605357923888524,
+      "weighted_rmse": 364.95366609674664,
+      "max_weighted_leverage": 0.027028699116820123,
+      "high_leverage_count_above_2p_over_n": 178,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "unadjusted:personal_hygiene_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "personal_hygiene_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.003248730964467,
+      "weighted_design_condition_number": 2.950447091740501,
+      "weighted_r_squared": 0.0004545499172512457,
+      "weighted_rmse": 117.20766396191544,
+      "max_weighted_leverage": 0.027028699116820123,
+      "high_leverage_count_above_2p_over_n": 178,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "unadjusted:household_conversation_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "household_conversation_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.003248730964467,
+      "weighted_design_condition_number": 2.950447091740501,
+      "weighted_r_squared": 0.000810919306549529,
+      "weighted_rmse": 188.971651518159,
+      "max_weighted_leverage": 0.027028699116820123,
+      "high_leverage_count_above_2p_over_n": 178,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "unadjusted:leisure_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "leisure_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.003248730964467,
+      "weighted_design_condition_number": 2.950447091740501,
+      "weighted_r_squared": 0.003250541908114024,
+      "weighted_rmse": 583.8906508557653,
+      "max_weighted_leverage": 0.027028699116820123,
+      "high_leverage_count_above_2p_over_n": 178,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:adjusted:sleep_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "sleep_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.004844572787498,
+      "weighted_design_condition_number": 12750.197341379504,
+      "weighted_r_squared": 0.05812204567736612,
+      "weighted_rmse": 360.6405274745628,
+      "max_weighted_leverage": 0.028411759901024854,
+      "high_leverage_count_above_2p_over_n": 166,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:adjusted:personal_hygiene_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "personal_hygiene_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.004844572787498,
+      "weighted_design_condition_number": 12750.197341379504,
+      "weighted_r_squared": 0.04931102005283161,
+      "weighted_rmse": 114.08300080563508,
+      "max_weighted_leverage": 0.028411759901024854,
+      "high_leverage_count_above_2p_over_n": 166,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:adjusted:household_conversation_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "household_conversation_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.004844572787498,
+      "weighted_design_condition_number": 12750.197341379504,
+      "weighted_r_squared": 0.005343344783491744,
+      "weighted_rmse": 188.40532208099444,
+      "max_weighted_leverage": 0.028411759901024854,
+      "high_leverage_count_above_2p_over_n": 166,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:adjusted:leisure_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "leisure_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 6,
+      "rank": 6,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.004844572787498,
+      "weighted_design_condition_number": 12750.197341379504,
+      "weighted_r_squared": 0.06546978821223248,
+      "weighted_rmse": 566.6096248668595,
+      "max_weighted_leverage": 0.028411759901024854,
+      "high_leverage_count_above_2p_over_n": 166,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:unadjusted:sleep_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "sleep_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0032539996608063,
+      "weighted_design_condition_number": 2.990226327411744,
+      "weighted_r_squared": 0.03404595675244171,
+      "weighted_rmse": 365.22075166627104,
+      "max_weighted_leverage": 0.027312480068102933,
+      "high_leverage_count_above_2p_over_n": 176,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:unadjusted:personal_hygiene_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "personal_hygiene_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0032539996608063,
+      "weighted_design_condition_number": 2.990226327411744,
+      "weighted_r_squared": 0.0007416001400764038,
+      "weighted_rmse": 116.96087541197004,
+      "max_weighted_leverage": 0.027312480068102933,
+      "high_leverage_count_above_2p_over_n": 176,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:unadjusted:household_conversation_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "household_conversation_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0032539996608063,
+      "weighted_design_condition_number": 2.990226327411744,
+      "weighted_r_squared": 0.0008866753249007209,
+      "weighted_rmse": 188.8269358076381,
+      "max_weighted_leverage": 0.027312480068102933,
+      "high_leverage_count_above_2p_over_n": 176,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    },
+    "exclude_zero_weekday_work:unadjusted:leisure_weekday_min": {
+      "n_before_missingness": 2529,
+      "n_model": 2529,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "leisure_weekday_min": 0,
+        "commute_5h": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12561985.0,
+      "weighted_population_model": 12561985.0,
+      "parameters": 2,
+      "rank": 2,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.0032539996608063,
+      "weighted_design_condition_number": 2.990226327411744,
+      "weighted_r_squared": 0.0032218305191201724,
+      "weighted_rmse": 585.1760370732175,
+      "max_weighted_leverage": 0.027312480068102933,
+      "high_leverage_count_above_2p_over_n": 176,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2101.909008101481,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ]
+    }
+  },
+  "sensitivity_results": [
+    {
+      "name": "exclude_zero_weekday_work",
+      "rule": "Exclude work_weekday_min == 0; retain missing until model-specific handling",
+      "n_before": 2563,
+      "n_excluded": 34,
+      "n_after": 2529,
+      "weighted_population": 12561985.0,
+      "ranking": {
+        "status": "INCONCLUSIVE_RANKING",
+        "point_estimate_order": [
+          {
+            "rank": 1,
+            "outcome": "sleep_weekday_min",
+            "coefficient": -49.25302559377981,
+            "direction": "negative",
+            "interval": {
+              "lower": -63.992210129656016,
+              "upper": -34.513841057903605,
+              "confidence_level": 0.95,
+              "adjustment": "none"
+            }
+          },
+          {
+            "rank": 2,
+            "outcome": "leisure_weekday_min",
+            "coefficient": -21.568186792348765,
+            "direction": "negative",
+            "interval": {
+              "lower": -44.56258007124681,
+              "upper": 1.4262064865492796,
+              "confidence_level": 0.95,
+              "adjustment": "none"
+            }
+          },
+          {
+            "rank": 3,
+            "outcome": "household_conversation_weekday_min",
+            "coefficient": -3.964800779741166,
+            "direction": "negative",
+            "interval": {
+              "lower": -10.459953646903347,
+              "upper": 2.530352087421016,
+              "confidence_level": 0.95,
+              "adjustment": "none"
+            }
+          },
+          {
+            "rank": 4,
+            "outcome": "personal_hygiene_weekday_min",
+            "coefficient": 3.31780090556855,
+            "direction": "positive",
+            "interval": {
+              "lower": -0.5262471174037064,
+              "upper": 7.161848928540806,
+              "confidence_level": 0.95,
+              "adjustment": "none"
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "outcome_a": "sleep_weekday_min",
+            "outcome_b": "leisure_weekday_min",
+            "difference_a_minus_b": -27.684838801431045,
+            "standard_error": 14.267761069178981,
+            "interval": {
+              "lower": -65.54204190699187,
+              "upper": 10.172364304129783,
+              "confidence_level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "method": "paired PSU influence contrast"
+          },
+          {
+            "outcome_a": "sleep_weekday_min",
+            "outcome_b": "household_conversation_weekday_min",
+            "difference_a_minus_b": -45.28822481403864,
+            "standard_error": 8.263117939934927,
+            "interval": {
+              "lower": -67.21307571535253,
+              "upper": -23.363373912724757,
+              "confidence_level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "method": "paired PSU influence contrast"
+          },
+          {
+            "outcome_a": "sleep_weekday_min",
+            "outcome_b": "personal_hygiene_weekday_min",
+            "difference_a_minus_b": -52.57082649934836,
+            "standard_error": 7.612260571605602,
+            "interval": {
+              "lower": -72.76873233436027,
+              "upper": -32.37292066433645,
+              "confidence_level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "method": "paired PSU influence contrast"
+          },
+          {
+            "outcome_a": "leisure_weekday_min",
+            "outcome_b": "household_conversation_weekday_min",
+            "difference_a_minus_b": -17.6033860126076,
+            "standard_error": 11.424787008101788,
+            "interval": {
+              "lower": -47.91721591951466,
+              "upper": 12.710443894299459,
+              "confidence_level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "method": "paired PSU influence contrast"
+          },
+          {
+            "outcome_a": "leisure_weekday_min",
+            "outcome_b": "personal_hygiene_weekday_min",
+            "difference_a_minus_b": -24.885987697917315,
+            "standard_error": 11.649518245785691,
+            "interval": {
+              "lower": -55.79610570271955,
+              "upper": 6.024130306884921,
+              "confidence_level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "method": "paired PSU influence contrast"
+          },
+          {
+            "outcome_a": "household_conversation_weekday_min",
+            "outcome_b": "personal_hygiene_weekday_min",
+            "difference_a_minus_b": -7.282601685309716,
+            "standard_error": 4.019923247388013,
+            "interval": {
+              "lower": -17.948819749044844,
+              "upper": 3.38361637842541,
+              "confidence_level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "method": "paired PSU influence contrast"
+          }
+        ],
+        "comparison_count": 6,
+        "same_complete_case_persons": true,
+        "rule": "All ordered pairs must have negative Bonferroni simultaneous intervals; point ordering alone is descriptive",
+        "limitation": "Cluster approximation; ranking uncertainty does not establish equivalence"
+      },
+      "comparison": [
+        {
+          "outcome": "sleep_weekday_min",
+          "primary_coefficient": -48.71059252182508,
+          "sensitivity_coefficient": -49.25302559377981,
+          "coefficient_difference": -0.5424330719547328,
+          "primary_direction": "negative",
+          "sensitivity_direction": "negative",
+          "direction_changed": false,
+          "primary_interval": {
+            "lower": -63.48071721309243,
+            "upper": -33.94046783055772,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "sensitivity_interval": {
+            "lower": -63.992210129656016,
+            "upper": -34.513841057903605,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "primary_rank": 1,
+          "sensitivity_rank": 1
+        },
+        {
+          "outcome": "personal_hygiene_weekday_min",
+          "primary_coefficient": 3.093668266778693,
+          "sensitivity_coefficient": 3.31780090556855,
+          "coefficient_difference": 0.224132638789857,
+          "primary_direction": "positive",
+          "sensitivity_direction": "positive",
+          "direction_changed": false,
+          "primary_interval": {
+            "lower": -0.7604250256522587,
+            "upper": 6.947761559209645,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "sensitivity_interval": {
+            "lower": -0.5262471174037064,
+            "upper": 7.161848928540806,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "primary_rank": 4,
+          "sensitivity_rank": 4
+        },
+        {
+          "outcome": "household_conversation_weekday_min",
+          "primary_coefficient": -3.816105261856255,
+          "sensitivity_coefficient": -3.964800779741166,
+          "coefficient_difference": -0.14869551788491098,
+          "primary_direction": "negative",
+          "sensitivity_direction": "negative",
+          "direction_changed": false,
+          "primary_interval": {
+            "lower": -10.343988503603276,
+            "upper": 2.7117779798907655,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "sensitivity_interval": {
+            "lower": -10.459953646903347,
+            "upper": 2.530352087421016,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "primary_rank": 3,
+          "sensitivity_rank": 3
+        },
+        {
+          "outcome": "leisure_weekday_min",
+          "primary_coefficient": -20.396420184108077,
+          "sensitivity_coefficient": -21.568186792348765,
+          "coefficient_difference": -1.171766608240688,
+          "primary_direction": "negative",
+          "sensitivity_direction": "negative",
+          "direction_changed": false,
+          "primary_interval": {
+            "lower": -43.436365511922006,
+            "upper": 2.6435251437058547,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "sensitivity_interval": {
+            "lower": -44.56258007124681,
+            "upper": 1.4262064865492796,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          },
+          "primary_rank": 2,
+          "sensitivity_rank": 2
+        }
+      ],
+      "missingness": {
+        "age": 0,
+        "cluster": 0,
+        "commute_5h": 0,
+        "household_conversation_weekday_min": 0,
+        "leisure_weekday_min": 0,
+        "personal_hygiene_weekday_min": 0,
+        "sex": 0,
+        "sleep_weekday_min": 0,
+        "state": 0,
+        "stratum": 0,
+        "weight": 0,
+        "work_weekday_min": 0
+      },
+      "model_ids": [
+        "exclude_zero_weekday_work:adjusted:sleep_weekday_min",
+        "exclude_zero_weekday_work:adjusted:personal_hygiene_weekday_min",
+        "exclude_zero_weekday_work:adjusted:household_conversation_weekday_min",
+        "exclude_zero_weekday_work:adjusted:leisure_weekday_min",
+        "exclude_zero_weekday_work:unadjusted:sleep_weekday_min",
+        "exclude_zero_weekday_work:unadjusted:personal_hygiene_weekday_min",
+        "exclude_zero_weekday_work:unadjusted:household_conversation_weekday_min",
+        "exclude_zero_weekday_work:unadjusted:leisure_weekday_min"
+      ],
+      "primary_population_redefined": false
+    }
+  ],
+  "quality_flags": [
+    "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+    "HIGH_LEVERAGE_RETAINED",
+    "INCONCLUSIVE_RANKING",
+    "MULTIPLE_COMPARISON_FAMILIES",
+    "REQUIRES_HUMAN_REVIEW"
+  ],
+  "limitations": [
+    "Observational associations; no identification of mechanisms or intervention effects.",
+    "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance.",
+    "EST_DIS identifies nested PSUs and is reported, but covariance does not center scores within strata or apply stratification gains.",
+    "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed.",
+    "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow.",
+    "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models.",
+    "Pointwise 95% intervals are descriptive. Separate Bonferroni families cover primary outcomes and pairwise differences; no joint guarantee across both families or sensitivity models.",
+    "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence.",
+    "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs.",
+    "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
+  ],
+  "scientific_interpretation": [
+    "Adjusted sleep_weekday_min: -48.711 minutes associated with an additional 300 minutes of weekday commuting; 95% interval [-63.481, -33.940].",
+    "Adjusted personal_hygiene_weekday_min: 3.094 minutes associated with an additional 300 minutes of weekday commuting; 95% interval [-0.760, 6.948].",
+    "Adjusted household_conversation_weekday_min: -3.816 minutes associated with an additional 300 minutes of weekday commuting; 95% interval [-10.344, 2.712].",
+    "Adjusted leisure_weekday_min: -20.396 minutes associated with an additional 300 minutes of weekday commuting; 95% interval [-43.436, 2.644].",
+    "Ranking status: INCONCLUSIVE_RANKING; point-estimate order is descriptive.",
+    "Sensitivity excludes 34 zero-work records; n=2529; ranking status INCONCLUSIVE_RANKING."
+  ],
+  "supported_hypotheses": [
+    {
+      "id": "H1",
+      "assessment": "Evidence consistent with a negative association under the specified model",
+      "evidence": "sleep_weekday_min; Bonferroni outcome intervals below zero; provisional survey approximation"
+    },
+    {
+      "id": "H2",
+      "assessment": "Evidence of at least one difference",
+      "evidence": "2 of 6 paired simultaneous intervals exclude zero; this does not establish a full ranking"
+    }
+  ],
+  "unsupported_hypotheses": [],
+  "inconclusive_hypotheses": [],
+  "candidate_next_experiments": [
+    {
+      "question": "Is the commuting association nonlinear?",
+      "hypothesis": "Linear slope may conceal variation over the exposure range",
+      "expected_information": "Assess adequacy of a common linear slope",
+      "required_variables": [
+        "commute_5h",
+        "sleep_weekday_min",
+        "personal_hygiene_weekday_min",
+        "household_conversation_weekday_min",
+        "leisure_weekday_min",
+        "work_weekday_min",
+        "age",
+        "sex",
+        "state"
+      ],
+      "feasibility": "Variables available; method and specification require review",
+      "cost": "Low",
+      "limitations": "Additional modeling choices and comparisons",
+      "decision_relevance": "Could change interpretation of a single coefficient",
+      "selected": false
+    },
+    {
+      "question": "Does the association differ by sex?",
+      "hypothesis": "H3, not evaluated in EXP-001",
+      "expected_information": "Assess whether an overall association masks subgroup differences",
+      "required_variables": [
+        "commute_5h",
+        "sex",
+        "sleep_weekday_min",
+        "personal_hygiene_weekday_min",
+        "household_conversation_weekday_min",
+        "leisure_weekday_min"
+      ],
+      "feasibility": "Variables available; interactions require a new approved specification",
+      "cost": "Low",
+      "limitations": "Subgroup uncertainty and multiple comparisons",
+      "decision_relevance": "Could qualify interpretation of the pooled association",
+      "selected": false
+    }
+  ],
+  "ranking": {
+    "status": "INCONCLUSIVE_RANKING",
+    "point_estimate_order": [
+      {
+        "rank": 1,
+        "outcome": "sleep_weekday_min",
+        "coefficient": -48.71059252182508,
+        "direction": "negative",
+        "interval": {
+          "lower": -63.48071721309243,
+          "upper": -33.94046783055772,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      {
+        "rank": 2,
+        "outcome": "leisure_weekday_min",
+        "coefficient": -20.396420184108077,
+        "direction": "negative",
+        "interval": {
+          "lower": -43.436365511922006,
+          "upper": 2.6435251437058547,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      {
+        "rank": 3,
+        "outcome": "household_conversation_weekday_min",
+        "coefficient": -3.816105261856255,
+        "direction": "negative",
+        "interval": {
+          "lower": -10.343988503603276,
+          "upper": 2.7117779798907655,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      {
+        "rank": 4,
+        "outcome": "personal_hygiene_weekday_min",
+        "coefficient": 3.093668266778693,
+        "direction": "positive",
+        "interval": {
+          "lower": -0.7604250256522587,
+          "upper": 6.947761559209645,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      }
+    ],
+    "paired_comparisons": [
+      {
+        "outcome_a": "sleep_weekday_min",
+        "outcome_b": "leisure_weekday_min",
+        "difference_a_minus_b": -28.314172337717,
+        "standard_error": 14.267089233015914,
+        "interval": {
+          "lower": -66.16959283436285,
+          "upper": 9.541248158928841,
+          "confidence_level": 0.9916666666666667,
+          "adjustment": "Bonferroni family of 6"
+        },
+        "method": "paired PSU influence contrast"
+      },
+      {
+        "outcome_a": "sleep_weekday_min",
+        "outcome_b": "household_conversation_weekday_min",
+        "difference_a_minus_b": -44.89448725996882,
+        "standard_error": 8.288780162139787,
+        "interval": {
+          "lower": -66.8874287294832,
+          "upper": -22.90154579045443,
+          "confidence_level": 0.9916666666666667,
+          "adjustment": "Bonferroni family of 6"
+        },
+        "method": "paired PSU influence contrast"
+      },
+      {
+        "outcome_a": "sleep_weekday_min",
+        "outcome_b": "personal_hygiene_weekday_min",
+        "difference_a_minus_b": -51.80426078860377,
+        "standard_error": 7.632167296257798,
+        "interval": {
+          "lower": -72.05498590722091,
+          "upper": -31.55353566998663,
+          "confidence_level": 0.9916666666666667,
+          "adjustment": "Bonferroni family of 6"
+        },
+        "method": "paired PSU influence contrast"
+      },
+      {
+        "outcome_a": "leisure_weekday_min",
+        "outcome_b": "household_conversation_weekday_min",
+        "difference_a_minus_b": -16.580314922251823,
+        "standard_error": 11.447603531727106,
+        "interval": {
+          "lower": -46.95468479509036,
+          "upper": 13.794054950586709,
+          "confidence_level": 0.9916666666666667,
+          "adjustment": "Bonferroni family of 6"
+        },
+        "method": "paired PSU influence contrast"
+      },
+      {
+        "outcome_a": "leisure_weekday_min",
+        "outcome_b": "personal_hygiene_weekday_min",
+        "difference_a_minus_b": -23.49008845088677,
+        "standard_error": 11.689835444080076,
+        "interval": {
+          "lower": -54.507181639607296,
+          "upper": 7.52700473783376,
+          "confidence_level": 0.9916666666666667,
+          "adjustment": "Bonferroni family of 6"
+        },
+        "method": "paired PSU influence contrast"
+      },
+      {
+        "outcome_a": "household_conversation_weekday_min",
+        "outcome_b": "personal_hygiene_weekday_min",
+        "difference_a_minus_b": -6.909773528634949,
+        "standard_error": 4.044649685098138,
+        "interval": {
+          "lower": -17.641599207323154,
+          "upper": 3.8220521500532563,
+          "confidence_level": 0.9916666666666667,
+          "adjustment": "Bonferroni family of 6"
+        },
+        "method": "paired PSU influence contrast"
+      }
+    ],
+    "comparison_count": 6,
+    "same_complete_case_persons": true,
+    "rule": "All ordered pairs must have negative Bonferroni simultaneous intervals; point ordering alone is descriptive",
+    "limitation": "Cluster approximation; ranking uncertainty does not establish equivalence"
+  },
+  "population_counts": [
+    {
+      "step": "approved_analytic_v1",
+      "n": 2563,
+      "weighted_population": 12737236.0
+    },
+    {
+      "step": "states",
+      "n": 2563,
+      "excluded": 0,
+      "weighted_population": 12737236.0
+    },
+    {
+      "step": "age_inclusive",
+      "n": 2563,
+      "excluded": 0,
+      "weighted_population": 12737236.0
+    },
+    {
+      "step": "sexes",
+      "n": 2563,
+      "excluded": 0,
+      "weighted_population": 12737236.0
+    }
+  ],
+  "missingness": {
+    "person_id": 0,
+    "household_id": 0,
+    "state": 0,
+    "sex": 0,
+    "age": 0,
+    "active_worker": 0,
+    "employment_reference_week_absent": 0,
+    "work_modality": 957,
+    "commute_weekday_min": 0,
+    "commute_5h": 0,
+    "commute_structural_zero": 0,
+    "sleep_weekday_min": 0,
+    "personal_hygiene_weekday_min": 0,
+    "household_conversation_weekday_min": 0,
+    "work_weekday_min": 0,
+    "has_child_u15": 3,
+    "has_minor_u18": 3,
+    "household_size": 0,
+    "weight": 0,
+    "stratum": 0,
+    "cluster": 0,
+    "leisure_weekday_min": 0
+  },
+  "transformations": [
+    "Verify approved dataset SHA256 and historical manifest; read analytic_v1 only",
+    "Sort by exact person_id; apply explicit state, inclusive age and sex filters in order",
+    "Retain original FAC_PER weights; use constant mean scaling only in numerical equations",
+    "Add intercept; sex female dummy (male reference), state 15 dummy (09 reference) when requested",
+    "Complete cases separately for each model, without zero imputation or unrelated-feature exclusions",
+    "Fit requested outcomes with approved covariates and unadjusted variants if requested",
+    "Group weighted scores by (stratum, cluster), apply CR1 and t(G-1) intervals",
+    "Use paired cluster influences for Bonferroni outcome contrasts on identical model samples",
+    "Execute only listed sensitivity rules; primary population remains unchanged"
+  ],
+  "provenance": {
+    "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+    "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+    "approval_sha256": "0844f5f5cb0a4c936e3e0551542055961c5e6293e8305e2c5c181a0620186081",
+    "spec_sha256": "b7fa540b5e13f16d765ec71597bed4f08cba28299d32ef11a84983b3020f4d71",
+    "code_sha256": "7867362c970e0e2d0ae33ba13813d2672ff67f492ce169d0ca55fe971c2fbedd",
+    "code_fingerprints": {
+      "docs/EXPERIMENT_ENGINE.md": "7c6b82022aa0a8207936354124490f6f1896cf08dfb6c662955c11b1803b02f6",
+      "metadata/experiment_contract.schema.json": "113a14d1acfd5f935c2e831d500d6dd7748bcf89c180de094806ab6672fbce54",
+      "requirements-experiments.txt": "6511682893b6786963d1264c89ba29fb0b9c7b2908f0df286e54bdf150218309",
+      "scripts/run_experiment.py": "9495a406e9e17c201ae89832593e86845eadd6030cd8674593cedfe459f51657",
+      "src/experiments/__init__.py": "e0cde96030e19a16b11bf950c6eb096e2b79a4be02a16d2cd180516aa044ff82",
+      "src/experiments/methods/__init__.py": "2780765c1d8f9b314cbd2fcf8a26b203e13ca3e549c2d77c6187737166eea42c",
+      "src/experiments/methods/weighted_linear_regression.py": "4f9afa70d00eebe920ee12f6b7270ffd6dd698f7c6982269a1f2aa57db496a90",
+      "src/experiments/models.py": "b05cc89545b653a3a3215c1e6a751851635301f6f1795286b233c47e78a079b0",
+      "src/experiments/report.py": "d6845e8b0907a32559cf3bbebc3e5b1dc07d94a608fa37591a21a36436262658",
+      "src/experiments/runner.py": "673ededd5d07516a6a11885887948a0105d41e297d73d94f438b9c6b1365c249",
+      "src/experiments/schemas.py": "b04ea6dbdddd1e70a5e5ae7203db75e34932b9ef6c118ebc3ddbb9abbd8a4f6c"
+    },
+    "protocol_fingerprints": {
+      "AGENTS.md": "4071cd92a725fc16e0cd6fd02552421e8ddc0bb837fd9f0eee9adea937ae2b41",
+      "docs/DATA_CONTRACT.md": "c5d6d2edfe2cc6e708dfe7db8e30b62296668053459049b61a0516f1f32ede36",
+      "docs/SCIENTIFIC_PROTOCOL.md": "e04ce7330c1eecb075e60212792a40ab6cfde7713afb083e77d23505ef2caff7",
+      "docs/EXPERIMENT_PROTOCOL.md": "cd13971300f6a625a7c736cda473e7c7db53e3e8b5cb99f9fc7fc8d7e30e723f"
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "numpy": "2.3.5",
+      "pandas": "3.0.1",
+      "pyarrow": "23.0.1",
+      "scipy": "1.16.3",
+      "pydantic": "2.13.5"
+    },
+    "feature_definitions": {
+      "age": {
+        "table": "TMODULO",
+        "columns": [
+          "EDAD_V"
+        ],
+        "transformation": "Exact integer age 00..96; 97 is retained as lower bound 97+; 98/99 are unknown, not ages",
+        "units": "completed years; 97 top-coded",
+        "missing": "null for special/invalid/empty; outside primary domain",
+        "approval": "Human-approved Phase 2B"
+      },
+      "cluster": {
+        "table": "TMODULO",
+        "columns": [
+          "UPM_DIS"
+        ],
+        "transformation": "Exact string alias, retaining leading zeros",
+        "units": "primary sampling unit",
+        "missing": "fail",
+        "approval": "Human-approved Phase 2B"
+      },
+      "commute_5h": {
+        "table": "TMODULO",
+        "columns": [
+          "P5_9_1",
+          "P5_9_2",
+          "P5_7",
+          "P5_1",
+          "P5_2",
+          "P5_5",
+          "P5_8_1_1",
+          "P5_8_1_2",
+          "P5_8_1_3",
+          "P5_8_1_4",
+          "P5_8_2_1",
+          "P5_8_2_2",
+          "P5_8_2_3",
+          "P5_8_2_4"
+        ],
+        "transformation": "commute_weekday_min / 300; inherits all commute dependencies",
+        "units": "300-minute units",
+        "missing": "propagate commute null",
+        "approval": "Human-approved Phase 2B"
+      },
+      "household_conversation_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P6_21_1",
+          "P6_21A_1_1",
+          "P6_21A_1_2"
+        ],
+        "transformation": "60*hours+minutes for exclusive conversation with household members, in person or virtual; P6_21_1=2 and blank pair gives flagged structural zero",
+        "units": "total minutes Monday-Friday",
+        "missing": "P6_21_1=1 with blanks unresolved; No with reported time is a conflict; special/invalid null",
+        "evidence": "questionnaire p24 item 6.21.1; DDI V4096/V4097/V4098",
+        "approval": "Human-approved Phase 2B",
+        "staging_alias": "family_weekday_min"
+      },
+      "leisure_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P6_18",
+          "P6_18A_1",
+          "P6_18A_2",
+          "P6_19_1",
+          "P6_19A_1_1",
+          "P6_19A_1_2",
+          "P6_19_2",
+          "P6_19A_2_1",
+          "P6_19A_2_2",
+          "P6_20_1",
+          "P6_20A_1_1",
+          "P6_20A_1_2",
+          "P6_20_2",
+          "P6_20A_2_1",
+          "P6_20A_2_2",
+          "P6_22_1",
+          "P6_22A_1_1",
+          "P6_22A_1_2",
+          "P6_22_2",
+          "P6_22A_2_1",
+          "P6_22A_2_2",
+          "P6_22_3",
+          "P6_22A_3_1",
+          "P6_22A_3_2",
+          "P6_22_4",
+          "P6_22A_4_1",
+          "P6_22A_4_2",
+          "P6_22_5",
+          "P6_22A_5_1",
+          "P6_22A_5_2",
+          "P6_22_6",
+          "P6_22A_6_1",
+          "P6_22A_6_2"
+        ],
+        "transformation": "Sum all 11 resolved components. Never skip missing components. Stop publication for unresolved semantics, invalid data or flow conflicts.",
+        "units": "total weekday minutes",
+        "missing": "No=2 + two blank fields -> explicit zero per component; missing/invalid/conflicting component stops publication",
+        "definition": "Discretionary leisure time reported Monday-Friday",
+        "components": [
+          {
+            "name": "sport",
+            "indicator": "P6_18",
+            "hours": "P6_18A_1",
+            "minutes": "P6_18A_2",
+            "ddi_ids": [
+              "V4071",
+              "V4072",
+              "V4073"
+            ],
+            "nonparticipation_rule": "P6_18=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "arts",
+            "indicator": "P6_19_1",
+            "hours": "P6_19A_1_1",
+            "minutes": "P6_19A_1_2",
+            "ddi_ids": [
+              "V4076",
+              "V4077",
+              "V4078"
+            ],
+            "nonparticipation_rule": "P6_19_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "games_hobbies",
+            "indicator": "P6_19_2",
+            "hours": "P6_19A_2_1",
+            "minutes": "P6_19A_2_2",
+            "ddi_ids": [
+              "V4081",
+              "V4082",
+              "V4083"
+            ],
+            "nonparticipation_rule": "P6_19_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "entertainment_venues",
+            "indicator": "P6_20_1",
+            "hours": "P6_20A_1_1",
+            "minutes": "P6_20A_1_2",
+            "ddi_ids": [
+              "V4086",
+              "V4087",
+              "V4088"
+            ],
+            "nonparticipation_rule": "P6_20_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "cultural_venues",
+            "indicator": "P6_20_2",
+            "hours": "P6_20A_2_1",
+            "minutes": "P6_20A_2_2",
+            "ddi_ids": [
+              "V4091",
+              "V4092",
+              "V4093"
+            ],
+            "nonparticipation_rule": "P6_20_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "screen_entertainment",
+            "indicator": "P6_22_1",
+            "hours": "P6_22A_1_1",
+            "minutes": "P6_22A_1_2",
+            "ddi_ids": [
+              "V4116",
+              "V4117",
+              "V4118"
+            ],
+            "nonparticipation_rule": "P6_22_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "audio_entertainment",
+            "indicator": "P6_22_2",
+            "hours": "P6_22A_2_1",
+            "minutes": "P6_22A_2_2",
+            "ddi_ids": [
+              "V4121",
+              "V4122",
+              "V4123"
+            ],
+            "nonparticipation_rule": "P6_22_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "recreational_reading",
+            "indicator": "P6_22_3",
+            "hours": "P6_22A_3_1",
+            "minutes": "P6_22A_3_2",
+            "ddi_ids": [
+              "V4126",
+              "V4127",
+              "V4128"
+            ],
+            "nonparticipation_rule": "P6_22_3=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "unpaid_social_posting",
+            "indicator": "P6_22_4",
+            "hours": "P6_22A_4_1",
+            "minutes": "P6_22A_4_2",
+            "ddi_ids": [
+              "V4131",
+              "V4132",
+              "V4133"
+            ],
+            "nonparticipation_rule": "P6_22_4=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "recreational_social_browsing",
+            "indicator": "P6_22_5",
+            "hours": "P6_22A_5_1",
+            "minutes": "P6_22A_5_2",
+            "ddi_ids": [
+              "V4136",
+              "V4137",
+              "V4138"
+            ],
+            "nonparticipation_rule": "P6_22_5=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          },
+          {
+            "name": "other_recreational_internet",
+            "indicator": "P6_22_6",
+            "hours": "P6_22A_6_1",
+            "minutes": "P6_22A_6_2",
+            "ddi_ids": [
+              "V4141",
+              "V4142",
+              "V4143"
+            ],
+            "nonparticipation_rule": "P6_22_6=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"
+          }
+        ],
+        "exclusions": [
+          "all P6_21",
+          "all P6_23",
+          "all weekend time components"
+        ],
+        "approval": "Human-approved Phase 2B specification, 2026-10-03"
+      },
+      "personal_hygiene_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P6_1_3_1",
+          "P6_1_3_2"
+        ],
+        "transformation": "60*hours+minutes for exclusive personal hygiene/grooming; excludes eating, sleep, health care and resting",
+        "units": "total minutes Monday-Friday",
+        "missing": "special/invalid/unresolved pairs null; no blanket zero",
+        "evidence": "questionnaire p14 item 6.1.3; DDI V3552/V3553",
+        "approval": "Human-approved Phase 2B",
+        "staging_alias": "selfcare_weekday_min"
+      },
+      "sex": {
+        "table": "TMODULO",
+        "columns": [
+          "SEXO"
+        ],
+        "transformation": "1=male, 2=female; original SEXO retained",
+        "units": "category",
+        "missing": "unknown code becomes null and is counted",
+        "approval": "Human-approved Phase 2B"
+      },
+      "sleep_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P6_1_1_1",
+          "P6_1_1_2"
+        ],
+        "transformation": "60*hours+minutes; exclusive sleep including naps",
+        "units": "total minutes Monday-Friday",
+        "missing": "99 in either field means No sabe: null; preserve pair and special_code status",
+        "evidence": "questionnaire p14; DDI V3544/V3545",
+        "approval": "Human-approved Phase 2B"
+      },
+      "state": {
+        "table": "TMODULO",
+        "columns": [
+          "CVE_ENT"
+        ],
+        "transformation": "Exact string; analytic domain 09/15",
+        "units": "state code",
+        "missing": "fail",
+        "approval": "Human-approved Phase 2B"
+      },
+      "stratum": {
+        "table": "TMODULO",
+        "columns": [
+          "EST_DIS"
+        ],
+        "transformation": "Exact string alias, retaining leading zeros",
+        "units": "survey stratum",
+        "missing": "fail",
+        "approval": "Human-approved Phase 2B"
+      },
+      "weight": {
+        "table": "TMODULO",
+        "columns": [
+          "FAC_PER"
+        ],
+        "transformation": "Numeric alias; raw FAC_PER retained",
+        "units": "person expansion factor",
+        "missing": "missing/nonfinite/nonpositive fails",
+        "approval": "Human-approved Phase 2B"
+      },
+      "work_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P5_8_1_1",
+          "P5_8_1_2",
+          "P5_8_2_1",
+          "P5_8_2_2",
+          "P5_1",
+          "P5_2",
+          "P5_5",
+          "P5_7"
+        ],
+        "transformation": "Sum required weekday branches: P5_7=1 first, =2 second, =3 both. P5_5=2..6 with P5_7 blank: first branch holds all work without modality distinction. Includes all jobs and meal time during work; excludes home-work commuting",
+        "units": "total minutes Monday-Friday",
+        "missing": "inactive/absent structural null; unused branches remain structural blanks, not generic zeros; required missing component makes sum null",
+        "evidence": "questionnaire p12; DDI V3525..V3530 interview instructions",
+        "approval": "Human-approved Phase 2B"
+      }
+    },
+    "spec": {
+      "schema_version": "1.0",
+      "experiment_id": "EXP-001",
+      "research_question": "Which dimension of personal time shows the strongest negative association with an additional five hours of weekday commuting among workers aged 18–65 living in Mexico City and the State of Mexico?",
+      "hypothesis_ids": [
+        "H1",
+        "H2"
+      ],
+      "dataset_version": "analytic_v1",
+      "population": {
+        "source": "approved_analytic_v1",
+        "states": [
+          "09",
+          "15"
+        ],
+        "age_min": 18,
+        "age_max": 65,
+        "sexes": [
+          "male",
+          "female"
+        ],
+        "expected_n": 2563
+      },
+      "exposure": "commute_5h",
+      "outcomes": [
+        "sleep_weekday_min",
+        "personal_hygiene_weekday_min",
+        "household_conversation_weekday_min",
+        "leisure_weekday_min"
+      ],
+      "covariates": [
+        "work_weekday_min",
+        "age",
+        "sex",
+        "state"
+      ],
+      "method": "weighted_linear_regression",
+      "survey_weight": "weight",
+      "cluster": "cluster",
+      "stratum": "stratum",
+      "sensitivity_analyses": [
+        "exclude_zero_weekday_work"
+      ],
+      "missingness_policy": "model_specific_complete_case",
+      "uncertainty": "psu_cluster_CR1_t",
+      "confidence_level": 0.95,
+      "include_unadjusted": true
+    },
+    "dataset_path": "data/processed/analytic_v1.parquet",
+    "dataset_hash_unchanged": true
+  },
+  "review_status": "REQUIRES_HUMAN_REVIEW"
+}
