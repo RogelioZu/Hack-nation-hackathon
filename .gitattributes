@@ -1,0 +1,16 @@
+# The experiment engine hashes its own sources, docs and metadata into result provenance.
+# Force LF so a checkout on any OS yields the same bytes and fingerprints.
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.parquet binary
+*.pdf binary
+# Written with CRLF before LF was enforced; recorded hashes refer to those exact bytes, so
+# store and check them out byte-for-byte, never normalized:
+# - the approved manifest (EXP-001 provenance manifest_sha256 f800513b…)
+# - the EXP-001 result (validation.json result_sha256 5e4084a3…)
+metadata/analytic_v1_manifest.json -text
+reports/experiments/EXP-001/result.json -text

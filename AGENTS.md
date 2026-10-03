@@ -78,7 +78,7 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 | Motor de experimentos | Python ≥ 3.11, pandas + pyarrow + numpy + scipy + pydantic (tests: statsmodels) → `src/experiments/` |
 | Web | Next.js 16 App Router + TypeScript + Tailwind 4 → `web/` (despliegue en Vercel) |
 | Embeddings | `intfloat/multilingual-e5-small`, 384 dimensiones, CPU |
-| LLM de los agentes | Harness `claude-sdk` con `databricks-claude-sonnet-4-6`, auth `databricks` y perfil `DEFAULT` (verificar el endpoint, ver [Decisiones abiertas](#decisiones-abiertas)) |
+| LLM de los agentes | Omnigent de código abierto, harness `codex` con `gpt-5.4-mini` y la llave `OPENAI_API_KEY` (service account del equipo) cargada desde `.env` (commit `84207bb`; ver [Decisiones abiertas](#decisiones-abiertas)) |
 | Web desplegada | Vercel, proyecto `commute-time-lab` → https://commute-time-lab.vercel.app |
 
 ```
@@ -104,11 +104,14 @@ analysis/
   enut/README.md           nota histórica; el pipeline ENUT se construyó fuera de este repo (ver §8)
 data/
   raw/                     ZIP bruto de INEGI (ignorado por git)
-  processed/               analytic_v1.parquet (dataset canónico; ⚠️ aún NO está en el repo, ver MEMORY.md §1)
-                           y staging_v1.parquet (staging histórico de la fase 2A; el motor no lo lee)
+  processed/               analytic_v1.parquet (dataset canónico, SHA256 verificado contra el manifiesto)
+  interim/, raw/enut_2024/ staging_v1.parquet y CSV crudos: solo locales (ignorados por git); los usa el validador
 metadata/
   analytic_v1_manifest.json          procedencia, linaje por columna, hashes, faltantes, validaciones
+  analytic_v1_experiment_approval.json  aprobación humana de la fase 3 (APPROVED_FOR_EXPERIMENTS)
   experiment_contract.schema.json    JSON Schema de ExperimentSpec y ExperimentResult
+  mappings/                          mapeos de fuente del ocio (analytic_v1) y de candidatos (staging_v1)
+  official/                          cuestionario ENUT 2024 (PDF) y diccionario DDI (XML/JSON) archivados
 docs/
   DATA_CONTRACT.md         definiciones canónicas de variables y población (FUENTE DE VERDAD de las variables)
   SCIENTIFIC_PROTOCOL.md   decisiones científicas aprobadas por fase (2A, 2B)
@@ -119,8 +122,15 @@ src/experiments/           motor determinista (sin LLM): run_experiment(Experime
   runner.py                carga y verifica analytic_v1, filtra población, ajusta, ranking, sensibilidad, procedencia
   methods/                 registro cerrado de métodos: solo weighted_linear_regression
   models.py                ExperimentError y utilidades
+  report.py                genera summary.md a partir del ExperimentResult
+scripts/
+  run_experiment.py        CLI: corre el spec dos veces, exige resultados idénticos y publica en reports/
+  validate_experiment_engine.py  valida el motor solo con analytic_v1 (hash, manifiesto, esquema, métodos, tests, EXP-001)
+requirements-experiments.txt     dependencias del motor, autocontenidas y con versiones fijadas
+.gitattributes             LF forzado en fuentes y metadatos; bytes exactos para manifiesto y result.json de EXP-001
 experiments/EXP-001/       spec.json (+ copia de result.json)
-reports/experiments/EXP-001/  result.json, summary.md (en español), validation.json
+reports/experiments/EXP-001/  result.json, summary.md (en español), spec.json, validation.json, engine_validation.json
+reports/audit/             auditoría ENUT 2024 y validaciones de las fases 2A y 2B
 tests/                     test_experiment_schemas.py, test_experiment_runner.py, test_exp001.py
 agents/
   commute_lab/tools.py     11 tools que persisten en Supabase (create_project … record_decision)
@@ -389,11 +399,11 @@ uv run python -m rag.ingest                       # ingiere rag/corpus.json (--d
 uv run python -m rag.search "tiempo de traslado al trabajo" -k 5
 uv run python -m rag.eval                         # QA de recuperación: hit@1, hit@5, MRR, ruido
 
-# Motor de experimentos (desde la raíz; requiere data/processed/analytic_v1.parquet y
-# metadata/analytic_v1_experiment_approval.json, que aún faltan en el repo: ver MEMORY.md §1)
-python -m unittest discover -s tests -t .         # tests de esquema, runner y EXP-001
-python scripts/validate_experiment_engine.py      # ⚠️ script aún no está en el repo
-python scripts/run_experiment.py experiments/EXP-001/spec.json   # ⚠️ ídem; escribe reports/experiments/EXP-001/
+# Motor de experimentos (desde la raíz; Python 3.12 en un entorno aislado)
+pip install -r requirements-experiments.txt
+python scripts/validate_experiment_engine.py        # validación completa del motor; escribe reports/experiments/EXP-001/engine_validation.json
+PYTHONPATH=. python -m unittest discover -s tests   # solo los 16 tests (tests/ no es paquete)
+python scripts/run_experiment.py experiments/EXP-001/spec.json   # corre 2 veces y REESCRIBE reports/experiments/EXP-001/
 
 # Omnigent (desde la raíz; las tools necesitan agents/ y analysis/ en el path)
 uv tool install "omnigent[databricks]"            # o: pip install "omnigent[databricks]"
@@ -472,11 +482,12 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | EXP-001 completado: sueño tiene la asociación puntual más negativa, pero el ranking es `INCONCLUSIVE_RANKING`. Queda como `REQUIRES_HUMAN_REVIEW` | Resultado del motor; ver `reports/experiments/EXP-001/` |
 | 2026-10-03 | No hay secuencia fija de experimentos: EXP-002 lo elige el sistema (crítico → hipótesis → ≥2 candidatos → Director) según el aprendizaje esperado. No linealidad y diferencia por sexo son candidatos, no decisiones | Requisito del track: la evidencia debe cambiar la siguiente decisión |
 | 2026-10-03 | El Shared Research State se amplía (§7.5) con `dataset_version`, `experiment_results`, `scientific_critiques`, `candidate_experiments`, `decisions` y `next_action`, todos con IDs estables | Trazabilidad de cada decisión a la evidencia |
+| 2026-10-03 | Agentes en Omnigent de código abierto con harness `codex` y `gpt-5.4-mini` (`OPENAI_API_KEY`). Reemplaza `databricks-claude-sonnet-4-6` | Decisión del equipo (commit `84207bb`): llave de service account disponible |
 
 ## Decisiones abiertas
 
-1. **Endpoint del modelo.** Verificar en el workspace de Databricks que `databricks-claude-sonnet-4-6` exista y que el perfil `DEFAULT` tenga acceso. Si no, cambiar `executor` en `omnigent.yaml`: el ancla `&executor` aplica a los 7 agentes.
-2. **Archivos que faltan en el repo.** El motor y los tests necesitan `data/processed/analytic_v1.parquet`, `metadata/analytic_v1_experiment_approval.json`, `src/experiments/report.py`, `scripts/run_experiment.py`, `scripts/validate_experiment_engine.py` y `requirements-experiments.txt`. Los documentos citan además `metadata/mappings/` y `reports/audit/`. Hay que traerlos del entorno donde se construyó el pipeline, sin regenerarlos, y comprobar que el SHA256 del parquet coincide con el manifiesto.
+1. **Modelo de los agentes.** Desde `84207bb`, `executor` usa el harness `codex` con `gpt-5.4-mini` y `OPENAI_API_KEY`. Omnigent no lee `.env`: cargarla con `set -a; source .env; set +a`. Verificar que el modelo esté habilitado para la llave. El ancla `&executor` aplica a los 7 agentes. Confirmar con el equipo si el track exige Omnigent administrado por Databricks o acepta el de código abierto.
+2. **Empaquetado del motor.** ✅ Resuelto el 2026-10-03: un clon limpio instala `requirements-experiments.txt`, pasa el validador y reproduce EXP-001 con 0 diferencias numéricas, sin datos crudos ni `staging_v1` (ver `MEMORY.md` §5). Queda borrar `audit/` (duplicado) y `metadata/provenance.json` (vacío). **`omnigent.yaml` sigue sin validarse** con el executor `codex`: hacerlo con `omnigent.spec.load` en un entorno con Omnigent instalado. Es independiente de la reproducibilidad del motor.
 3. **Alcance de las políticas en sub-agentes.** Comprobar en la primera sesión real que el ASK también se dispara cuando un sub-agente (runner, critic) llama a la tool. Si no, mover esas llamadas al Director.
 4. **`ExperimentResult` en Supabase.** Decidir si `experiment_runs.results` guarda el resultado completo o un resumen + `artifact_paths`, y cómo se guardan `ScientificCritique` y los candidatos (¿`decisions` y `experiment_proposals` bastan, o hace falta una migración?).
 5. **Revisión humana de EXP-001.** Su `review_status` es `REQUIRES_HUMAN_REVIEW`. Definir si el ciclo agéntico puede usarlo como evidencia antes de esa revisión (marcado como provisional) o si la revisión es un paso del ciclo.

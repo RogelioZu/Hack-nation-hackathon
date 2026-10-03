@@ -123,11 +123,18 @@ implemented, and no result enters an autonomous discovery decision.
 Python >=3.11; install requirements-experiments.txt in an isolated runtime.
 The repository's CLI also supports packages under .local_deps.
 
+    pip install -r requirements-experiments.txt
     python scripts/validate_experiment_engine.py
     python scripts/run_experiment.py experiments/EXP-001/spec.json
 
-The validator runs all pipeline and experiment tests, then checks input
-hashes and persists an independent validation record. The CLI runs each
+The validator needs only the committed analytic_v1, its manifest and its
+approval record. Raw ENUT files, staging_v1 and the pipeline tests belong to
+the upstream pipeline repository and are not read. It checks the approved
+hash and manifest consistency, the JSON Schema against the strict models,
+the closed method registry, runs the experiment-engine tests, reruns EXP-001
+twice, requires exact equality with the committed result.json apart from
+code/runtime fingerprints, checks the inputs are unchanged and persists
+engine_validation.json. The CLI runs each
 spec twice, requires identical serialized numerical/provenance results,
 checks the input SHA256 before and after, and writes result.json, summary.md,
 spec.json and validation.json under reports/experiments/<id>/.

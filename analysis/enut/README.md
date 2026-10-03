@@ -6,8 +6,10 @@ El pipeline ENUT 2024 se construyó y validó en otro entorno, por fases con apr
 
 | Qué | Dónde |
 |---|---|
-| Dataset canónico (`APPROVED_FOR_EXPERIMENTS`, n = 2,563) | `data/processed/analytic_v1.parquet` (⚠️ aún no está en el repo, ver `MEMORY.md` §1) |
-| Staging histórico de la fase 2A | `data/processed/staging_v1.parquet` (el motor no lo lee) |
+| Dataset canónico (`APPROVED_FOR_EXPERIMENTS`, n = 2,563) | `data/processed/analytic_v1.parquet` |
+| Staging histórico de la fase 2A y CSV crudos | `data/interim/staging_v1.parquet`, `data/raw/enut_2024/` (solo locales, ignorados por git; el motor no los lee) |
+| Auditorías y validaciones de las fases 1, 2A y 2B | `reports/audit/` |
+| Cuestionario y diccionario DDI archivados | `metadata/official/` |
 | Definiciones de variables y población | `docs/DATA_CONTRACT.md` |
 | Decisiones científicas por fase | `docs/SCIENTIFIC_PROTOCOL.md` |
 | Procedencia, linaje, faltantes y validaciones | `metadata/analytic_v1_manifest.json` |

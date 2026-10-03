@@ -35,7 +35,7 @@ Instead of ambiguous text-based conversations, our agents communicate strictly b
 
 ### Prerequisites
 - Python environment (uv or pipx recommended)
-- Databricks API keys configured
+- An `OPENAI_API_KEY` for the agents (Codex harness)
 
 ### Installation
 Install Omnigent with Databricks support:
@@ -47,7 +47,7 @@ or
 pip install "omnigent[databricks]"
 ```
 
-The agent tools also need the Python dependencies in `analysis/` (`cd analysis && uv sync`), a `.env` at the repo root with `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, and a Databricks CLI profile (`DEFAULT` by default; see `executor.auth` in `omnigent.yaml`).
+The agent tools also need the Python dependencies in `analysis/` (`cd analysis && uv sync`) and a `.env` at the repo root with `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` and `OPENAI_API_KEY`. The agents run on open-source Omnigent with the `codex` harness; see `executor` in `omnigent.yaml`. Omnigent does not read `.env`, so load it first with `set -a; source .env; set +a`.
 
 ### Running the Lab
 Start a session with the Discovery Director, sending the initial Shared Research State as the first message. Run it from the repo root so the tools in `agents/commute_lab/` and `analysis/` are importable:

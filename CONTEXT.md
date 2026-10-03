@@ -324,7 +324,7 @@ Proyecto `xnbruiprrxradfidoleu` (us-east-1, Postgres 17, pgvector). La cuenta ti
 | RAG (535 pasajes, FTS en español, eval medido) | ✅ |
 | Web leyendo Supabase y desplegada | ✅ (contrato de resultados viejo) |
 | `analytic_v1` en el repo, SHA256 verificado, aprobación registrada | ✅ |
-| Motor `src/experiments/` + scripts + `report.py` | ✅ **16 tests pasan** en este repo (Python 3.12, versiones fijadas + pandas/pyarrow) con `python -m unittest discover -s tests` |
+| Motor `src/experiments/` + scripts + `report.py` | ✅ **16 tests pasan** y el validador pasa desde un clon limpio (`pip install -r requirements-experiments.txt`) |
 | EXP-001 | ✅ completado; pendiente de revisión humana |
 | `omnigent.yaml` (formato válido, executor codex) | 🟡 prompts, `enum` de protocolos e `initial_state.json` desfasados |
 | Tools `run_experiment`, `save_proposals`, `describe_dataset` | 🟡 desfasadas (§9.4) |
@@ -333,12 +333,7 @@ Proyecto `xnbruiprrxradfidoleu` (us-east-1, Postgres 17, pgvector). La cuenta ti
 | Medición manual vs asistido | ⏳ |
 | Demo de 2 minutos | ⏳ |
 
-**Fricciones encontradas al verificar:**
-
-1. El comando de tests de `AGENTS.md` §10 (`python -m unittest discover -s tests -t .`) **falla** con `Start directory is not importable`, porque `tests/` no tiene `__init__.py`. Funciona sin `-t .`.
-2. `requirements-experiments.txt` empieza con `-r requirements.txt`, y ese archivo **no está en el repo**. `pip install -r requirements-experiments.txt` falla. Mientras tanto, instalar a mano pandas, pyarrow y las versiones fijadas (numpy 2.3.5, pydantic 2.13.5, scipy 1.16.3, statsmodels 0.14.6, patsy 1.0.2).
-3. `scripts/validate_experiment_engine.py` hashea `data/interim/staging_v1.parquet` y `data/raw/enut_2024/*.csv`, que no están en el repo. Solo corre en el entorno del pipeline. `engine_validation.json` registra esa ejecución (PASS).
-4. `metadata/provenance.json` está vacío (0 bytes) y `audit/` es una copia idéntica de `reports/audit/`.
+**Empaquetado del motor (resuelto el 2026-10-03):** un clon limpio, con solo `pip install -r requirements-experiments.txt` y sin datos crudos ni `staging_v1`, pasa los 16 tests y `scripts/validate_experiment_engine.py`, y reproduce EXP-001 con 0 diferencias en 1,801 valores numéricos. Detalle en `MEMORY.md` §5. Queda pendiente borrar `audit/` (copia idéntica de `reports/audit/`) y `metadata/provenance.json` (vacío, sin consumidores).
 
 **Desfases en otros documentos** (ningún cambio aplicado; conviene alinearlos):
 
@@ -412,6 +407,6 @@ Proyecto `xnbruiprrxradfidoleu` (us-east-1, Postgres 17, pgvector). La cuenta ti
 3. **`ExperimentResult` en Supabase.** ¿Resultado completo en `experiment_runs.results`, o resumen + `artifact_paths` hacia `reports/experiments/<id>/`? ¿Bastan `decisions` y `experiment_proposals` para la crítica y los candidatos, o hace falta una migración?
 4. **Revisión humana de EXP-001.** ¿El ciclo puede usarlo como evidencia provisional antes de esa revisión, o la revisión es un paso del ciclo?
 5. **Ampliación del contrato.** Si el sistema elige interacciones, no linealidad, dos partes o H3/H4, hay que revisar el contrato del motor con aprobación humana.
-6. **Entorno reproducible.** Agregar o quitar `requirements.txt`, decidir el comando de tests y qué hacer con `provenance.json` vacío y el duplicado `audit/`.
+6. **`omnigent.yaml` sin validar con el executor `codex`.** Hay que validarlo con `omnigent.spec.load` en un entorno con Omnigent instalado. Es independiente de la reproducibilidad del motor.
 7. **Seguridad.** Decidir si se quita `EXECUTE` a `anon`/`authenticated` sobre `public.rls_auto_enable()`, que ya existía en el proyecto.
 8. **Datos demo.** Crear un proyecto real nuevo o limpiar el seed demo cuando exista el ciclo real; nunca mezclar resultados reales con filas demo.

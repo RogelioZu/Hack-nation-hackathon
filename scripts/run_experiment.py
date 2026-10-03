@@ -17,7 +17,7 @@ from src.experiments.schemas import ExperimentResult, ExperimentSpec
 
 def write_atomic(path, content):
     temp = path.with_suffix(path.suffix + ".tmp")
-    temp.write_text(content, encoding="utf-8")
+    temp.write_text(content, encoding="utf-8", newline="\n")  # same bytes and hashes on every OS
     os.replace(temp, path)
 
 
