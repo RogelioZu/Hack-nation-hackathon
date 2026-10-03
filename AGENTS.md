@@ -4,6 +4,8 @@ Fuente única de verdad para cualquier agente o integrante del equipo que trabaj
 
 **Presupuesto: 10 horas en total.**
 
+> 📌 **Antes de tocar nada, lee [`MEMORY.md`](MEMORY.md).** Tiene el estado real del proyecto (qué está aplicado en Supabase, qué está pendiente), las decisiones ya tomadas y las trampas técnicas encontradas. Si cambias el estado, actualízalo en el mismo commit.
+
 ## 0. Idioma
 
 | Qué | Idioma |
@@ -65,6 +67,7 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 
 ```
 AGENTS.md / CLAUDE.md      este archivo (CLAUDE.md solo lo importa)
+MEMORY.md                  estado actual, decisiones y trampas; leer antes de tocar nada
 CONTEXT.md                 especificación original (larga)
 .env.example               SOLO nombres de variables; copiar a .env (raíz) y web/.env.local
 supabase/
@@ -218,6 +221,7 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 
 ## 13. Convenciones para agentes que editen este repo
 
+- Leer `MEMORY.md` al empezar y actualizarlo al terminar si cambió el estado (migraciones, ingestas, pendientes, trampas nuevas).
 - Leer antes de escribir. Imitar el código existente. Cambios mínimos.
 - Nunca editar una migración ya aplicada. Agregar un archivo nuevo con timestamp en `supabase/migrations/`.
 - El contenido de seed/demo se marca (`is_demo`, prefijo `[DEMO]`) para que nunca se confunda con hallazgos.
