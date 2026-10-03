@@ -15,7 +15,7 @@ Instead of ambiguous text-based conversations, our agents communicate strictly b
 2. **Hypothesis Agent**: Proposes falsifiable explanations.
 3. **Data Steward**: Validates if available ENUT data can test the hypothesis.
 4. **Experiment Planner**: Designs the test to maximize learning.
-5. **Experiment Runner**: Executes reproducible Python/R code in a sandbox.
+5. **Experiment Runner**: Executes pre-defined, reproducible statistical protocols on ENUT data (no arbitrary code).
 6. **Scientific Critic**: Evaluates results and checks for interpretation errors.
 7. **Discovery Director**: Decides the next action based on the full state.
 
@@ -35,8 +35,10 @@ or
 pip install "omnigent[databricks]"
 ```
 
+The agent tools also need the Python dependencies in `analysis/` (`cd analysis && uv sync`), a `.env` at the repo root with `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`, and a Databricks CLI profile (`DEFAULT` by default; see `executor.auth` in `omnigent.yaml`).
+
 ### Running the Lab
-Start the Omnigent orchestration server using our configuration and initial state:
+Start a session with the Discovery Director, sending the initial Shared Research State as the first message. Run it from the repo root so the tools in `agents/commute_lab/` and `analysis/` are importable:
 ```bash
-omnigent run --config omnigent.yaml --state initial_state.json
+PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"
 ```

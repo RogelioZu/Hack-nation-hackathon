@@ -17,9 +17,9 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Web (`/` y `/research/[id]`) leyendo Supabase real | ✅ Verificado con `next dev`; `npm run build` pasa |
 | Pipeline ENUT (`analysis/enut/`) | ⏳ **Pendiente: lo entrega el usuario** |
 | `run_experiment` y protocolos cerrados | ⏳ Depende del pipeline ENUT |
-| Agentes Omnigent | 🟡 Definidos en `omnigent.yaml` (7 agentes + `initial_state.json`, hechos por el equipo). Faltan herramientas, persistencia y resolver las [Decisiones abiertas de AGENTS.md](AGENTS.md#decisiones-abiertas). No se ha hecho el preflight de acceso ni se ha ejecutado `omnigent run` |
-| Papers de OpenAlex en el corpus | ⏳ No iniciado (`search_openalex` está declarada en el YAML, pero no implementada) |
-| Despliegue en Vercel | ⏳ No iniciado |
+| Agentes Omnigent | 🟡 `omnigent.yaml` reescrito con el formato real y **validado con `omnigent.spec.load`** (Omnigent 0.16). Las 10 tools de `agents/commute_lab/` están implementadas y probadas contra Supabase. **Falta la primera sesión real**: requiere el perfil de Databricks y el endpoint del modelo |
+| Papers de OpenAlex | 🟡 `search_openalex` funciona y registra cada paper en `sources` (`kind = 'paper'`, solo metadatos y resumen, sin pasajes) |
+| Despliegue en Vercel | ✅ https://commute-time-lab.vercel.app (producción, pública) |
 | Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
 
 ## 2. Infraestructura
@@ -91,10 +91,21 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - Crear antes el schema `extensions` y los roles `anon`, `authenticated` y `service_role` (este último con `bypassrls`), y poner `search_path = public, extensions`.
   - Así se validaron las 4 migraciones y el seed antes de aplicarlos en remoto.
 
-- **`omnigent.yaml`**:
-  - Los comentarios `#[cite: 5]` son restos de una herramienta de IA. No significan nada y se pueden quitar.
-  - Los 7 agentes usan `databricks/dbrx-instruct`, `enforce_json_output: true` y `require_human_approval_for_tools: false`.
-  - Los handoffs son lineales y no tienen un regreso que cierre el ciclo.
+- **Omnigent**:
+  - La versión original de `omnigent.yaml` (commits del equipo) **no era un spec válido**: el loader la rechazaba por no tener `prompt`. Usaba campos inventados (`agents:` como lista, `role`, `system_prompt`, `handoffs`, `policies` como lista) y el comando `omnigent run --config … --state …`, que no existe. Se reescribió el 2026-10-03.
+  - Para validar sin credenciales de modelo: `from omnigent.spec import load; load(Path("omnigent.yaml"))`. Si `is_omnigent_yaml()` devuelve False, `diagnose_yaml_rejection()` explica el motivo.
+  - Los `callable` y `handler` se importan **al cargar** el spec. Si el módulo no se puede importar, el loader **no falla**: deja `callable=None` en silencio. Verificar siempre que cada `FunctionTool.callable` no sea `None` (ver la comprobación en el historial del 2026-10-03).
+  - Las function tools reciben los argumentos del LLM como kwargs, y el resultado se convierte con `str()`. Por eso las tools devuelven JSON (`json.dumps`).
+  - No llamar `agents` a un paquete propio: es el import del SDK `openai-agents`, que Omnigent instala.
+  - Para el validador se usó un venv temporal con `omnigent[databricks]` 0.16.0 y Python 3.12, fuera del repo.
+- **Smoke test de las tools**: se probaron las 10 contra Supabase con un proyecto temporal `[SMOKE TEST]`, borrado al final (la cascada limpia todo; los `sources` de OpenAlex se borraron a mano). `run_experiment` hoy siempre termina en `failed` con el motivo "ENUT pipeline … not available yet", que es lo esperado.
+
+### Vercel
+- Cuenta Hobby. El proyecto `commute-time-lab` está en el scope `roger-1592` (`team_37NrEuZAkgRsRYTKpMCwC5j9`).
+  - El MCP de Vercel da **403 si se pasa `teamId`**. Funciona sin `teamId` (usa el scope por defecto).
+- Despliegue por API con archivos inline (no hay conexión con Git ni CLI de Vercel). Se suben solo los fuentes de `web/`, **sin `package-lock.json`** (240 KB), así que Vercel resuelve versiones desde `package.json`. Para redeployar: `create_deployment` con los archivos, o conectar el repo de GitHub.
+- Variables en el proyecto (production, preview y development): `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+- `https://commute-time-lab.vercel.app` es público. Los alias por deployment y `…-roger-1592.vercel.app` piden login de Vercel (SSO protection por defecto).
 
 ## 6. Preferencias del usuario
 
@@ -104,10 +115,9 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 7. Próximos pasos
 
-1. Recibir el pipeline ENUT → adaptarlo a protocolos cerrados → `run_experiment` escribe en `experiment_runs` con el contrato de resultados.
-2. Acordar con el equipo las 8 [Decisiones abiertas de AGENTS.md](AGENTS.md#decisiones-abiertas): runner cerrado, aprobaciones, handoff de regreso, persistencia, herramientas de literatura, modelo, formato del YAML y `variables`.
-3. Preflight de Omnigent (administrado vs. código abierto) y validar `omnigent.yaml` contra la spec oficial.
-4. Implementar en `agents/` las herramientas que persisten en Supabase (`save_*`, `record_decision`, `log_event`, `search_evidence`, `search_openalex`, `run_experiment`).
-5. Mejorar el corpus RAG: cuestionario por pregunta y papers de OpenAlex.
-6. Decidir sobre `rls_auto_enable()` (ver §2).
-7. Desplegar en Vercel con las variables de `web/.env.local`.
+1. Recibir el pipeline ENUT → `analysis/enut/protocols.py` con `PROTOCOLS = {nombre: fn(parameters) -> {"results", "sample_sizes", "dataset_hash"}}`. `run_experiment` ya lo busca ahí.
+2. Configurar el perfil de Databricks y verificar el endpoint del modelo → primera sesión real: `PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"`.
+3. En esa sesión, comprobar que el ASK salta cuando un sub-agente llama a `run_experiment` o `record_decision` ([Decisiones abiertas](AGENTS.md#decisiones-abiertas)).
+4. Mejorar el corpus RAG: cuestionario por pregunta.
+5. Decidir sobre `rls_auto_enable()` (ver §2).
+6. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.

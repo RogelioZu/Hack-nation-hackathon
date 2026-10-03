@@ -62,20 +62,21 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 
 | Área | Elección |
 |---|---|
-| Orquestación | Omnigent con `omnigent.yaml` (7 agentes) + estado inicial `initial_state.json` |
-| Herramientas de agentes | Python (wrappers sobre `analysis/`) → `agents/` |
+| Orquestación | Omnigent 0.16 con `omnigent.yaml` (7 agentes) + estado inicial `initial_state.json` |
+| Herramientas de agentes | Python, paquete `commute_lab` en `agents/commute_lab/` (tools + policies) |
 | Backend / estado persistente | Supabase Postgres + **pgvector**, RLS, migraciones SQL versionadas → `supabase/` |
 | RAG + host del experimento | Python 3.12 con **uv** → `analysis/` |
 | Web | Next.js 16 App Router + TypeScript + Tailwind 4 → `web/` (despliegue en Vercel) |
 | Embeddings | `intfloat/multilingual-e5-small`, 384 dimensiones, CPU |
-| LLM de los agentes | `databricks/dbrx-instruct` según `omnigent.yaml` (verificar disponibilidad, ver [Decisiones abiertas](#decisiones-abiertas)) |
+| LLM de los agentes | Harness `claude-sdk` con `databricks-claude-sonnet-4-6`, auth `databricks` y perfil `DEFAULT` (verificar el endpoint, ver [Decisiones abiertas](#decisiones-abiertas)) |
+| Web desplegada | Vercel, proyecto `commute-time-lab` → https://commute-time-lab.vercel.app |
 
 ```
 AGENTS.md / CLAUDE.md      este archivo (CLAUDE.md lo importa junto con MEMORY.md)
 MEMORY.md                  estado actual, decisiones y trampas; leer antes de tocar nada
 CONTEXT.md                 especificación original (larga)
 README.md                  presentación pública del proyecto (inglés)
-omnigent.yaml              7 agentes, políticas y handoffs de Omnigent
+omnigent.yaml              spec Omnigent: Discovery Director (raíz) + 6 sub-agentes, tools y políticas
 initial_state.json         Shared Research State vacío con el que arranca la sesión
 .env.example               SOLO nombres de variables; copiar a .env (raíz) y web/.env.local
 supabase/
@@ -90,7 +91,9 @@ analysis/
   rag/search.py            search_evidence() → RPC hybrid_search
   rag/corpus.json          manifiesto del corpus (docs INEGI; agregar aquí papers de OpenAlex)
   enut/                    pipeline ENUT — LO PROPORCIONA EL USUARIO (pendiente)
-agents/                    herramientas Python de los agentes y políticas (ver agents/README.md)
+agents/
+  commute_lab/tools.py     10 tools que persisten en Supabase (create_project … record_decision)
+  commute_lab/policies.py  ask_before_run: pide aprobación humana para run_experiment y record_decision
 web/
   lib/supabase.ts          cliente de solo lectura (clave publishable, solo servidor)
   lib/data.ts              getProjects(), getResearch(id)
@@ -151,12 +154,13 @@ Arquitectura definida por el equipo en `omnigent.yaml` (commits `bda27fc` y `b9e
 
 ### 7.1 Restricción central: el Shared Research State
 
-Los agentes **NO** se comunican por chat de texto libre. Se comunican **exclusivamente** recibiendo, modificando y devolviendo **un único objeto JSON**: el *Shared Research State*. El prompt de sistema de cada agente debe obligar a que su salida sea estrictamente ese objeto JSON, sin markdown ni texto conversacional (`policies: enforce_json_output: true`).
+Los agentes **NO** se comunican por chat de texto libre. Se comunican **exclusivamente** recibiendo, modificando y devolviendo **un único objeto JSON**: el *Shared Research State*. El prompt de sistema de cada especialista obliga a que su salida sea estrictamente ese objeto JSON, sin markdown ni texto conversacional. Omnigent no tiene una política `enforce_json_output`; la regla vive en los prompts.
 
 Esquema actual (`initial_state.json`):
 
 ```json
 {
+  "project_id": "String (uuid en Supabase; lo llena el Director con create_project)",
   "research_question": "String",
   "population": "Object",
   "hypotheses": [
@@ -177,21 +181,24 @@ Esquema actual (`initial_state.json`):
 
 Omnigent gestiona el enrutamiento. Cada agente es dueño de **una decisión científica**:
 
-| # | Agente (`name`) | Decisión científica | Entrada | Salida en el estado | Herramientas | Persistencia en Supabase |
+| # | Agente (`name`) | Decisión científica | Entrada | Salida en el estado | Herramientas (`commute_lab.tools`) | Persistencia en Supabase |
 |---|---|---|---|---|---|---|
-| 1 | Literature Agent (`literature_agent`) | Qué evidencia previa existe | `research_question` | `evidence[]` (tarjetas + citas) | `search_openalex` (definida, sin implementar); **agregar** `search_evidence` (RAG) | `sources`, `passages` |
-| 2 | Hypothesis Agent (`hypothesis_agent`) | Qué explicación falsable probar | `evidence` | `hypotheses[]` ordenadas | — (propuesta: `save_hypothesis`) | `hypotheses` |
-| 3 | Data Steward (`data_steward`) | Si los datos permiten probarla | hipótesis líder | `variables` + `limitations` (reporte de calidad) | — (propuesta: `inspect_enut_variables`, `get_dataset_profile`) | `projects.cohort_definition`; reporte en `agent_events` |
-| 4 | Experiment Planner (`experiment_planner`) | Qué prueba maximiza el aprendizaje | hipótesis + datos | `experiments[]` (status `planned`) | — (propuesta: `save_proposals`) | `experiment_proposals` (**≥2**, una `selected` con `selection_rationale`) |
-| 5 | Experiment Runner (`experiment_runner`) | Ejecutar la prueba de forma reproducible | especificación del experimento | `results[]`; experimento `completed` | `execute_python_sandbox` (definida); **debe ser** `run_experiment` con protocolos cerrados | `experiment_runs` |
-| 6 | Scientific Critic (`scientific_critic`) | Si la interpretación es confiable | `results` | `limitations[]` + solicitudes de validación | — (propuesta: `read_run`, `record_decision`) | `decisions` (`interpretation`, `uncertainty`, `limitations`) |
-| 7 | Discovery Director (`discovery_director`) | Qué investigar después | estado completo | `next_decision` | — | `decisions` (`next_test`, `rationale`, `rule_applied`), `projects.status` |
+| 1 | Literature Agent (`literature_agent`) | Qué evidencia previa existe | `research_question` | `evidence[]` (tarjetas + citas) | `search_evidence` (RAG INEGI), `search_openalex` | `sources` (los papers de OpenAlex se registran como `paper`), `passages` |
+| 2 | Hypothesis Agent (`hypothesis_agent`) | Qué explicación falsable probar | `evidence` | `hypotheses[]` ordenadas | `save_hypothesis` | `hypotheses` |
+| 3 | Data Steward (`data_steward`) | Si los datos permiten probarla | hipótesis líder | `variables`, `population` y `limitations` (reporte de calidad) | `search_evidence` | Va en el estado JSON; la herramienta de perfil ENUT llega con el pipeline |
+| 4 | Experiment Planner (`experiment_planner`) | Qué prueba maximiza el aprendizaje | hipótesis + datos | `experiments[]` (status `planned`) | `save_proposals` (exige ≥2 y protocolos cerrados) | `experiment_proposals`, una `selected` con `selection_rationale` |
+| 5 | Experiment Runner (`experiment_runner`) | Ejecutar la prueba de forma reproducible | especificación del experimento | `results[]`; experimento `completed`/`failed` | `run_experiment` (requiere aprobación), `read_run` | `experiment_runs` |
+| 6 | Scientific Critic (`scientific_critic`) | Si la interpretación es confiable | `results` | `limitations[]` + regla aplicada | `read_run`, `record_decision` (requiere aprobación) | `decisions`, estado de `hypotheses` |
+| 7 | Discovery Director (raíz del spec) | Qué investigar después | estado completo | `project_id`, `next_decision` | `create_project`, `set_project_status`, `log_event` + los 6 sub-agentes | `projects`, `agent_events` |
 
-Handoffs actuales en `omnigent.yaml` (lineales):
+Todas las tools escriben una fila en `agent_events`, que la web muestra como línea de tiempo.
+
+**Orquestación en `omnigent.yaml`.** El Discovery Director es el agente raíz. Los otros 6 son sub-agentes (`type: agent`) que el Director invoca en orden; cada uno hereda (`inherit`) solo sus tools. Después del crítico, el Director puede repetir **una vez** planner → runner → critic si `next_decision` propone una prueba factible (máximo 2 experimentos por sesión):
 
 ```
-user_input → literature_agent → hypothesis_agent → data_steward → experiment_planner
-           → experiment_runner → scientific_critic → discovery_director
+Director → literature_agent → hypothesis_agent → data_steward → experiment_planner
+        → experiment_runner → scientific_critic → Director (next_decision)
+        └─(si aplica, una vez)→ experiment_planner → experiment_runner → scientific_critic → Director
 ```
 
 ### 7.3 Cómo se conecta el estado JSON con Supabase
@@ -204,18 +211,26 @@ El **JSON es el contrato de mensajes** entre agentes durante la sesión. **Supab
 | `population` | `projects.cohort_definition` | El Data Steward la confirma contra el diccionario |
 | `evidence[]` | `sources` + `passages` | Cada tarjeta debe llevar `source_id`, `passage_id` (o DOI), `url`, `locator` y la cita textual |
 | `hypotheses[]` | `hypotheses` | `claim` → `statement`; `untested` → `proposed`; `tested` → `supported`·`not_supported`·`inconclusive` |
-| `variables` | sin tabla propia | Guardar en `experiment_runs.parameters.variables` (ver Decisiones abiertas) |
+| `variables` | `experiment_runs.parameters.variables` | El runner los pasa como parámetros del protocolo |
 | `experiments[]` | `experiment_proposals` + `experiment_runs` | El planner propone ≥2; el runner crea el run de la elegida |
 | `results[]` | `experiment_runs.results` | Debe cumplir el [contrato de resultados](#contrato-de-resultados-experiment_runsresults) |
 | `limitations[]` | `decisions.limitations` | También el reporte de calidad del Data Steward |
 | `next_decision` | `decisions.next_test` / `rationale` / `rule_applied` | Debe citar el `experiment_run_id` real y la regla R1–R3 aplicada |
 
-**Extensiones propuestas al esquema JSON** (aditivas, pendientes de acuerdo del equipo antes de tocar `initial_state.json`): `project_id`; `decision_rules` (R1–R3); en `experiments[]`, los campos `protocol`, `learning_value`, `feasibility`, `cost`, `selected` y `selection_rationale`; en `next_decision`, los campos `rule_applied` y `run_id`.
+**Extensiones aplicadas al esquema JSON** (aditivas):
+- `project_id` en `initial_state.json`.
+- Las reglas R1–R3 se guardan en `projects.decision_rules` al llamar a `create_project`.
+- `experiments[]` lleva además `protocol`, `learning_value`, `feasibility`, `cost`, `selected` y `selection_rationale`.
+- `evidence[]` lleva `claim`, `stance`, `source_id`, `passage_id` o `doi`, `url`, `locator` y `quote`.
+- `next_decision` lleva además `rule_applied` y `run_id`.
+
+Los prompts de `omnigent.yaml` definen estas formas.
 
 ### 7.4 Reglas de los agentes
 
-- El Experiment Runner ejecuta **solo protocolos cerrados** (p. ej. `weighted_means_by_group`, `wls_commute_by_sex`) con parámetros validados vía `run_experiment(protocol, parameters)`, que registra hash del dataset, versión de código (SHA de git), entradas y salidas. **Ningún agente tiene SQL ni shell arbitrario sobre los datos.**
-- Cada llamada a herramienta escribe una fila en `agent_events`. Las acciones relevantes (lanzar una ejecución, decisión final) emiten un evento `approval` para que un humano las apruebe.
+- El Experiment Runner ejecuta **solo protocolos cerrados** (`weighted_means_by_group`, `wls_commute_by_sex`) vía `run_experiment(project_id, proposal_id, parameters)`. Esta función registra la versión de código (SHA de git), los parámetros, el hash del dataset y los resultados. **Ningún agente tiene SQL ni shell arbitrario sobre los datos.**
+- `run_experiment` busca `analysis/enut/protocols.py` con `PROTOCOLS = {nombre: fn(parameters) -> {"results", "sample_sizes", "dataset_hash"}}`. Si no existe, guarda el run como `failed` con el motivo; **nunca inventa cifras**.
+- Cada llamada a herramienta escribe una fila en `agent_events`. La política `commute_lab.policies.ask_before_run` devuelve **ASK** (aprobación humana) antes de `run_experiment` y de `record_decision`. Hay además un tope de 150 llamadas por sesión.
 - Los textos que los agentes guardan (en el JSON y en Supabase) van **en inglés**, porque los muestra la web.
 - La sesión se inicia desde Omnigent y se guarda `projects.omnigent_session_url`. Un botón "Start research" (Route Handler del servidor → API de Omnigent) se agrega **solo después** de que el ciclo funcione. Nunca llamar a Omnigent desde el navegador con credenciales.
 - Preflight en la hora 0–1: confirmar acceso a Omnigent administrado y a un host que ejecute Python y llegue a Supabase. Si no, usar Omnigent de código abierto. Docs: [quickstart](https://developers.databricks.com/docs/omnigent/quickstart), [API programática](https://developers.databricks.com/docs/omnigent/programmatic), [spec YAML de agentes](https://github.com/omnigent-ai/omnigent/blob/main/docs/AGENT_YAML_SPEC.md).
@@ -255,9 +270,11 @@ uv sync
 uv run python -m rag.ingest                       # ingiere rag/corpus.json
 uv run python -m rag.search "tiempo de traslado al trabajo" -k 5
 
-# Omnigent (según README.md; comando aún no verificado contra la spec oficial)
+# Omnigent (desde la raíz; las tools necesitan agents/ y analysis/ en el path)
 uv tool install "omnigent[databricks]"            # o: pip install "omnigent[databricks]"
-omnigent run --config omnigent.yaml --state initial_state.json
+PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"
+# Validar el spec sin credenciales de modelo:
+PYTHONPATH=agents:analysis python -c "from pathlib import Path; from omnigent.spec import load; print(load(Path('omnigent.yaml')).name)"
 
 # Web (desde web/)
 npm run dev                                       # http://localhost:3000/research/00000000-0000-0000-0000-000000000001
@@ -272,7 +289,7 @@ npx next typegen && npx tsc --noEmit && npm run lint && npm run build
 | 1–3 | Migraciones, RLS, seed, ingesta + búsqueda RAG | `hybrid_search` devuelve pasajes con cita |
 | 3–4.5 | Panel Next.js lee la BD (`/research/[id]`) | La web muestra estado real de la BD |
 | 4.5–6.5 | Pipeline ENUT del usuario → `run_experiment` → `experiment_runs` | **Resultado real persistido** |
-| 6.5–8 | Omnigent: los 7 agentes de `omnigent.yaml` con herramientas que persisten en Supabase, ciclo completo | **Decisión dependiente del resultado guardada** |
+| 6.5–8 | Omnigent: primera sesión real con los 7 agentes de `omnigent.yaml` (tools ya implementadas), ciclo completo | **Decisión dependiente del resultado guardada** |
 | 8–9 | El panel muestra el ciclo completo; reejecutar para reproducibilidad; cronometrar manual vs asistido | Reproducción y medición honestas |
 | 9–10 | Desplegar en Vercel, README, grabar demo de 2 minutos | Entrega completa |
 
@@ -295,7 +312,7 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 - Leer `MEMORY.md` al empezar y actualizarlo al terminar si cambió el estado (migraciones, ingestas, pendientes, trampas nuevas).
 - Leer antes de escribir. Imitar el código existente. Cambios mínimos.
 - Nunca editar una migración ya aplicada. Agregar un archivo nuevo con timestamp en `supabase/migrations/`.
-- No cambiar `omnigent.yaml` ni `initial_state.json` sin resolver antes la decisión abierta correspondiente con el equipo.
+- Después de editar `omnigent.yaml`, validarlo con `omnigent.spec.load` (ver §10). Si agregas una tool, implementarla en `agents/commute_lab/tools.py` y declararla con su JSON Schema.
 - El contenido de seed/demo se marca (`is_demo`, prefijo `[DEMO]`) para que nunca se confunda con hallazgos.
 - En `web/`, leer `web/AGENTS.md` (Next.js 16 trae cambios incompatibles) y la documentación incluida en `web/node_modules/next/dist/docs/`.
 - Nunca commitear secretos, microdatos crudos ni `analysis/.cache/`.
@@ -312,19 +329,19 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | Año y pipeline ENUT: **pendiente del usuario** | El usuario entregará el pipeline completo |
 | 2026-10-03 | Se adopta la arquitectura de **7 agentes + Shared Research State** de `omnigent.yaml`. Reemplaza los 4 roles iniciales (coordinador → Discovery Director; evidencia → Literature Agent; método/datos → Hypothesis Agent + Data Steward + Experiment Planner; crítico → Scientific Critic) | Decisión del equipo; da más traspasos visibles (orquestación = 30 %) |
 | 2026-10-03 | El JSON de estado es el contrato entre agentes; Supabase es la persistencia que lee la web | Ambos diseños se complementan: uno para la sesión, otro para auditoría y panel |
+| 2026-10-03 | `omnigent.yaml` reescrito con el formato real de Omnigent 0.16: Director raíz + 6 sub-agentes `type: agent`, 10 tools `type: function` y políticas `type: function`. Validado con `omnigent.spec.load` | El formato anterior (`agents:` lista, `role`, `system_prompt`, `handoffs`, `policies` como lista) no era válido: el loader lo rechazaba por no tener `prompt` |
+| 2026-10-03 | `execute_python_sandbox` → `run_experiment` con protocolos cerrados | Reproducibilidad y regla de no ejecutar código arbitrario |
+| 2026-10-03 | Aprobación humana (ASK) para `run_experiment` y `record_decision` | Requisito del track |
+| 2026-10-03 | Ciclo de regreso: el Director puede repetir planner → runner → critic una vez | La decisión debe cambiar la siguiente prueba |
+| 2026-10-03 | Modelo `databricks/dbrx-instruct` → `databricks-claude-sonnet-4-6` (harness `claude-sdk`) | El id anterior no tenía el formato de Omnigent; se usa el de los ejemplos oficiales |
+| 2026-10-03 | Paquete de tools llamado `commute_lab`, no `agents` | `agents` es el nombre de import del SDK `openai-agents` que usa Omnigent |
+| 2026-10-03 | `variables` se guarda en `experiment_runs.parameters.variables` | Evita una migración nueva |
 
 ## Decisiones abiertas
 
-Diferencias entre `omnigent.yaml` y las reglas de este documento. **Resolverlas con el equipo antes de la hora 6.5.** La primera opción es la recomendada.
-
-1. **Experiment Runner con `execute_python_sandbox`.** Ejecutar código arbitrario rompe la regla de protocolos cerrados y la reproducibilidad. → Cambiar la herramienta a `run_experiment(protocol, parameters)`.
-2. **`require_human_approval_for_tools: false`.** Choca con la regla de aprobación humana para ejecuciones y decisión final. → Activar la aprobación al menos para `run_experiment` y para el Discovery Director.
-3. **Handoffs lineales sin regreso.** El ciclo termina en el Discovery Director y no vuelve a empezar. El track exige que la decisión cambie la siguiente prueba, y una segunda ejecución fortalece el demo. → Agregar un handoff condicional `discovery_director → experiment_planner` (o `hypothesis_agent`) según `next_decision`.
-4. **Sin persistencia.** Los agentes solo devuelven JSON y ninguna herramienta escribe en Supabase, así que la web no vería nada. → Herramientas `save_*`, `record_decision` y `log_event` en `agents/` (o un hook tras cada handoff que persista el estado).
-5. **Literature Agent solo con `search_openalex`, que no está implementada.** → Implementarla y agregar `search_evidence` (RAG en Supabase con documentos INEGI) para citas con `passage_id`.
-6. **Modelo `databricks/dbrx-instruct`.** → Verificar en el workspace que el endpoint exista y soporte tool calling antes de construir sobre él.
-7. **Formato de `omnigent.yaml` y comando `omnigent run --config … --state …`.** Campos como `role`, `scientific_decision`, `input`, `output` y `policies` no están verificados contra la spec oficial. → Validarlos con el quickstart antes de la hora 6.5.
-8. **Dónde guardar `variables`** (el mapa de conceptos a columnas del Data Steward). → En `experiment_runs.parameters.variables`; si hace falta mostrarlo antes de la ejecución, crear una migración con `projects.variable_map jsonb`.
+1. **Endpoint del modelo.** Verificar en el workspace de Databricks que `databricks-claude-sonnet-4-6` exista y que el perfil `DEFAULT` tenga acceso. Si no, cambiar `executor` en `omnigent.yaml`: el ancla `&executor` aplica a los 7 agentes.
+2. **Herramienta de perfil ENUT para el Data Steward** (`inspect_enut_variables` / `get_dataset_profile`). Llega junto con el pipeline del usuario.
+3. **Alcance de las políticas en sub-agentes.** Comprobar en la primera sesión real que el ASK también se dispara cuando un sub-agente (runner, critic) llama a la tool. Si no, mover esas llamadas al Director.
 
 ## Para los commits
 

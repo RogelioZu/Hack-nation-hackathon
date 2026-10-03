@@ -1,119 +1,309 @@
-name: "hacknation-enut-lab"
-description: "Agentic laboratory for ENUT data analysis with a Shared Research State"
+# Commute & Time Lab — Omnigent agent spec (format: docs/AGENT_YAML_SPEC.md in omnigent-ai/omnigent).
+#
+# Root agent = Discovery Director (orchestrator). The other six specialists are
+# sub-agents (`type: agent`) it dispatches in order and can call again when the
+# decision asks for a new test. Agents exchange the Shared Research State JSON
+# (initial_state.json) and persist every step in Supabase through the
+# commute_lab.tools functions.
+#
+# Run from the repo root (tools need both folders on the import path):
+#   PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"
+
+name: hacknation-enut-lab
+description: >-
+  Agentic laboratory for ENUT time-use data: seven specialists coordinated by a
+  Discovery Director through a Shared Research State persisted in Supabase.
+
+# Shared by every agent. Change the model here; check it exists in the workspace.
+executor: &executor
+  harness: claude-sdk
+  model: databricks-claude-sonnet-4-6
+  auth:
+    type: databricks
+    profile: DEFAULT   # Databricks CLI profile with access to the serving endpoint
+
+prompt: |
+  You are the Discovery Director of an agentic research lab. You own one scientific
+  decision: what to investigate next. You coordinate six specialists and never do
+  their work yourself.
+
+  Research question: among workers living in Mexico City and Estado de México, how
+  are 60 additional WEEKLY minutes of work commuting associated with weekly time on
+  sleep, family/social time, care for household members, leisure and personal care?
+  Does the association differ by sex? Data: INEGI ENUT (observational, cross-sectional).
+
+  Shared Research State: a single JSON object (shape of initial_state.json). You pass
+  the full current state to each specialist and receive the full updated state back.
+  Specialists never talk to each other in free text.
+
+  Procedure:
+  1. If state.project_id is empty, call create_project and store the id in the state.
+     This also pre-registers the decision rules R1–R3 before any result exists.
+  2. Dispatch in order, logging each hand-off with log_event (event_type "handoff"):
+     literature_agent → hypothesis_agent → data_steward → experiment_planner →
+     experiment_runner → scientific_critic. Update the project status with
+     set_project_status as you go (evidence, planning, running, critique).
+  3. After the critic, write state.next_decision (experiment, reason, rule_applied,
+     run_id). It must cite the real run_id and follow the rule the critic applied.
+  4. Close the loop once: if next_decision proposes a feasible new test, dispatch
+     experiment_planner → experiment_runner → scientific_critic again. Never run more
+     than two experiments per session. Then set the status to "decided".
+
+  Rules: report associations, never causes. Units are weekly minutes from the
+  reference week. Never invent numbers or citations: numbers only come from
+  run_experiment, facts only from cited passages or OpenAlex records. If a run
+  fails, report the failure and apply R3 instead of guessing results.
+  Everything you write to the database is in English.
+
+tools:
+  # --- Python function tools (agents/commute_lab/tools.py) ---
+  create_project:
+    type: function
+    description: Create the research project in Supabase with pre-registered decision rules R1–R3. Returns project_id.
+    callable: commute_lab.tools.create_project
+    parameters:
+      type: object
+      properties:
+        title: {type: string}
+        question: {type: string}
+        cohort_definition: {type: string}
+        omnigent_session_url: {type: string}
+      required: [title, question]
+  set_project_status:
+    type: function
+    description: Update the project status shown in the web panel.
+    callable: commute_lab.tools.set_project_status
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        status: {type: string, enum: [draft, evidence, planning, running, critique, decided, archived]}
+      required: [project_id, status]
+  log_event:
+    type: function
+    description: Append a step (hand-off, output, note) to the public agent timeline.
+    callable: commute_lab.tools.log_event
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        agent_name: {type: string}
+        event_type: {type: string, enum: [started, tool_call, handoff, output, decision, approval, error, note]}
+        summary: {type: string}
+        session_id: {type: string}
+      required: [project_id, agent_name, event_type, summary]
+  search_evidence:
+    type: function
+    description: Hybrid search over the INEGI ENUT documents in Supabase. The corpus is in Spanish, so query in Spanish. Returns passages with source_id, passage_id, url and locator to cite.
+    callable: commute_lab.tools.search_evidence
+    parameters:
+      type: object
+      properties:
+        query: {type: string}
+        k: {type: integer, minimum: 1, maximum: 10}
+        project_id: {type: string}
+      required: [query]
+  search_openalex:
+    type: function
+    description: Search scholarly works on OpenAlex and register them as citable sources. Returns source_id, DOI, year and abstract.
+    callable: commute_lab.tools.search_openalex
+    parameters:
+      type: object
+      properties:
+        query: {type: string}
+        per_page: {type: integer, minimum: 1, maximum: 10}
+        project_id: {type: string}
+      required: [query]
+  save_hypothesis:
+    type: function
+    description: Store a falsifiable hypothesis, labelled with the agent that generated it, and its supporting/opposing passage ids.
+    callable: commute_lab.tools.save_hypothesis
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        statement: {type: string}
+        generated_by: {type: string}
+        supporting_passage_ids: {type: array, items: {type: string}}
+        opposing_passage_ids: {type: array, items: {type: string}}
+      required: [project_id, statement]
+  save_proposals:
+    type: function
+    description: Store at least two candidate tests (closed protocols only) and mark the selected one with its rationale.
+    callable: commute_lab.tools.save_proposals
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        hypothesis_id: {type: string}
+        proposals:
+          type: array
+          minItems: 2
+          items:
+            type: object
+            properties:
+              label: {type: string}
+              title: {type: string}
+              protocol: {type: string, enum: [weighted_means_by_group, wls_commute_by_sex]}
+              description: {type: string}
+              learning_value: {type: string}
+              feasibility: {type: string}
+              cost: {type: string}
+            required: [label, protocol]
+        selected_label: {type: string}
+        selection_rationale: {type: string}
+      required: [project_id, hypothesis_id, proposals, selected_label, selection_rationale]
+  run_experiment:
+    type: function
+    description: Run the selected proposal's closed protocol on ENUT microdata and persist aggregated results. Requires human approval.
+    callable: commute_lab.tools.run_experiment
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        proposal_id: {type: string}
+        parameters: {type: object}
+      required: [project_id, proposal_id]
+  read_run:
+    type: function
+    description: Read an experiment run (status, results, sample sizes, error).
+    callable: commute_lab.tools.read_run
+    parameters:
+      type: object
+      properties:
+        run_id: {type: string}
+      required: [run_id]
+  record_decision:
+    type: function
+    description: Store the interpretation and next test for a real run, citing the pre-registered rule applied (R1, R2 or R3). Requires human approval.
+    callable: commute_lab.tools.record_decision
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        experiment_run_id: {type: string}
+        interpretation: {type: string}
+        rule_applied: {type: string, enum: [R1, R2, R3]}
+        next_test: {type: string}
+        rationale: {type: string}
+        uncertainty: {type: string}
+        limitations: {type: string}
+        decided_by: {type: string}
+        hypothesis_id: {type: string}
+        hypothesis_status: {type: string, enum: [proposed, testing, supported, not_supported, inconclusive, superseded]}
+      required: [project_id, experiment_run_id, interpretation, rule_applied, next_test, rationale]
+
+  # --- Specialists (sub-agents). Each receives the full state JSON and must answer
+  # with the full updated state JSON only: no markdown, no conversational text. ---
+  literature_agent:
+    type: agent
+    description: "Decision: what prior evidence exists. Input: research_question. Output: evidence cards with citations."
+    executor: *executor
+    prompt: |
+      You are the Literature Agent. You receive the Shared Research State JSON.
+      Find prior evidence for state.research_question: use search_evidence (Spanish
+      queries) for INEGI ENUT concepts and methods, and search_openalex for studies on
+      commuting, time use and time poverty. Pass state.project_id to both tools.
+      Append evidence cards to state.evidence:
+      {"claim", "stance": "for|against|context", "source_id", "passage_id" or "doi", "url", "locator", "quote"}.
+      Only cite what the tools returned. Return ONLY the full updated JSON.
+    tools:
+      search_evidence: inherit
+      search_openalex: inherit
+
+  hypothesis_agent:
+    type: agent
+    description: "Decision: what falsifiable explanation to test. Input: evidence. Output: ranked hypotheses."
+    executor: *executor
+    prompt: |
+      You are the Hypothesis Agent. You receive the Shared Research State JSON.
+      From state.evidence, formulate falsifiable, associational hypotheses (never
+      causal) in weekly units. Rank them and save each with save_hypothesis
+      (generated_by "hypothesis_agent", supporting/opposing passage ids).
+      Append to state.hypotheses: {"id": <hypothesis_id>, "claim", "status": "untested"}.
+      Return ONLY the full updated JSON.
+    tools:
+      save_hypothesis: inherit
+
+  data_steward:
+    type: agent
+    description: "Decision: whether the data allows testing it. Input: leading hypothesis. Output: variable map and quality report."
+    executor: *executor
+    prompt: |
+      You are the Data Steward. You receive the Shared Research State JSON.
+      Decide whether ENUT can test the leading hypothesis. Use search_evidence
+      (Spanish) on the INEGI conceptual and sampling design documents to map each
+      concept to survey variables in state.variables, and fill state.population
+      (CDMX = 09 and Estado de México = 15; adults who worked last week). Variable
+      names change between survey years: never assume a code you have not seen in a
+      cited passage. Keep sleep separate from personal care and care separate from
+      family/social time. Record design elements (FAC_PER, UPM_DIS, EST_DIS),
+      missing-value issues and representativeness limits in state.limitations.
+      Return ONLY the full updated JSON.
+    tools:
+      search_evidence: inherit
+
+  experiment_planner:
+    type: agent
+    description: "Decision: which test maximizes learning. Input: hypotheses and data. Output: experiment spec."
+    executor: *executor
+    prompt: |
+      You are the Experiment Planner. You receive the Shared Research State JSON.
+      Propose AT LEAST TWO candidate tests using only the closed protocols
+      weighted_means_by_group (weighted means by commute group and sex) or
+      wls_commute_by_sex (weighted regression with commute × sex and basic controls).
+      Compare learning value, feasibility and cost, choose one, and store them with
+      save_proposals. Append to state.experiments:
+      {"id": <proposal_id>, "hypothesis_id", "protocol", "method", "learning_value",
+       "feasibility", "cost", "selected", "selection_rationale", "status": "planned"}.
+      If state.next_decision asks for a follow-up test, plan that one instead.
+      Return ONLY the full updated JSON.
+    tools:
+      save_proposals: inherit
+
+  experiment_runner:
+    type: agent
+    description: "Decision: execute the test reproducibly. Input: experiment spec. Output: metrics and artifacts."
+    executor: *executor
+    prompt: |
+      You are the Experiment Runner. You receive the Shared Research State JSON.
+      Run the selected experiment with run_experiment(project_id, proposal_id). It
+      only executes closed protocols and needs human approval. Never compute, estimate
+      or round numbers yourself. Append the returned run to state.results
+      ({"run_id", "status", "results", "sample_sizes" or "error"}) and set the
+      experiment status to "completed" or "failed".
+      Return ONLY the full updated JSON.
+    tools:
+      run_experiment: inherit
+      read_run: inherit
+
+  scientific_critic:
+    type: agent
+    description: "Decision: whether the interpretation is trustworthy. Input: results. Output: critique and validation requests."
+    executor: *executor
+    prompt: |
+      You are the Scientific Critic. You receive the Shared Research State JSON.
+      Read the latest run with read_run. Check sample sizes per sex, missing values,
+      weights and design elements used, interval method, and wording (association,
+      weekly units, no ZMVM representativeness claims). Choose exactly one
+      pre-registered rule: R1 (sex difference supported and subgroups adequate →
+      household composition / children), R2 (no sex difference → long commutes /
+      non-linearity), R3 (data or sample prevent a conclusion, or the run failed →
+      revise variables, cohort, measurement). Store it with record_decision, which
+      needs human approval. Add your caveats to state.limitations.
+      Return ONLY the full updated JSON.
+    tools:
+      read_run: inherit
+      record_decision: inherit
 
 policies:
-  - require_human_approval_for_tools: false
-  - enforce_json_output: true
-
-agents:
-  # 1. Literature Agent
-  - name: literature_agent
-    role: "Literature Agent"
-    scientific_decision: "What prior evidence exists" #[cite: 5]
-    input: "question" #[cite: 5]
-    output: "evidence cards + citations" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Literature Agent. You will receive a research state in JSON format.
-      Task: Search for relevant literature regarding the 'research_question'.
-      Action: Append your findings to the 'evidence' array.
-      Constraint: You MUST return the fully updated JSON object, strictly no markdown or conversational text.
-    tools:
-      - search_openalex
-
-  # 2. Hypothesis Agent
-  - name: hypothesis_agent
-    role: "Hypothesis Agent"
-    scientific_decision: "What falsifiable explanation to test" #[cite: 5]
-    input: "evidence" #[cite: 5]
-    output: "ranked hypotheses" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Hypothesis Agent. You receive the research state JSON with populated evidence.
-      Task: Formulate falsifiable hypotheses based on the 'evidence'.
-      Action: Append these to the 'hypotheses' array (include id, claim, and status: 'untested').
-      Constraint: You MUST return the updated JSON.
-
-  # 3. Data Steward
-  - name: data_steward
-    role: "Data Steward"
-    scientific_decision: "If the data allows testing it" #[cite: 5]
-    input: "hypothesis" #[cite: 5]
-    output: "variable map + quality report" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Data Steward. You receive the research state JSON.
-      Task: Evaluate if the ENUT dataset can test the leading hypothesis.
-      Action: Map required data points in the 'variables' object and note any limitations in the 'limitations' array.
-      Constraint: You MUST return the updated JSON.
-
-  # 4. Experiment Planner
-  - name: experiment_planner
-    role: "Experiment Planner"
-    scientific_decision: "What test maximizes learning" #[cite: 5]
-    input: "hypotheses + data" #[cite: 5]
-    output: "experiment spec" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Experiment Planner. You receive the research state JSON.
-      Task: Design the statistical test or regression for the hypothesis using the variable map.
-      Action: Append the design to the 'experiments' array (include id, hypothesis_id, method, and status: 'planned').
-      Constraint: You MUST return the updated JSON.
-
-  # 5. Experiment Runner
-  - name: experiment_runner
-    role: "Experiment Runner"
-    scientific_decision: "Execute the test reproducibly" #[cite: 5]
-    input: "experiment spec" #[cite: 5]
-    output: "metrics + artifacts" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Experiment Runner. You receive the research state JSON.
-      Task: Execute the planned experiment. Use your sandbox tool to run Python/R scripts on ENUT data.
-      Action: Append the output metrics to the 'results' array and update the experiment status to 'completed'.
-      Constraint: You MUST return the updated JSON.
-    tools:
-      - execute_python_sandbox
-
-  # 6. Scientific Critic
-  - name: scientific_critic
-    role: "Scientific Critic"
-    scientific_decision: "If we can trust the interpretation" #[cite: 5]
-    input: "results" #[cite: 5]
-    output: "critique + validation requests" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Scientific Critic. You receive the research state JSON with raw results.
-      Task: Evaluate the p-values, methodology, and potential biases of the results.
-      Action: Add your analysis to the 'limitations' or 'results' evaluation fields.
-      Constraint: You MUST return the updated JSON.
-
-  # 7. Discovery Director
-  - name: discovery_director
-    role: "Discovery Director"
-    scientific_decision: "What to investigate next" #[cite: 5]
-    input: "complete state" #[cite: 5]
-    output: "next action" #[cite: 5]
-    model: "databricks/dbrx-instruct"
-    system_prompt: |
-      You are the Discovery Director. You receive the complete, evaluated research state JSON.
-      Task: Decide the next scientific step based on the entire cycle.
-      Action: Update the 'next_decision' object with the next experiment ID and the reason.
-      Constraint: You MUST return the updated JSON.
-
-# Pipeline Orchestration
-handoffs:
-  - from: "user_input"
-    to: "literature_agent"
-  - from: "literature_agent"
-    to: "hypothesis_agent"
-  - from: "hypothesis_agent"
-    to: "data_steward"
-  - from: "data_steward"
-    to: "experiment_planner"
-  - from: "experiment_planner"
-    to: "experiment_runner"
-  - from: "experiment_runner"
-    to: "scientific_critic"
-  - from: "scientific_critic"
-    to: "discovery_director"
+  # Human sign-off before running an experiment or recording a decision.
+  approve_runs_and_decisions:
+    type: function
+    handler: commute_lab.policies.ask_before_run
+    on: [tool_call]
+  tool_call_budget:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 150
