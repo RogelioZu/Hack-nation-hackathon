@@ -1,0 +1,19 @@
+"""Supabase client for the Python host. Uses the service_role key: never ship this to the browser."""
+
+import os
+from functools import lru_cache
+from pathlib import Path
+
+from dotenv import load_dotenv
+from supabase import Client, create_client
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
+
+@lru_cache(maxsize=1)
+def client() -> Client:
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+    if not url or not key:
+        raise RuntimeError("Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the repo-root .env (see .env.example)")
+    return create_client(url, key)

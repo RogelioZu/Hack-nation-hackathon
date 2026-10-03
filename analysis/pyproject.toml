@@ -1,0 +1,26 @@
+[project]
+name = "commute-lab-analysis"
+version = "0.1.0"
+description = "RAG + ENUT experiment tooling for the commute/time-use research loop"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "supabase>=2.10",
+  "sentence-transformers>=3.0",
+  "torch>=2.4",
+  "pypdf>=5.0",
+  "httpx>=0.27",
+  "python-dotenv>=1.0",
+  "pydantic>=2.7",
+]
+
+[tool.uv]
+package = false
+
+# CPU-only torch keeps the install small (no CUDA wheels).
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

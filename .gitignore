@@ -1,0 +1,17 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+analysis/.venv/
+analysis/.cache/
+__pycache__/
+
+# data (raw microdata never goes to git)
+data/
+*.zip
+
+# supabase local
+supabase/.branches
+supabase/.temp

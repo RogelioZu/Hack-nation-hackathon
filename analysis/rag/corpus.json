@@ -1,0 +1,18 @@
+[
+  {
+    "kind": "official_doc",
+    "title": "ENUT 2024 — Conceptual design (Diseño conceptual)",
+    "url": "https://www.inegi.org.mx/contenidos/programas/enut/2024/doc/889463921929.pdf",
+    "publisher": "INEGI",
+    "year": 2024,
+    "license": "INEGI terms of free use of information"
+  },
+  {
+    "kind": "sampling_design",
+    "title": "ENUT 2024 — Sampling design (Diseño muestral)",
+    "url": "https://www.inegi.org.mx/contenidos/programas/enut/2024/doc/889463926528.pdf",
+    "publisher": "INEGI",
+    "year": 2024,
+    "license": "INEGI terms of free use of information"
+  }
+]
