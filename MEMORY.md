@@ -17,12 +17,18 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Web (`/` y `/research/[id]`) leyendo Supabase real | ✅ Verificado con `next dev`; `npm run build` pasa |
 | Pipeline ENUT (`analysis/enut/`) | ⏳ **Pendiente: lo entrega el usuario** |
 | `run_experiment` y protocolos cerrados | ⏳ Depende del pipeline ENUT |
-| Agentes Omnigent (`agents/`) | ⏳ No iniciado (no se ha hecho el preflight de acceso) |
-| Papers de OpenAlex en el corpus | ⏳ No iniciado |
+| Agentes Omnigent | 🟡 Definidos en `omnigent.yaml` (7 agentes + `initial_state.json`, hechos por el equipo). Faltan herramientas, persistencia y resolver las [Decisiones abiertas de AGENTS.md](AGENTS.md#decisiones-abiertas). No se ha hecho el preflight de acceso ni se ha ejecutado `omnigent run` |
+| Papers de OpenAlex en el corpus | ⏳ No iniciado (`search_openalex` está declarada en el YAML, pero no implementada) |
 | Despliegue en Vercel | ⏳ No iniciado |
-| Commit inicial en `main` | ✅ Hecho (no se ha hecho push a ningún remoto) |
+| Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
 
 ## 2. Infraestructura
+
+### Repositorio y trabajo en equipo
+- Remoto: `origin` = `https://github.com/RogelioZu/Hack-nation-hackathon.git`, rama `main`.
+- El 2026-10-03, `origin/main` tenía 4 commits del equipo: `README.md`, `AGENTS.md` (arquitectura de agentes), `omnigent.yaml` e `initial_state.json`. Nuestra historia local era **independiente**: no compartían ningún commit. Se fusionaron con `git pull --allow-unrelated-histories`.
+- Solo `AGENTS.md` tuvo conflicto. Se resolvió con un único `AGENTS.md` en español que integra la arquitectura de 7 agentes y el Shared Research State (§7). Las diferencias entre ambos diseños quedaron como **Decisiones abiertas** al final de `AGENTS.md`.
+- `omnigent.yaml` e `initial_state.json` **no se modificaron** en el merge. Cambiarlos requiere acordar antes las decisiones abiertas con el equipo.
 
 ### Supabase
 - Proyecto del hackathon: **`xnbruiprrxradfidoleu`** (us-east-1, Postgres 17). URL: `https://xnbruiprrxradfidoleu.supabase.co`.
@@ -85,6 +91,11 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - Crear antes el schema `extensions` y los roles `anon`, `authenticated` y `service_role` (este último con `bypassrls`), y poner `search_path = public, extensions`.
   - Así se validaron las 4 migraciones y el seed antes de aplicarlos en remoto.
 
+- **`omnigent.yaml`**:
+  - Los comentarios `#[cite: 5]` son restos de una herramienta de IA. No significan nada y se pueden quitar.
+  - Los 7 agentes usan `databricks/dbrx-instruct`, `enforce_json_output: true` y `require_human_approval_for_tools: false`.
+  - Los handoffs son lineales y no tienen un regreso que cierre el ciclo.
+
 ## 6. Preferencias del usuario
 
 - **Idioma:** documentación y conversación en español. UI web, demo y textos guardados en Supabase en inglés (ver `AGENTS.md` §0).
@@ -94,7 +105,9 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 ## 7. Próximos pasos
 
 1. Recibir el pipeline ENUT → adaptarlo a protocolos cerrados → `run_experiment` escribe en `experiment_runs` con el contrato de resultados.
-2. Preflight de Omnigent (administrado vs. código abierto) → YAML de los 4 roles en `agents/`.
-3. Mejorar el corpus RAG: cuestionario por pregunta y papers de OpenAlex.
-4. Decidir sobre `rls_auto_enable()` (ver §2).
-5. Desplegar en Vercel con las variables de `web/.env.local`.
+2. Acordar con el equipo las 8 [Decisiones abiertas de AGENTS.md](AGENTS.md#decisiones-abiertas): runner cerrado, aprobaciones, handoff de regreso, persistencia, herramientas de literatura, modelo, formato del YAML y `variables`.
+3. Preflight de Omnigent (administrado vs. código abierto) y validar `omnigent.yaml` contra la spec oficial.
+4. Implementar en `agents/` las herramientas que persisten en Supabase (`save_*`, `record_decision`, `log_event`, `search_evidence`, `search_openalex`, `run_experiment`).
+5. Mejorar el corpus RAG: cuestionario por pregunta y papers de OpenAlex.
+6. Decidir sobre `rls_auto_enable()` (ver §2).
+7. Desplegar en Vercel con las variables de `web/.env.local`.
