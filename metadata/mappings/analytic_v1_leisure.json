@@ -1,0 +1,24 @@
+{
+  "version": "analytic_v1",
+  "approval": "Human-approved Phase 2B specification, 2026-10-03",
+  "table": "TMODULO",
+  "construct": "Discretionary leisure time reported Monday-Friday",
+  "units": "total weekday minutes",
+  "aggregation": "Sum all 11 resolved components. Never skip missing components. Stop publication for unresolved semantics, invalid data or flow conflicts.",
+  "excluded": ["all P6_21", "all P6_23", "all weekend time components"],
+  "official_metadata": "metadata/official/enut_2024_ddi.xml",
+  "questionnaire_reference": "metadata/official/enut_2024_cuestionario.pdf, printed pages 23-24, items 6.18, 6.19, 6.20 and 6.22",
+  "components": [
+    {"name":"sport", "indicator":"P6_18", "hours":"P6_18A_1", "minutes":"P6_18A_2", "ddi_ids":["V4071","V4072","V4073"], "nonparticipation_rule":"P6_18=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"arts", "indicator":"P6_19_1", "hours":"P6_19A_1_1", "minutes":"P6_19A_1_2", "ddi_ids":["V4076","V4077","V4078"], "nonparticipation_rule":"P6_19_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"games_hobbies", "indicator":"P6_19_2", "hours":"P6_19A_2_1", "minutes":"P6_19A_2_2", "ddi_ids":["V4081","V4082","V4083"], "nonparticipation_rule":"P6_19_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"entertainment_venues", "indicator":"P6_20_1", "hours":"P6_20A_1_1", "minutes":"P6_20A_1_2", "ddi_ids":["V4086","V4087","V4088"], "nonparticipation_rule":"P6_20_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"cultural_venues", "indicator":"P6_20_2", "hours":"P6_20A_2_1", "minutes":"P6_20A_2_2", "ddi_ids":["V4091","V4092","V4093"], "nonparticipation_rule":"P6_20_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"screen_entertainment", "indicator":"P6_22_1", "hours":"P6_22A_1_1", "minutes":"P6_22A_1_2", "ddi_ids":["V4116","V4117","V4118"], "nonparticipation_rule":"P6_22_1=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"audio_entertainment", "indicator":"P6_22_2", "hours":"P6_22A_2_1", "minutes":"P6_22A_2_2", "ddi_ids":["V4121","V4122","V4123"], "nonparticipation_rule":"P6_22_2=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"recreational_reading", "indicator":"P6_22_3", "hours":"P6_22A_3_1", "minutes":"P6_22A_3_2", "ddi_ids":["V4126","V4127","V4128"], "nonparticipation_rule":"P6_22_3=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"unpaid_social_posting", "indicator":"P6_22_4", "hours":"P6_22A_4_1", "minutes":"P6_22A_4_2", "ddi_ids":["V4131","V4132","V4133"], "nonparticipation_rule":"P6_22_4=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"recreational_social_browsing", "indicator":"P6_22_5", "hours":"P6_22A_5_1", "minutes":"P6_22A_5_2", "ddi_ids":["V4136","V4137","V4138"], "nonparticipation_rule":"P6_22_5=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"},
+    {"name":"other_recreational_internet", "indicator":"P6_22_6", "hours":"P6_22A_6_1", "minutes":"P6_22A_6_2", "ddi_ids":["V4141","V4142","V4143"], "nonparticipation_rule":"P6_22_6=2 plus two blanks: structural zero; =1 requires valid pair; other/partial/conflicting values stop publication"}
+  ]
+}

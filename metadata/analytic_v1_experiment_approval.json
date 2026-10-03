@@ -1,0 +1,8 @@
+{
+  "dataset_version": "analytic_v1",
+  "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+  "status": "APPROVED_FOR_EXPERIMENTS",
+  "authority": "Explicit human Phase 3 request, 2026-10-03",
+  "scope": "Deterministic experiment engine and EXP-001; preserve analytic_v1 unchanged; human scientific review of results",
+  "historical_manifest_note": "Phase 2B final_human_approval=pending records the historical build state. This separate record records the subsequent human approval without rewriting build provenance."
+}

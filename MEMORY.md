@@ -15,9 +15,13 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Seed demo | ✅ Cargado en remoto |
 | Ingesta RAG (3 PDFs INEGI ENUT 2024) | ✅ 535 pasajes limpios con embedding: cuestionario por pregunta (88), diseño conceptual (402), diseño muestral (45). FTS en español |
 | Web (`/` y `/research/[id]`) leyendo Supabase real | ✅ Verificado con `next dev`; `npm run build` pasa |
-| Pipeline ENUT (`analysis/enut/`) | ⏳ **Pendiente: lo entrega el usuario.** Salida acordada: `data/processed/analytic_v1.parquet` + contrato + metadata (`analytic_v1.*`), versionados en git |
-| `run_experiment` y protocolos cerrados | 🟡 `run_experiment` ya apunta al parquet (guarda su `sha256` como `dataset_hash`) y `describe_dataset` lee contrato y metadata. Faltan el dataset y `analysis/enut/protocols.py`, que se escribe contra el contrato |
-| Agentes Omnigent | 🟡 `omnigent.yaml` reescrito con el formato real y **validado con `omnigent.spec.load`** (Omnigent 0.16). Las 11 tools de `agents/commute_lab/` están implementadas; 10 se probaron contra Supabase y `describe_dataset` con un dataset ficticio fuera del repo. **Falta la primera sesión real**: requiere el perfil de Databricks y el endpoint del modelo |
+| Pipeline ENUT → `analytic_v1` | ✅ Construido y validado fuera del repo (fases 1 → 2A → 2B). **`APPROVED_FOR_EXPERIMENTS`**. ENUT 2024, n = 2,563. Documentación en `docs/` y `metadata/analytic_v1_manifest.json` (commit `805b7c2`) |
+| Motor de experimentos (`src/experiments/`) | ✅ Determinista, `ExperimentSpec` → `ExperimentResult`, solo `weighted_linear_regression` con CR1 por UPM. Tests en `tests/` |
+| EXP-001 | ✅ `EXPERIMENT_COMPLETED`, `REQUIRES_HUMAN_REVIEW`, `INCONCLUSIVE_RANKING`. Resultados en `reports/experiments/EXP-001/` (ver §4) |
+| ⚠️ **Archivos faltantes del commit `805b7c2`** | ❌ **No están en el repo**, aunque el código y los tests los usan: `data/processed/analytic_v1.parquet`, `metadata/analytic_v1_experiment_approval.json`, `src/experiments/report.py` (lo importa `tests/test_exp001.py`), `scripts/run_experiment.py`, `scripts/validate_experiment_engine.py`, `requirements-experiments.txt`. Los docs citan además `metadata/mappings/*.json` y `reports/audit/`. **Hoy el motor y los tests no corren en este repo.** Traerlos del entorno del pipeline sin regenerarlos y comprobar el SHA256 del parquet (`973f2c01…dd94`) |
+| Tool `run_experiment` (`agents/commute_lab/tools.py`) | 🟡 **Desfasada**: sigue esperando `analysis/enut/protocols.py` (`weighted_means_by_group`, `wls_commute_by_sex`), que ya no se va a escribir. Hay que reescribirla para que reciba un `ExperimentSpec` y llame al motor. `save_proposals` valida contra la misma lista vieja y `describe_dataset` busca `data/processed/analytic_v1.*` en vez de `docs/` + `metadata/` |
+| Capa agéntica de descubrimiento | ⏳ **Fase actual.** Scientific Critic, Hypothesis Agent, Experiment Planner, Discovery Director y orquestación Omnigent sobre la evidencia de EXP-001 (ver `AGENTS.md` §7.5). Nada implementado aún |
+| Agentes Omnigent | 🟡 `omnigent.yaml` reescrito con el formato real y **validado con `omnigent.spec.load`** (Omnigent 0.16). Las 11 tools de `agents/commute_lab/` están implementadas; 10 se probaron contra Supabase. Los prompts y `initial_state.json` todavía describen la pregunta y el estado viejos (60 min semanales, protocolos cerrados). **Falta la primera sesión real**: requiere el perfil de Databricks y el endpoint del modelo |
 | Papers de OpenAlex | 🟡 `search_openalex` funciona y registra cada paper en `sources` (`kind = 'paper'`, solo metadatos y resumen, sin pasajes) |
 | Despliegue en Vercel | ✅ https://commute-time-lab.vercel.app (producción, pública) |
 | Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
@@ -78,19 +82,27 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **Mejoras posibles, aún no aplicadas:** reranker multilingüe (cross-encoder, ~470 MB más, ~1 s por consulta en CPU), filtro por `source_kind` en `hybrid_search` y en la tool, y diccionario de variables de microdatos 2024 (catálogo RNM de INEGI) como fuente `data_dictionary`.
 - Los `sources` demo del seed (`…0a1`, `…0a2`) no tienen pasajes. Solo existen para la web.
 
-## 4. Dataset ENUT
+## 4. Dataset ENUT y EXP-001
 
-- `MEX-INEGI.ESD3.04-ENUT-2019.xml` era el **codebook DDI de ENUT 2019**: metadatos de 1300 variables y 8 tablas. **No son microdatos.** El usuario pidió **ignorarlo** porque entregará el pipeline completo. Nunca se commiteó, y el 2026-10-03 ya no estaba en la carpeta del repo.
-- Hallazgo del codebook 2019, ya documentado en `AGENTS.md` §8:
-  - `P5_4_*` es el traslado al trabajo; `P5_9_*` es el tiempo buscando trabajo.
-  - `ENT` vale `09` para CDMX y `15` para Edomex.
-  - `TMODULO_tradicional` tiene 71,404 casos a nivel nacional.
-- CONTEXT.md asume ENUT **2024**. El año definitivo lo fija el pipeline del usuario.
-- Hallazgos del **cuestionario ENUT 2024** (ingerido en el RAG el 2026-10-03; ver `AGENTS.md` §8):
-  - 5.9 = tiempo de traslado al trabajo (ida y vuelta, lun–vie y sáb–dom, h:min). 5.8 = tiempo de trabajo. 5.12 = búsqueda de trabajo, incluidos sus traslados.
-  - 5.7 = modalidad: 1 solo presencial, 2 solo virtual, 3 mixta. **FILTRO 5.9: con 5.7 = 2 se salta la 5.9**, así que el traslado de quien trabaja solo a distancia es faltante estructural.
-  - 6.1 = cuidado personal "sin hacer otra actividad": 1 dormir (incluye siesta), 2 comer, 3 aseo. 6.21 = convivencia familiar, social y participación ciudadana.
-  - El nombre de la columna (`P5_9_*`) aún no se ha visto en un diccionario 2024.
+### Dataset `analytic_v1` (llegó en el commit `805b7c2`, 2026-10-03)
+- **Año: ENUT 2024.** Fases del pipeline (todas con aprobación humana): 1 auditoría → 2A staging semántico (`staging_v1.parquet`, todas las personas de TMODULO) → 2B dataset canónico (`analytic_v1.parquet`) → 3 motor de experimentos y autorización de EXP-001.
+- Una fila por persona; n = 2,563 (18–65 años, CDMX/Edomex, trabajadores activos con traslado resuelto). SHA256 `973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94`.
+- El manifiesto (`metadata/analytic_v1_manifest.json`) dice `experiment_readiness = EXPERIMENT_READY` y `final_human_approval = pending`. **Eso es del momento de la fase 2B.** La aprobación posterior (fase 3, `APPROVED_FOR_EXPERIMENTS`) vive en `metadata/analytic_v1_experiment_approval.json`, que falta en el repo (§1). No "corregir" el manifiesto: se preserva tal cual.
+- Definiciones: `docs/DATA_CONTRACT.md` (la primera tabla es la vigente; las secciones "Historical Phase 1 / Phase 2A" de abajo son históricas y el runner las ignora a propósito).
+- `staging_v1.parquet` quedó en `data/processed/`, aunque el contrato lo ubica en `data/interim/`. Es histórico; nada del motor lo lee.
+- `analysis/enut/` ya no recibirá el pipeline: se construyó en otro entorno.
+- Hallazgos previos que el pipeline confirmó: en ENUT 2024, P5_9 es el traslado; con P5_7 = 2 (solo virtual) se salta la 5.9 y el pipeline lo codifica como **cero estructural marcado**. En ENUT 2019, P5_9 era la búsqueda de trabajo (el codebook 2019 se descartó y nunca se commiteó).
+
+### EXP-001 (resultado real)
+- Pregunta: ¿qué dimensión del tiempo personal muestra la asociación negativa más fuerte con +5 h de traslado entre semana? Spec: `experiments/EXP-001/spec.json` (H1, H2; 4 outcomes; controles trabajo, edad, sexo, estado; sensibilidad `exclude_zero_weekday_work`; versiones ajustada y sin ajustar = 16 modelos).
+- Coeficientes ajustados (min de lunes a viernes por +300 min de traslado): sueño **−48.711** [−63.48, −33.94]; ocio **−20.396** [−43.44, 2.64]; conversación en el hogar **−3.816** [−10.34, 2.71]; higiene **+3.094** [−0.76, 6.95].
+- **`INCONCLUSIVE_RANKING`**: con Bonferroni, solo sueño − conversación y sueño − higiene excluyen el cero; sueño − ocio no. H1: evidencia compatible (sueño). H2: evidencia de al menos una diferencia, sin orden completo. H3/H4 no se evaluaron.
+- Sensibilidad: excluir 34 personas con `work_weekday_min = 0` no cambia direcciones ni orden.
+- Diagnósticos: 351 UPM, 19 estratos, R² ponderado ≤ 0.07, sin predicciones negativas, 168 puntos con leverage > 2p/n (se conservan).
+- Alternativas que dejó EXP-001, **sin elegir**: no linealidad del traslado y diferencia por sexo.
+- Frase correcta para la demo: "Longer weekday commuting showed the strongest negative point association with sleep in EXP-001, but uncertainty prevented a definitive ranking across all four time-use outcomes." **Nunca** "commuting definitely sacrifices sleep the most".
+- Limitación que hay que conservar siempre: CR1 por UPM es una aproximación, no la varianza completa de encuesta compleja de ENUT.
+- `experiments/EXP-001/result.json` y `reports/experiments/EXP-001/result.json` son idénticos.
 
 ## 5. Trampas técnicas encontradas
 
@@ -127,14 +139,18 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 - **Idioma:** documentación y conversación en español. UI web, demo y textos guardados en Supabase en inglés (ver `AGENTS.md` §0).
 - **Commits:** mensaje breve en inglés y **sin créditos de coautoría** (ver `AGENTS.md`, "Para los commits").
-- El usuario entrega el pipeline ENUT. No escribir transformaciones de datos por adelantado.
-- La salida del pipeline es `data/processed/analytic_v1.parquet` con su contrato y metadata, **versionados en git** para que Omnigent y el ExperimentRunner los consuman directamente (decisión del 2026-10-03). El ZIP bruto (`data/raw/`) sigue fuera de git y Supabase sigue sin filas individuales. Los requisitos del contrato están en `analysis/enut/README.md`.
+- **El pipeline de datos está cerrado.** No reconstruirlo, no reinterpretar los datos crudos, no modificar `analytic_v1.parquet` y no volver a limpiar datos salvo que una validación científica explícita falle.
+- `analytic_v1` y sus metadatos están **versionados en git** para que Omnigent y el motor los consuman directamente. El ZIP bruto (`data/raw/`) sigue fuera de git y Supabase sigue sin filas individuales.
+- Prioridad: **el ciclo de descubrimiento antes que la UI**. No programar EXP-001 → EXP-002 → EXP-003 fijo; la evidencia debe poder cambiar la siguiente decisión.
 
 ## 7. Próximos pasos
 
-1. Recibir `data/processed/analytic_v1.parquet` + contrato + metadata. Revisar que el contrato cubra `analysis/enut/README.md` y escribir contra él `analysis/enut/protocols.py` con `PROTOCOLS = {nombre: fn(dataset_path, parameters) -> {"results", "sample_sizes"}}`. El entorno de Omnigent necesitará las dependencias que usen los protocolos (p. ej. pandas/pyarrow).
-2. Configurar el perfil de Databricks y verificar el endpoint del modelo → primera sesión real: `PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"`.
-3. En esa sesión, comprobar que el ASK salta cuando un sub-agente llama a `run_experiment` o `record_decision` ([Decisiones abiertas](AGENTS.md#decisiones-abiertas)).
-4. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).
-5. Decidir sobre `rls_auto_enable()` (ver §2).
-6. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.
+1. **Traer los archivos faltantes** (§1) del entorno del pipeline, sin regenerarlos. Verificar el SHA256 del parquet contra el manifiesto y correr `python -m unittest discover -s tests -t .`.
+2. **Conectar el motor a las tools:** reescribir `run_experiment` en `agents/commute_lab/tools.py` para que valide un `ExperimentSpec` y llame a `src.experiments.runner.run_experiment`. Actualizar `save_proposals` y `describe_dataset` (que exponga `docs/DATA_CONTRACT.md`, el manifiesto y los valores que acepta el esquema). Quitar las referencias a `analysis/enut/protocols.py`. El entorno de Omnigent necesita pandas, pyarrow, numpy, scipy y pydantic.
+3. **Capa agéntica** (`AGENTS.md` §7.5): estructuras `ScientificCritique`, hipótesis y candidatos con IDs estables, el Shared Research State ampliado y los prompts de crítico, Hypothesis Agent, Planner y Director. Arrancar desde `reports/experiments/EXP-001/result.json`.
+4. Actualizar `omnigent.yaml` e `initial_state.json` a la pregunta, unidades y outcomes de `analytic_v1`, y validar con `omnigent.spec.load`.
+5. Decidir cómo se guarda `ExperimentResult` en Supabase y adaptar `web/lib/types.ts` ([Decisiones abiertas](AGENTS.md#decisiones-abiertas) 4).
+6. Configurar el perfil de Databricks y verificar el endpoint del modelo → primera sesión real: `PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"`. Comprobar que el ASK salta cuando un sub-agente llama a `run_experiment` o `record_decision`.
+7. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).
+8. Decidir sobre `rls_auto_enable()` (ver §2).
+9. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.

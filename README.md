@@ -19,6 +19,18 @@ Instead of ambiguous text-based conversations, our agents communicate strictly b
 6. **Scientific Critic**: Evaluates results and checks for interpretation errors.
 7. **Discovery Director**: Decides the next action based on the full state.
 
+## Current Status (2026-10-03)
+
+**Research question.** Among workers aged 18–65 living in Mexico City and the State of Mexico, which dimension of personal time shows the strongest negative association with five additional hours of weekday commuting? All findings are observational associations, not causal effects.
+
+**Scientific data layer (done).** ENUT 2024 microdata were processed into the canonical dataset `analytic_v1` (2,563 workers, `APPROVED_FOR_EXPERIMENTS`). Variable definitions are in [`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md) and provenance is in [`metadata/analytic_v1_manifest.json`](metadata/analytic_v1_manifest.json).
+
+**Deterministic experiment engine (done).** [`src/experiments/`](src/experiments/) turns a strictly validated `ExperimentSpec` into an `ExperimentResult`. It uses FAC_PER-weighted linear regression with PSU-clustered (CR1) uncertainty. This approximates ENUT's complex-survey variance and does not fully reconstruct it. Agents request experiments through this engine. They never compute or invent numbers. See [`docs/EXPERIMENT_ENGINE.md`](docs/EXPERIMENT_ENGINE.md).
+
+**EXP-001 (completed, awaiting human review).** Longer weekday commuting showed the strongest negative point association with sleep (about −49 weekday minutes per +300 commute minutes). Uncertainty prevented a definitive ranking across all four time-use outcomes (sleep, leisure, household conversation, personal hygiene). See [`reports/experiments/EXP-001/summary.md`](reports/experiments/EXP-001/summary.md).
+
+**Next: the agentic discovery loop.** A Scientific Critic reviews EXP-001. A Hypothesis Agent and an Experiment Planner then propose competing follow-up experiments. The Discovery Director, orchestrated by Omnigent, selects one and explains the choice. The engine runs it, and the new evidence updates the next decision. No experiment sequence is hard-coded.
+
 ## 🚀 Getting Started
 
 ### Prerequisites

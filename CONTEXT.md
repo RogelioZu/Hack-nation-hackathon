@@ -5,6 +5,14 @@
 **Decisiones de stack tomadas por el equipo:** Next.js para la web y Supabase para el backend.  
 **Idioma de la experiencia:** INGLES. El demo puede explicarse en español o inglés.
 
+> ⚠️ **Documento histórico (actualizado el 2026-10-03).** Es la especificación de arranque y ya no describe el estado del proyecto. Quedan superadas, en particular:
+> - **La pregunta y las unidades** (§3, §6): la versión vigente usa `commute_5h` (+300 minutos de traslado de lunes a viernes) y cuatro outcomes canónicos (sueño, higiene personal exclusiva, conversación exclusiva en el hogar, ocio), en minutos totales de lunes a viernes, para 2,563 trabajadores de 18–65 años. Ver `docs/DATA_CONTRACT.md`.
+> - **El dataset** (§5): el pipeline ENUT 2024 ya produjo `data/processed/analytic_v1.parquet` (`APPROVED_FOR_EXPERIMENTS`).
+> - **El experimento inicial** (§6): EXP-001 ya se ejecutó con el motor determinista `src/experiments/` (ver `reports/experiments/EXP-001/summary.md`).
+> - **Arquitectura de agentes y fase actual**: ver `AGENTS.md` §7 y `MEMORY.md`.
+>
+> Si este archivo contradice a `AGENTS.md`, `MEMORY.md` o `docs/`, ganan ellos.
+
 ## 1. Encargo para el agente que reciba este archivo
 
 Construir un MVP web que investigue una pregunta científica concreta sobre el tiempo de traslado al trabajo y el uso del tiempo personal y familiar en Ciudad de México y Estado de México. El sistema debe usar **Omnigent para orquestar en vivo varios agentes especializados**, recuperar evidencia con citas mediante RAG, ejecutar al menos una prueba computacional reproducible con microdatos reales, interpretar su resultado y registrar cómo ese resultado cambia la siguiente decisión científica.
