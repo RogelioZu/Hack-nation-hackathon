@@ -13,11 +13,11 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | `AGENTS.md` (contexto, contratos, roadmap) | ✅ Hecho |
 | Migraciones Supabase (extensiones, tablas, RAG, RLS) | ✅ Aplicadas en remoto |
 | Seed demo | ✅ Cargado en remoto |
-| Ingesta RAG (2 PDFs INEGI ENUT 2024) | ✅ 613 pasajes con embedding |
+| Ingesta RAG (3 PDFs INEGI ENUT 2024) | ✅ 535 pasajes limpios con embedding: cuestionario por pregunta (88), diseño conceptual (402), diseño muestral (45). FTS en español |
 | Web (`/` y `/research/[id]`) leyendo Supabase real | ✅ Verificado con `next dev`; `npm run build` pasa |
-| Pipeline ENUT (`analysis/enut/`) | ⏳ **Pendiente: lo entrega el usuario** |
-| `run_experiment` y protocolos cerrados | ⏳ Depende del pipeline ENUT |
-| Agentes Omnigent | 🟡 `omnigent.yaml` reescrito con el formato real y **validado con `omnigent.spec.load`** (Omnigent 0.16). Las 10 tools de `agents/commute_lab/` están implementadas y probadas contra Supabase. **Falta la primera sesión real**: requiere el perfil de Databricks y el endpoint del modelo |
+| Pipeline ENUT (`analysis/enut/`) | ⏳ **Pendiente: lo entrega el usuario.** Salida acordada: `data/processed/analytic_v1.parquet` + contrato + metadata (`analytic_v1.*`), versionados en git |
+| `run_experiment` y protocolos cerrados | 🟡 `run_experiment` ya apunta al parquet (guarda su `sha256` como `dataset_hash`) y `describe_dataset` lee contrato y metadata. Faltan el dataset y `analysis/enut/protocols.py`, que se escribe contra el contrato |
+| Agentes Omnigent | 🟡 `omnigent.yaml` reescrito con el formato real y **validado con `omnigent.spec.load`** (Omnigent 0.16). Las 11 tools de `agents/commute_lab/` están implementadas; 10 se probaron contra Supabase y `describe_dataset` con un dataset ficticio fuera del repo. **Falta la primera sesión real**: requiere el perfil de Databricks y el endpoint del modelo |
 | Papers de OpenAlex | 🟡 `search_openalex` funciona y registra cada paper en `sources` (`kind = 'paper'`, solo metadatos y resumen, sin pasajes) |
 | Despliegue en Vercel | ✅ https://commute-time-lab.vercel.app (producción, pública) |
 | Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
@@ -34,7 +34,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - Proyecto del hackathon: **`xnbruiprrxradfidoleu`** (us-east-1, Postgres 17). URL: `https://xnbruiprrxradfidoleu.supabase.co`.
 - ⚠️ La cuenta tiene **otro** proyecto, "Finding out" (`fnveucrdccqwzovptxqa`), que **no es de este hackathon**. No tocarlo.
 - El acceso se hace por el **MCP de Supabase**. Hubo que reautenticarlo con `/mcp` para que viera este proyecto. La **CLI `supabase` no tiene sesión iniciada**, así que `supabase db push` y `supabase link` no funcionan todavía.
-- Migraciones aplicadas con `apply_migration` del MCP. Versiones remotas: `20261003210503_extensions`, `20261003210519_core`, `20261003210530_rag`, `20261003210538_rls`.
+- Migraciones aplicadas con `apply_migration` del MCP. Versiones remotas: `20261003210503_extensions`, `20261003210519_core`, `20261003210530_rag`, `20261003210538_rls`, `20261003221539_rag_spanish_fts`.
   - **Los archivos locales se renombraron para coincidir con esas versiones.** Si aplicas otra migración por MCP, consulta `list_migrations` y renombra el archivo local a la versión que devuelva. Si no, un `db push` futuro intentará reaplicarla.
 - El seed se cargó con `execute_sql` del MCP, no con `db reset`.
 - **Advisor de seguridad:** no reporta nada sobre nuestras tablas. Sí avisa sobre `public.rls_auto_enable()`, una función `SECURITY DEFINER` que **ya existía en el proyecto** y que se puede llamar sin sesión vía `/rest/v1/rpc/rls_auto_enable`. No se tocó; **el usuario debe decidir** si se le quita `EXECUTE` a `anon` y `authenticated`.
@@ -52,19 +52,30 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 3. RAG: estado y calidad
 
-- Corpus en `analysis/rag/corpus.json`. Por ahora tiene el diseño conceptual de ENUT 2024 (564 pasajes) y el diseño muestral (49 pasajes). Los PDFs se guardan en `analysis/.cache/`, con nombre igual al `sha1(url)`.
-- La primera ejecución descarga el modelo e5-small (~470 MB) a la caché de HuggingFace.
-- `pypdf` muestra advertencias de "fontTools is required…". Son inofensivas: el texto se extrae bien.
-- QA del 2026-10-03 (5 consultas):
-  - ✅ Diseño muestral (UPM, estratos, factor de expansión).
-  - ✅ Definición de convivencia (p. 67).
-  - 🟡 Cuidados pasivos.
-  - 🟡 "Traslado al trabajo": devuelve la semana de referencia, pero no la pregunta concreta.
-  - ❌ Consulta en inglés "weekly time spent sleeping".
-- **Debilidades conocidas:**
-  1. El corpus está en español. Con consultas en inglés solo funciona la parte semántica, así que **el agente de evidencia debe consultar en español**.
-  2. Las páginas del cuestionario anexo del diseño conceptual (pp. ~95–115) son tablas de formulario con texto repetido ("REGISTRE EL CÓDIGO…") que contaminan los resultados.
-- **Mejora sugerida, aún no aplicada:** ingerir el cuestionario como fuente aparte (`kind = 'questionnaire'`) fragmentada por pregunta, y excluir o etiquetar esas páginas del diseño conceptual.
+- Corpus en `analysis/rag/corpus.json` (3 fuentes INEGI ENUT 2024). Los PDFs se guardan en `analysis/.cache/`, con nombre igual al `sha1(url)`.
+  - **Cuestionario** (`kind = 'questionnaire'`, PDF propio de INEGI `enut_2024_cuestionario.pdf`): solo pp. 3–25. Las pp. 26–73 repiten las secciones IV–VII para la 2.ª–4.ª persona y la p. 1 es texto legal. Un pasaje por pregunta numerada; `section` = `Sección V. … › Pregunta 5.9`, `locator` = `p. 12 · 5.9`.
+  - **Diseño conceptual**: se excluyen portada y créditos (1–3), índice (5–6), separador (71), anexo B = cuestionario duplicado (91–115) y referencias (125–127). `section` sale de los marcadores del PDF (`6. … › 6.3 Uso del tiempo › 6.3.3 …`), cortando la página donde empieza cada encabezado.
+  - **Diseño muestral**: se excluyen portada, índice y referencias (1–3, 5–6, 24).
+- Limpieza (`analysis/rag/ingest.py`): NFKC (arregla las letras matemáticas del diseño muestral), unión de palabras cortadas con guion, encabezados/pies repetidos, números de página, instrucciones al entrevistador y guías de puntos (`Sí ....... 1` → `Sí = 1`). Se descartan fragmentos de < 60 caracteres (< 40 en el cuestionario), que eran encabezados sueltos. Se conservan "PASE A" y "FILTRO".
+- `uv run python -m rag.ingest --dry-run` fragmenta y cuenta sin embeddings ni escrituras.
+- La primera ejecución descarga el modelo e5-small (~470 MB) a la caché de HuggingFace. Las advertencias de `pypdf` sobre "fontTools" son inofensivas.
+- **QA medido con `uv run python -m rag.eval`** (15 consultas fijas en `rag/eval_queries.json`, 5 en inglés; acierto = el pasaje contiene el texto esperado, sin acentos, y es del `kind` esperado). Mismo archivo antes y después, el 2026-10-03:
+
+  | Métrica (k = 5) | Antes | Después |
+  |---|---|---|
+  | hit@1 | 0.60 | 0.80 |
+  | hit@5 | 0.80 | 0.93 |
+  | MRR | 0.69 | 0.86 |
+  | Pasajes del top 5 con ruido de formulario | 31 % | 0 % |
+
+  - El único ✗ ("tiempo de traslado al trabajo") es en parte un artefacto del criterio: los 4 primeros resultados son la definición de la variable de traslado (diseño conceptual p. 49), pero el texto esperado era la redacción del cuestionario ("trasladarse de ida y vuelta"). La pregunta 5.9 sí sale primera si la consulta menciona "pregunta" o "cuestionario".
+  - "cuidado pasivo integrantes del hogar" bajó del 1.º al 3.º lugar: ahora ganan filas del anexo A que dicen "cuidados pasivos" (plural, no cuenta para el criterio). La definición (p. 58) sigue en el top 5.
+  - Con 15 consultas, cambios pequeños de limpieza mueven hit@1 ±0.07. No sobreinterpretar décimas.
+- **Debilidades que quedan:**
+  1. La extracción de `pypdf` desordena las columnas del cuestionario: una pregunta puede arrastrar líneas de la vecina (p. ej. la 5.9 incluye el FILTRO 5.8). Por eso las etiquetas temáticas en mayúsculas no se usan como `section`.
+  2. Sin IDF en Postgres: términos muy frecuentes ("tiempo", "trabajo") pesan tanto como los raros. RRF con la parte semántica lo compensa en parte.
+  3. Las consultas en inglés dependen del glosario fijo de `rag/search.py`. Un término que no esté ahí solo cuenta con la parte semántica.
+- **Mejoras posibles, aún no aplicadas:** reranker multilingüe (cross-encoder, ~470 MB más, ~1 s por consulta en CPU), filtro por `source_kind` en `hybrid_search` y en la tool, y diccionario de variables de microdatos 2024 (catálogo RNM de INEGI) como fuente `data_dictionary`.
 - Los `sources` demo del seed (`…0a1`, `…0a2`) no tienen pasajes. Solo existen para la web.
 
 ## 4. Dataset ENUT
@@ -75,6 +86,11 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - `ENT` vale `09` para CDMX y `15` para Edomex.
   - `TMODULO_tradicional` tiene 71,404 casos a nivel nacional.
 - CONTEXT.md asume ENUT **2024**. El año definitivo lo fija el pipeline del usuario.
+- Hallazgos del **cuestionario ENUT 2024** (ingerido en el RAG el 2026-10-03; ver `AGENTS.md` §8):
+  - 5.9 = tiempo de traslado al trabajo (ida y vuelta, lun–vie y sáb–dom, h:min). 5.8 = tiempo de trabajo. 5.12 = búsqueda de trabajo, incluidos sus traslados.
+  - 5.7 = modalidad: 1 solo presencial, 2 solo virtual, 3 mixta. **FILTRO 5.9: con 5.7 = 2 se salta la 5.9**, así que el traslado de quien trabaja solo a distancia es faltante estructural.
+  - 6.1 = cuidado personal "sin hacer otra actividad": 1 dormir (incluye siesta), 2 comer, 3 aseo. 6.21 = convivencia familiar, social y participación ciudadana.
+  - El nombre de la columna (`P5_9_*`) aún no se ha visto en un diccionario 2024.
 
 ## 5. Trampas técnicas encontradas
 
@@ -98,7 +114,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - Las function tools reciben los argumentos del LLM como kwargs, y el resultado se convierte con `str()`. Por eso las tools devuelven JSON (`json.dumps`).
   - No llamar `agents` a un paquete propio: es el import del SDK `openai-agents`, que Omnigent instala.
   - Para el validador se usó un venv temporal con `omnigent[databricks]` 0.16.0 y Python 3.12, fuera del repo.
-- **Smoke test de las tools**: se probaron las 10 contra Supabase con un proyecto temporal `[SMOKE TEST]`, borrado al final (la cascada limpia todo; los `sources` de OpenAlex se borraron a mano). `run_experiment` hoy siempre termina en `failed` con el motivo "ENUT pipeline … not available yet", que es lo esperado.
+- **Smoke test de las tools**: se probaron las 10 contra Supabase con un proyecto temporal `[SMOKE TEST]`, borrado al final (la cascada limpia todo; los `sources` de OpenAlex se borraron a mano). `run_experiment` hoy siempre termina en `failed` con el motivo "Analytic dataset data/processed/analytic_v1.parquet is not available yet", que es lo esperado.
 
 ### Vercel
 - Cuenta Hobby. El proyecto `commute-time-lab` está en el scope `roger-1592` (`team_37NrEuZAkgRsRYTKpMCwC5j9`).
@@ -112,12 +128,13 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **Idioma:** documentación y conversación en español. UI web, demo y textos guardados en Supabase en inglés (ver `AGENTS.md` §0).
 - **Commits:** mensaje breve en inglés y **sin créditos de coautoría** (ver `AGENTS.md`, "Para los commits").
 - El usuario entrega el pipeline ENUT. No escribir transformaciones de datos por adelantado.
+- La salida del pipeline es `data/processed/analytic_v1.parquet` con su contrato y metadata, **versionados en git** para que Omnigent y el ExperimentRunner los consuman directamente (decisión del 2026-10-03). El ZIP bruto (`data/raw/`) sigue fuera de git y Supabase sigue sin filas individuales. Los requisitos del contrato están en `analysis/enut/README.md`.
 
 ## 7. Próximos pasos
 
-1. Recibir el pipeline ENUT → `analysis/enut/protocols.py` con `PROTOCOLS = {nombre: fn(parameters) -> {"results", "sample_sizes", "dataset_hash"}}`. `run_experiment` ya lo busca ahí.
+1. Recibir `data/processed/analytic_v1.parquet` + contrato + metadata. Revisar que el contrato cubra `analysis/enut/README.md` y escribir contra él `analysis/enut/protocols.py` con `PROTOCOLS = {nombre: fn(dataset_path, parameters) -> {"results", "sample_sizes"}}`. El entorno de Omnigent necesitará las dependencias que usen los protocolos (p. ej. pandas/pyarrow).
 2. Configurar el perfil de Databricks y verificar el endpoint del modelo → primera sesión real: `PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"`.
 3. En esa sesión, comprobar que el ASK salta cuando un sub-agente llama a `run_experiment` o `record_decision` ([Decisiones abiertas](AGENTS.md#decisiones-abiertas)).
-4. Mejorar el corpus RAG: cuestionario por pregunta.
+4. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).
 5. Decidir sobre `rls_auto_enable()` (ver §2).
 6. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.

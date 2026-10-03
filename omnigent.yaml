@@ -94,7 +94,7 @@ tools:
       required: [project_id, agent_name, event_type, summary]
   search_evidence:
     type: function
-    description: Hybrid search over the INEGI ENUT documents in Supabase. The corpus is in Spanish, so query in Spanish. Returns passages with source_id, passage_id, url and locator to cite.
+    description: Hybrid search over the INEGI ENUT 2024 documents in Supabase (questionnaire, one passage per numbered question; conceptual design; sampling design). The corpus is in Spanish, so query in Spanish (English domain terms are expanded to Spanish, but Spanish works best). Returns passages with source_id, passage_id, url, section and locator to cite.
     callable: commute_lab.tools.search_evidence
     parameters:
       type: object
@@ -153,9 +153,17 @@ tools:
         selected_label: {type: string}
         selection_rationale: {type: string}
       required: [project_id, hypothesis_id, proposals, selected_label, selection_rationale]
+  describe_dataset:
+    type: function
+    description: Contract and metadata of the analytic ENUT dataset (data/processed/analytic_v1.parquet) - columns, units, filters, sample sizes - plus its sha256. Never returns rows.
+    callable: commute_lab.tools.describe_dataset
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
   run_experiment:
     type: function
-    description: Run the selected proposal's closed protocol on ENUT microdata and persist aggregated results. Requires human approval.
+    description: Run the selected proposal's closed protocol on the analytic ENUT dataset (data/processed/analytic_v1.parquet) and persist aggregated results with the dataset hash. Requires human approval.
     callable: commute_lab.tools.run_experiment
     parameters:
       type: object
@@ -231,16 +239,21 @@ tools:
     executor: *executor
     prompt: |
       You are the Data Steward. You receive the Shared Research State JSON.
-      Decide whether ENUT can test the leading hypothesis. Use search_evidence
-      (Spanish) on the INEGI conceptual and sampling design documents to map each
-      concept to survey variables in state.variables, and fill state.population
-      (CDMX = 09 and Estado de México = 15; adults who worked last week). Variable
-      names change between survey years: never assume a code you have not seen in a
-      cited passage. Keep sleep separate from personal care and care separate from
+      Decide whether ENUT can test the leading hypothesis. First call describe_dataset
+      (pass state.project_id): the contract and metadata of the analytic dataset are the
+      only source of column names, units, filters and sample sizes. Map each concept
+      to a dataset column in state.variables and fill state.population (CDMX = 09 and
+      Estado de México = 15; adults who worked last week), then justify each mapping
+      with search_evidence (Spanish) on the INEGI questionnaire, conceptual design and
+      sampling design. Include "pregunta" or "cuestionario" in a query to get the exact
+      question wording, its answer codes and its skip rules ("PASE A", "FILTRO").
+      Never use a column that is not in the contract; if the dataset is not available,
+      say so in state.limitations. Keep sleep separate from personal care and care separate from
       family/social time. Record design elements (FAC_PER, UPM_DIS, EST_DIS),
       missing-value issues and representativeness limits in state.limitations.
       Return ONLY the full updated JSON.
     tools:
+      describe_dataset: inherit
       search_evidence: inherit
 
   experiment_planner:

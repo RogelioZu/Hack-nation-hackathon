@@ -8,8 +8,9 @@ analysis/.venv/
 analysis/.cache/
 __pycache__/
 
-# data (raw microdata never goes to git)
-data/
+# data: raw microdata (ZIP, data/raw/) never goes to git; only the analytic dataset in data/processed/ does
+data/*
+!data/processed/
 *.zip
 
 # supabase local

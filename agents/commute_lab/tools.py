@@ -7,6 +7,7 @@ strings: Omnigent passes the LLM arguments as kwargs and stringifies the result.
 Requires PYTHONPATH to include `agents/` and `analysis/` (see AGENTS.md §10).
 """
 
+import hashlib
 import json
 import subprocess
 from datetime import datetime, timezone
@@ -18,6 +19,11 @@ import httpx
 from db import client
 
 ROOT = Path(__file__).resolve().parents[2]
+
+# Analytic dataset delivered by the ENUT pipeline (AGENTS.md §8). Its contract and metadata are the
+# sibling files sharing the stem (data/processed/analytic_v1.*).
+DATASET = ROOT / "data" / "processed" / "analytic_v1.parquet"
+SIDECAR_CHARS = 60_000  # cap per contract/metadata file returned to the LLM
 
 # Closed protocols accepted by run_experiment (AGENTS.md §7.4).
 PROTOCOLS = ("weighted_means_by_group", "wls_commute_by_sex")
@@ -62,6 +68,14 @@ def _log(project_id: str, agent_name: str, event_type: str, summary: str,
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""):
+            digest.update(block)
+    return f"sha256:{digest.hexdigest()}"
 
 
 def _code_version() -> str | None:
@@ -204,14 +218,42 @@ def save_proposals(project_id: str, hypothesis_id: str, proposals: list[dict],
     return _ok(proposal_ids=ids, selected_proposal_id=ids[selected_label])
 
 
-# --- Experiment -------------------------------------------------------------
+# --- Dataset and experiment -------------------------------------------------
+
+def describe_dataset(project_id: str | None = None) -> str:
+    """Contract and metadata of the analytic dataset (columns, units, filters, n) and its hash. Never returns rows."""
+    if not DATASET.exists():
+        return _err(f"{DATASET.relative_to(ROOT)} not found: the ENUT pipeline has not delivered it yet")
+    files: dict[str, Any] = {}
+    for path in sorted(DATASET.parent.glob(f"{DATASET.stem}.*")):
+        if path == DATASET or not path.is_file():
+            continue
+        text = path.read_text(errors="replace")[:SIDECAR_CHARS]
+        try:
+            files[path.name] = json.loads(text)
+        except ValueError:
+            files[path.name] = text
+    if project_id:
+        _log(project_id, "data_steward", "tool_call",
+             f"describe_dataset → {', '.join(files) or 'no contract/metadata files'}")
+    return _ok(dataset=str(DATASET.relative_to(ROOT)), dataset_hash=_sha256(DATASET), files=files)
+
+
+def _load_protocol(name: str):
+    """Protocol function from analysis/enut/protocols.py, or None while it is not implemented."""
+    if not (ROOT / "analysis" / "enut" / "protocols.py").exists():
+        return None
+    from enut.protocols import PROTOCOLS as implemented  # import errors inside it surface as run errors
+    return implemented.get(name)
+
 
 def run_experiment(project_id: str, proposal_id: str, parameters: dict | None = None) -> str:
-    """Run the selected proposal's closed protocol on ENUT microdata and persist the aggregates.
+    """Run the selected proposal's closed protocol on the analytic dataset and persist the aggregates.
 
-    The ENUT pipeline is expected at analysis/enut/protocols.py exposing
-    PROTOCOLS = {name: fn(parameters) -> {"results", "sample_sizes", "dataset_hash"}}.
-    Until it exists the run is recorded as failed — numbers are never invented.
+    Protocols live in analysis/enut/protocols.py as
+    PROTOCOLS = {name: fn(dataset_path, parameters) -> {"results", "sample_sizes"}}, written against the
+    dataset contract. The runner hashes the exact file it hands to the protocol. Until the dataset and
+    the protocol exist the run is recorded as failed — numbers are never invented.
     """
     db = client()
     proposal = db.table("experiment_proposals").select("*").eq("id", proposal_id) \
@@ -229,25 +271,29 @@ def run_experiment(project_id: str, proposal_id: str, parameters: dict | None = 
         "protocol": protocol,
         "parameters": parameters or {},
         "code_version": _code_version(),
+        "dataset_hash": _sha256(DATASET) if DATASET.exists() else None,
         "status": "running",
         "started_at": _now(),
     }).execute().data[0]
     _log(project_id, "experiment_runner", "tool_call", f"run_experiment({protocol}) started",
          experiment_run_id=run["id"])
 
+    error = None
     try:
-        from enut.protocols import PROTOCOLS as IMPLEMENTED  # provided by the ENUT pipeline
-        output = IMPLEMENTED[protocol](parameters or {})
-    except (ImportError, KeyError):
-        error = f"ENUT pipeline for protocol {protocol!r} is not available yet (analysis/enut/protocols.py)."
+        fn = _load_protocol(protocol)
+        if not DATASET.exists():
+            error = f"Analytic dataset {DATASET.relative_to(ROOT)} is not available yet (ENUT pipeline)."
+        elif fn is None:
+            error = f"Protocol {protocol!r} is not implemented yet (analysis/enut/protocols.py)."
+        else:
+            output = fn(DATASET, parameters or {})
     except Exception as exc:  # report the real failure to the agents and the panel
         error = f"{type(exc).__name__}: {exc}"
-    else:
+    if error is None:
         db.table("experiment_runs").update({
             "status": "succeeded",
             "results": output["results"],
             "sample_sizes": output.get("sample_sizes", {}),
-            "dataset_hash": output.get("dataset_hash"),
             "finished_at": _now(),
         }).eq("id", run["id"]).execute()
         _log(project_id, "experiment_runner", "output", f"{protocol} succeeded",

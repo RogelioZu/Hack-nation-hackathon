@@ -87,12 +87,16 @@ analysis/
   pyproject.toml           proyecto uv (torch CPU)
   db.py                    cliente Supabase con service_role (lee el .env de la raíz)
   rag/embed.py             embeddings e5 con prefijos "passage: " / "query: "
-  rag/ingest.py            manifiesto → descarga → fragmentos con localizador → embeddings → upsert
-  rag/search.py            search_evidence() → RPC hybrid_search
-  rag/corpus.json          manifiesto del corpus (docs INEGI; agregar aquí papers de OpenAlex)
-  enut/                    pipeline ENUT — LO PROPORCIONA EL USUARIO (pendiente)
+  rag/ingest.py            manifiesto → descarga → limpieza → fragmentos (sección + localizador) → embeddings → upsert
+  rag/search.py            search_evidence() → RPC hybrid_search (expande términos inglés → español)
+  rag/corpus.json          manifiesto del corpus: cuestionario, diseño conceptual y diseño muestral ENUT 2024
+  rag/eval.py              QA de recuperación (hit@1, hit@5, MRR, ruido) sobre rag/eval_queries.json
+  enut/                    pipeline ENUT (LO PROPORCIONA EL USUARIO, pendiente) + protocols.py (protocolos cerrados)
+data/
+  raw/                     ZIP bruto de INEGI (ignorado por git)
+  processed/               analytic_v1.parquet + contrato + metadata (analytic_v1.*), versionados en git
 agents/
-  commute_lab/tools.py     10 tools que persisten en Supabase (create_project … record_decision)
+  commute_lab/tools.py     11 tools que persisten en Supabase (create_project … record_decision)
   commute_lab/policies.py  ask_before_run: pide aprobación humana para run_experiment y record_decision
 web/
   lib/supabase.ts          cliente de solo lectura (clave publishable, solo servidor)
@@ -111,14 +115,14 @@ Todas las PK son `uuid`. Las tablas hijas se borran en cascada con `projects`. L
 |---|---|---|
 | `projects` | Un caso de investigación | `question`, `cohort_definition`, `decision_rules jsonb [{id,if,then}]`, `status` (draft·evidence·planning·running·critique·decided·archived), `omnigent_session_url`, `is_demo` |
 | `sources` | Documentos citables | `kind` (official_doc·questionnaire·data_dictionary·sampling_design·paper·report·internal), `title`, `url` (única), `doi`, `publisher`, `year`, `license` |
-| `passages` | Fragmentos RAG | `source_id`, `section`, `locator` (único por fuente, p. ej. `p. 12`), `content`, `embedding vector(384)`, `fts` (generada, configuración `'simple'`) |
+| `passages` | Fragmentos RAG | `source_id`, `section` (ruta de marcadores del PDF o `Sección V… › Pregunta 5.9`), `locator` (único por fuente, p. ej. `p. 12` o `p. 12 · 5.9`), `content`, `embedding vector(384)`, `fts` (generada, configuración `public.es_unaccent`: español + unaccent) |
 | `hypotheses` | Afirmaciones a probar | `statement`, `generated_by`, `status` (proposed·testing·supported·not_supported·inconclusive·superseded), `supporting_passage_ids[]`, `opposing_passage_ids[]` |
 | `experiment_proposals` | ≥2 pruebas candidatas | `label` (A/B), `title`, `protocol` (clave cerrada), `learning_value`, `feasibility`, `cost`, `selected`, `selection_rationale` |
 | `experiment_runs` | Ejecuciones reproducibles | `proposal_id`, `protocol`, `dataset_hash`, `code_version`, `parameters`, `sample_sizes`, `results` (contrato abajo), `artifact_paths`, `status` (pending·running·succeeded·failed), `error` |
 | `decisions` | Crítica → siguiente paso | `experiment_run_id`, `interpretation`, `uncertainty`, `limitations`, `rule_applied` (R1/R2/R3), `next_test`, `rationale`, `decided_by` |
 | `agent_events` | Línea de tiempo / auditoría | `session_id`, `agent_name`, `event_type` (started·tool_call·handoff·output·decision·approval·error·note), `summary`, `input_refs`, `output_refs`, `occurred_at` |
 
-**RLS:** activo en todas las tablas. `anon` y `authenticated` tienen solo SELECT. No hay políticas de escritura, así que solo `service_role` escribe (host Python, herramientas de Omnigent, Route Handlers protegidos de Next). **Nunca guardar filas individuales de microdatos.** Solo agregados y procedencia.
+**RLS:** activo en todas las tablas. `anon` y `authenticated` tienen solo SELECT. No hay políticas de escritura, así que solo `service_role` escribe (host Python, herramientas de Omnigent, Route Handlers protegidos de Next). **Nunca guardar filas individuales de microdatos en Supabase.** Solo agregados y procedencia.
 
 ### Contrato de resultados (`experiment_runs.results`)
 
@@ -142,11 +146,12 @@ La web dibuja esta forma (ver `web/lib/types.ts`) y el pipeline ENUT debe emitir
 ## 6. Contrato RAG
 
 - Modelo: `intfloat/multilingual-e5-small`, normalizado. Se ingiere como `"passage: …"` y se consulta como `"query: …"`. **Usar el mismo modelo en ingesta y consulta.** Cambiarlo obliga a re-embeber todo y a cambiar `vector(384)`.
-- Recuperación: `public.hybrid_search(query_text, query_embedding, match_count=5, full_text_weight=1, semantic_weight=1, rrf_k=50)`. Combina texto completo (`websearch_to_tsquery('simple')`) y coseno (HNSW) con Reciprocal Rank Fusion. Devuelve `passage_id, source_id, source_title, source_kind, url, doi, section, locator, content, score`.
-- Punto de entrada en Python: `rag.search.search_evidence(query, k=5) -> list[EvidenceHit]`. El corpus actual está en español, así que **consultar en español**.
-- Corpus deliberadamente pequeño: cuestionario ENUT, diccionario/descriptor, diseño conceptual y diseño muestral, más 10–20 papers pertinentes de OpenAlex (los encuentra `search_openalex` del Literature Agent). Guardar texto completo **solo si la licencia lo permite**. Si no, guardar título + resumen.
+- Recuperación: `public.hybrid_search(query_text, query_embedding, match_count=5, full_text_weight=1, semantic_weight=1, rrf_k=50)`. Combina texto completo y coseno (HNSW) con Reciprocal Rank Fusion. El texto completo usa la configuración `public.es_unaccent` (stemming español + sin acentos), acepta coincidencias **parciales** (OR) y ordena primero por cuántos términos distintos de la consulta contiene el pasaje y luego por `ts_rank_cd`. Devuelve `passage_id, source_id, source_title, source_kind, url, doi, section, locator, content, score`.
+- Punto de entrada en Python: `rag.search.search_evidence(query, k=5) -> list[EvidenceHit]`. El corpus está en español, así que **consultar en español**. Los términos de dominio en inglés (commute, sleep, care, weights…) se expanden a su equivalente en español (`GLOSSARY` en `rag/search.py`), pero es un respaldo, no un sustituto.
+- Corpus deliberadamente pequeño: cuestionario ENUT 2024 (un pasaje por pregunta numerada), diseño conceptual (sin portada, índice, anexo del cuestionario ni referencias) y diseño muestral, más 10–20 papers pertinentes de OpenAlex (los encuentra `search_openalex` del Literature Agent). Guardar texto completo **solo si la licencia lo permite**. Si no, guardar título + resumen.
+- Limpieza en la ingesta: se quitan encabezados/pies repetidos, números de página, instrucciones al entrevistador ("REGISTRE…", "CIRCULE…") y guías de puntos (`Sí ....... 1` → `Sí = 1`). Las reglas de salto ("PASE A", "FILTRO") **se conservan**: explican faltantes estructurales.
 - El RAG fundamenta conceptos, literatura y decisiones de método. **Nunca produce cifras de resultados.**
-- Control de calidad: revisar a mano 5 consultas de recuperación y 10 afirmaciones factuales del panel.
+- Control de calidad: `uv run python -m rag.eval` (15 consultas fijas, 5 en inglés; criterio por texto esperado, no por id) antes y después de cualquier cambio de ingesta o búsqueda. Además, revisar a mano 10 afirmaciones factuales del panel.
 
 ## 7. Arquitectura de agentes (Omnigent)
 
@@ -185,7 +190,7 @@ Omnigent gestiona el enrutamiento. Cada agente es dueño de **una decisión cien
 |---|---|---|---|---|---|---|
 | 1 | Literature Agent (`literature_agent`) | Qué evidencia previa existe | `research_question` | `evidence[]` (tarjetas + citas) | `search_evidence` (RAG INEGI), `search_openalex` | `sources` (los papers de OpenAlex se registran como `paper`), `passages` |
 | 2 | Hypothesis Agent (`hypothesis_agent`) | Qué explicación falsable probar | `evidence` | `hypotheses[]` ordenadas | `save_hypothesis` | `hypotheses` |
-| 3 | Data Steward (`data_steward`) | Si los datos permiten probarla | hipótesis líder | `variables`, `population` y `limitations` (reporte de calidad) | `search_evidence` | Va en el estado JSON; la herramienta de perfil ENUT llega con el pipeline |
+| 3 | Data Steward (`data_steward`) | Si los datos permiten probarla | hipótesis líder | `variables`, `population` y `limitations` (reporte de calidad) | `describe_dataset`, `search_evidence` | Va en el estado JSON; los nombres de columna salen del contrato del dataset analítico |
 | 4 | Experiment Planner (`experiment_planner`) | Qué prueba maximiza el aprendizaje | hipótesis + datos | `experiments[]` (status `planned`) | `save_proposals` (exige ≥2 y protocolos cerrados) | `experiment_proposals`, una `selected` con `selection_rationale` |
 | 5 | Experiment Runner (`experiment_runner`) | Ejecutar la prueba de forma reproducible | especificación del experimento | `results[]`; experimento `completed`/`failed` | `run_experiment` (requiere aprobación), `read_run` | `experiment_runs` |
 | 6 | Scientific Critic (`scientific_critic`) | Si la interpretación es confiable | `results` | `limitations[]` + regla aplicada | `read_run`, `record_decision` (requiere aprobación) | `decisions`, estado de `hypotheses` |
@@ -229,7 +234,8 @@ Los prompts de `omnigent.yaml` definen estas formas.
 ### 7.4 Reglas de los agentes
 
 - El Experiment Runner ejecuta **solo protocolos cerrados** (`weighted_means_by_group`, `wls_commute_by_sex`) vía `run_experiment(project_id, proposal_id, parameters)`. Esta función registra la versión de código (SHA de git), los parámetros, el hash del dataset y los resultados. **Ningún agente tiene SQL ni shell arbitrario sobre los datos.**
-- `run_experiment` busca `analysis/enut/protocols.py` con `PROTOCOLS = {nombre: fn(parameters) -> {"results", "sample_sizes", "dataset_hash"}}`. Si no existe, guarda el run como `failed` con el motivo; **nunca inventa cifras**.
+- `run_experiment` corre sobre **`data/processed/analytic_v1.parquet`**. Calcula su `sha256` y lo guarda como `dataset_hash`, y pasa ese mismo archivo al protocolo de `analysis/enut/protocols.py`: `PROTOCOLS = {nombre: fn(dataset_path, parameters) -> {"results", "sample_sizes"}}`. Si falta el dataset o el protocolo, guarda el run como `failed` con el motivo; **nunca inventa cifras**.
+- `describe_dataset` devuelve el contrato y la metadata (archivos hermanos `data/processed/analytic_v1.*`; los JSON ya parseados, el resto como texto) y el hash del parquet. **Nunca devuelve filas.**
 - Cada llamada a herramienta escribe una fila en `agent_events`. La política `commute_lab.policies.ask_before_run` devuelve **ASK** (aprobación humana) antes de `run_experiment` y de `record_decision`. Hay además un tope de 150 llamadas por sesión.
 - Los textos que los agentes guardan (en el JSON y en Supabase) van **en inglés**, porque los muestra la web.
 - La sesión se inicia desde Omnigent y se guarda `projects.omnigent_session_url`. Un botón "Start research" (Route Handler del servidor → API de Omnigent) se agrega **solo después** de que el ciclo funcione. Nunca llamar a Omnigent desde el navegador con credenciales.
@@ -239,14 +245,18 @@ Los prompts de `omnigent.yaml` definen estas formas.
 
 **Estado: pendiente. El pipeline ENUT completo lo proporciona el usuario** y va en `analysis/enut/`. Hasta entonces, no escribir transformaciones a partir de supuestos.
 
+**Salida del pipeline: `data/processed/analytic_v1.parquet`**, el dataset analítico limpio, validado y listo para experimentos, versionado en git junto con su **contrato y metadata** (archivos hermanos `analytic_v1.*`). Es la única entrada de `run_experiment` y del Data Steward (`describe_dataset`). Una versión nueva del dataset es un archivo nuevo (`analytic_v2…`), no una sobrescritura, para que los runs anteriores sigan siendo reproducibles por su hash. Lo que el contrato y la metadata deben cubrir está en `analysis/enut/README.md`.
+
 Lo que el pipeline debe hacer, sin importar el año de la encuesta:
-- Procesar el ZIP bruto localmente en Python. Solo los agregados salen de la máquina.
+- Procesar el ZIP bruto localmente en Python (`data/raw/`, ignorado por git). En git solo entra el dataset analítico, que deriva de microdatos públicos de INEGI: su metadata debe citar la fuente y la licencia. En Supabase y en la web solo hay agregados.
 - Filtrar CDMX + Edomex tras comprobar los códigos geográficos (`ENT` en 2019, `CVE_ENT` en 2024; CDMX = `09`, Edomex = `15`).
 - Comprobar en el descriptor los códigos de faltantes y saltos, las llaves y los filtros de ocupación **antes** de transformar.
 - Conservar `FAC_PER`, `UPM_DIS` y `EST_DIS`.
-- Exponerse como protocolos cerrados de `run_experiment` y emitir el [contrato de resultados](#contrato-de-resultados-experiment_runsresults).
+- Escribir `analytic_v1.parquet` con su contrato y metadata. Los protocolos cerrados de `run_experiment` leen ese archivo y emiten el [contrato de resultados](#contrato-de-resultados-experiment_runsresults).
 
-⚠️ **Los nombres de variables cambian entre años.** En **ENUT 2019** (codebook DDI revisado), el traslado al trabajo es `P5_4_1..4` (lun–vie h/min, sáb–dom h/min). Las horas trabajadas son `P5_3_*`, el sueño `P6_1_1_*`, la convivencia `P6_21A_*`, la edad `EDAD_V` y el sexo `SEXO`. En 2019, `P5_9_*` es **tiempo buscando trabajo, NO traslado**. CONTEXT.md da `P5_9_*` como traslado para **2024**. Verificarlo contra el diccionario 2024 antes de usarlo.
+⚠️ **Los nombres de variables cambian entre años.** En **ENUT 2019** (codebook DDI revisado), el traslado al trabajo es `P5_4_1..4` (lun–vie h/min, sáb–dom h/min). Las horas trabajadas son `P5_3_*`, el sueño `P6_1_1_*`, la convivencia `P6_21A_*`, la edad `EDAD_V` y el sexo `SEXO`. En 2019, `P5_9_*` es **tiempo buscando trabajo, NO traslado**.
+
+En **ENUT 2024** el cuestionario (ingerido en el RAG, p. 12) confirma que la **pregunta 5.9** es "TIEMPO DE TRASLADO AL TRABAJO" (ida y vuelta, lun–vie y sáb–dom, horas y minutos). La 5.8 es tiempo de trabajo, la 5.7 la modalidad (1 presencial, 2 solo virtual, 3 mixta) y la 5.12 la búsqueda de trabajo con sus traslados. **FILTRO 5.9: si 5.7 = 2 (solo virtual), la persona salta la 5.9**, así que su traslado es un faltante estructural, no un cero medido. El nombre exacto de la columna (`P5_9_*` según CONTEXT.md) sigue pendiente de verificar contra el diccionario de microdatos 2024.
 
 ## 9. Seguridad y secretos
 
@@ -267,8 +277,9 @@ supabase gen types typescript --linked > web/lib/database.types.ts
 
 # Python (desde analysis/)
 uv sync
-uv run python -m rag.ingest                       # ingiere rag/corpus.json
+uv run python -m rag.ingest                       # ingiere rag/corpus.json (--dry-run: solo fragmenta y cuenta)
 uv run python -m rag.search "tiempo de traslado al trabajo" -k 5
+uv run python -m rag.eval                         # QA de recuperación: hit@1, hit@5, MRR, ruido
 
 # Omnigent (desde la raíz; las tools necesitan agents/ y analysis/ en el path)
 uv tool install "omnigent[databricks]"            # o: pip install "omnigent[databricks]"
@@ -288,7 +299,7 @@ npx next typegen && npx tsc --noEmit && npm run lint && npm run build
 | 0–1 | AGENTS.md, esqueleto del repo, vincular Supabase, preflight de Omnigent | Acceso real a BD + orquestador ✅/❌ |
 | 1–3 | Migraciones, RLS, seed, ingesta + búsqueda RAG | `hybrid_search` devuelve pasajes con cita |
 | 3–4.5 | Panel Next.js lee la BD (`/research/[id]`) | La web muestra estado real de la BD |
-| 4.5–6.5 | Pipeline ENUT del usuario → `run_experiment` → `experiment_runs` | **Resultado real persistido** |
+| 4.5–6.5 | Pipeline ENUT del usuario → `data/processed/analytic_v1.parquet` (+ contrato y metadata) → protocolos → `run_experiment` → `experiment_runs` | **Resultado real persistido** |
 | 6.5–8 | Omnigent: primera sesión real con los 7 agentes de `omnigent.yaml` (tools ya implementadas), ciclo completo | **Decisión dependiente del resultado guardada** |
 | 8–9 | El panel muestra el ciclo completo; reejecutar para reproducibilidad; cronometrar manual vs asistido | Reproducción y medición honestas |
 | 9–10 | Desplegar en Vercel, README, grabar demo de 2 minutos | Entrega completa |
@@ -315,7 +326,7 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 - Después de editar `omnigent.yaml`, validarlo con `omnigent.spec.load` (ver §10). Si agregas una tool, implementarla en `agents/commute_lab/tools.py` y declararla con su JSON Schema.
 - El contenido de seed/demo se marca (`is_demo`, prefijo `[DEMO]`) para que nunca se confunda con hallazgos.
 - En `web/`, leer `web/AGENTS.md` (Next.js 16 trae cambios incompatibles) y la documentación incluida en `web/node_modules/next/dist/docs/`.
-- Nunca commitear secretos, microdatos crudos ni `analysis/.cache/`.
+- Nunca commitear secretos, microdatos crudos (ZIP, `data/raw/`) ni `analysis/.cache/`. El dataset analítico de `data/processed/` sí se commitea.
 
 ## Registro de decisiones
 
@@ -336,11 +347,15 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | Modelo `databricks/dbrx-instruct` → `databricks-claude-sonnet-4-6` (harness `claude-sdk`) | El id anterior no tenía el formato de Omnigent; se usa el de los ejemplos oficiales |
 | 2026-10-03 | Paquete de tools llamado `commute_lab`, no `agents` | `agents` es el nombre de import del SDK `openai-agents` que usa Omnigent |
 | 2026-10-03 | `variables` se guarda en `experiment_runs.parameters.variables` | Evita una migración nueva |
+| 2026-10-03 | El índice de texto pasa de `'simple'` a `public.es_unaccent` (español + unaccent) y `hybrid_search` acepta coincidencias parciales ordenadas por nº de términos (migración `20261003221539_rag_spanish_fts`). Reemplaza la decisión del índice `'simple'` | Todos los pasajes están en español (los papers de OpenAlex no tienen pasajes). Con `'simple'` + `websearch_to_tsquery` (AND) casi ninguna consulta natural tenía coincidencias de texto y la búsqueda quedaba solo semántica |
+| 2026-10-03 | El cuestionario ENUT 2024 se ingiere como fuente propia (`kind = 'questionnaire'`, un pasaje por pregunta, pp. 3–25 del PDF de INEGI) y se excluye el anexo B del diseño conceptual (pp. 91–115) | Las páginas de formulario contaminaban los resultados y no permitían citar una pregunta concreta |
+| 2026-10-03 | Las consultas en inglés se expanden con un glosario fijo inglés → español; no hay traductor ni reranker | Determinista y auditable; el eval mide si basta |
+| 2026-10-03 | La salida del pipeline es `data/processed/analytic_v1.parquet` + contrato + metadata, versionados en git. `run_experiment` lo hashea (`sha256`) y se lo pasa al protocolo; el Data Steward lo lee con la tool nueva `describe_dataset`. Relaja la regla "solo los agregados salen de la máquina": el ZIP bruto sigue fuera de git y Supabase sigue sin filas individuales | Decisión del equipo: un dataset analítico único que Omnigent y el ExperimentRunner consumen directamente. Deriva de microdatos públicos de INEGI, cuya licencia permite redistribuir citando la fuente |
 
 ## Decisiones abiertas
 
 1. **Endpoint del modelo.** Verificar en el workspace de Databricks que `databricks-claude-sonnet-4-6` exista y que el perfil `DEFAULT` tenga acceso. Si no, cambiar `executor` en `omnigent.yaml`: el ancla `&executor` aplica a los 7 agentes.
-2. **Herramienta de perfil ENUT para el Data Steward** (`inspect_enut_variables` / `get_dataset_profile`). Llega junto con el pipeline del usuario.
+2. **Contrato y metadata de `analytic_v1`.** `describe_dataset` ya existe y lee cualquier archivo `data/processed/analytic_v1.*`. Falta confirmar con el pipeline sus nombres de archivo y que cubran los requisitos de `analysis/enut/README.md`. Los protocolos se escriben contra ese contrato, no antes.
 3. **Alcance de las políticas en sub-agentes.** Comprobar en la primera sesión real que el ASK también se dispara cuando un sub-agente (runner, critic) llama a la tool. Si no, mover esas llamadas al Director.
 
 ## Para los commits

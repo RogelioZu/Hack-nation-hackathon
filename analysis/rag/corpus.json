@@ -5,7 +5,8 @@
     "url": "https://www.inegi.org.mx/contenidos/programas/enut/2024/doc/889463921929.pdf",
     "publisher": "INEGI",
     "year": 2024,
-    "license": "INEGI terms of free use of information"
+    "license": "INEGI terms of free use of information",
+    "exclude_pages": "1-3,5-6,71,91-115,125-127"
   },
   {
     "kind": "sampling_design",
@@ -13,6 +14,17 @@
     "url": "https://www.inegi.org.mx/contenidos/programas/enut/2024/doc/889463926528.pdf",
     "publisher": "INEGI",
     "year": 2024,
-    "license": "INEGI terms of free use of information"
+    "license": "INEGI terms of free use of information",
+    "exclude_pages": "1-3,5-6,24"
+  },
+  {
+    "kind": "questionnaire",
+    "title": "ENUT 2024 — Questionnaire (Cuestionario)",
+    "url": "https://www.inegi.org.mx/contenidos/programas/enut/2024/doc/enut_2024_cuestionario.pdf",
+    "publisher": "INEGI",
+    "year": 2024,
+    "license": "INEGI terms of free use of information",
+    "pages": "3-25",
+    "chunking": "question"
   }
 ]

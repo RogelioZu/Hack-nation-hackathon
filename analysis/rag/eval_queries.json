@@ -1,0 +1,17 @@
+[
+  {"query": "diseño muestral unidades primarias de muestreo estratos factor de expansión", "kind": "sampling_design", "expect_any": ["UPM"]},
+  {"query": "definición de convivencia familiar y social", "expect_any": ["interacción pacífica"]},
+  {"query": "cuidado pasivo integrantes del hogar", "expect_any": ["cuidado pasivo"]},
+  {"query": "tiempo de traslado al trabajo", "expect_any": ["trasladarse de ida y vuelta"]},
+  {"query": "pregunta 5.9 tiempo de traslado de ida y vuelta para trabajar", "expect_any": ["trasladarse de ida y vuelta"]},
+  {"query": "tiempo dedicado a dormir en la semana", "expect_any": ["dormir"]},
+  {"query": "trabajo de manera presencial o virtual a distancia", "expect_any": ["manera virtual"]},
+  {"query": "estimación de la varianza por conglomerados últimos", "kind": "sampling_design", "expect_any": ["conglomerados últimos"]},
+  {"query": "cuidado a integrantes del hogar de 0 a 5 años", "expect_any": ["0 a 5 años"]},
+  {"query": "actividades simultáneas en el uso del tiempo", "expect_any": ["simultáne"]},
+  {"query": "weekly time spent sleeping", "expect_any": ["dormir"]},
+  {"query": "commuting time to work", "expect_any": ["trasladarse de ida y vuelta", "traslado al trabajo"]},
+  {"query": "family and social time with friends", "expect_any": ["convivencia"]},
+  {"query": "passive care of household members", "expect_any": ["cuidado pasivo"]},
+  {"query": "sampling weights and variance estimation", "kind": "sampling_design", "expect_any": ["ponderador", "varianza"]}
+]
