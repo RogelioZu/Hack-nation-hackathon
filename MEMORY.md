@@ -63,7 +63,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 4. Dataset ENUT
 
-- `MEX-INEGI.ESD3.04-ENUT-2019.xml`, en la raíz, es el **codebook DDI de ENUT 2019**: metadatos de 1300 variables y 8 tablas. **No son microdatos.** El usuario pidió **ignorarlo** porque entregará el pipeline completo. Se dejó **fuera del commit a propósito**.
+- `MEX-INEGI.ESD3.04-ENUT-2019.xml` era el **codebook DDI de ENUT 2019**: metadatos de 1300 variables y 8 tablas. **No son microdatos.** El usuario pidió **ignorarlo** porque entregará el pipeline completo. Nunca se commiteó, y el 2026-10-03 ya no estaba en la carpeta del repo.
 - Hallazgo del codebook 2019, ya documentado en `AGENTS.md` §8:
   - `P5_4_*` es el traslado al trabajo; `P5_9_*` es el tiempo buscando trabajo.
   - `ENT` vale `09` para CDMX y `15` para Edomex.
