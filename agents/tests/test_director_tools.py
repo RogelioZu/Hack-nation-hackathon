@@ -161,6 +161,21 @@ class Validation(unittest.TestCase):
         self.assertRejected(lambda d: d.update(next_action="PROP-005 was executed already so we can compare "
                                                            "it later with the formal test."), "was run or executed")
 
+    def test_exp001_ranking_stays_inconclusive(self):
+        # Phrases from a discarded run (never committed): they overstate EXP-001.
+        self.assertRejected(lambda d: d.update(scientific_rationale="PROP-003 focuses on the dimension with the "
+                                               "strongest observed negative association in EXP-001."), "POINT estimate")
+        self.assertRejected(lambda d: d.update(scientific_rationale=d["scientific_rationale"] +
+                                               " It can clarify the inconclusive ranking of personal-time dimensions."),
+                            "does not resolve or clarify the ranking")
+        self.assertRejected(lambda d: d.update(expected_learning=d["expected_learning"] +
+                                               " This learning will resolve uncertainty about sex patterns."),
+                            "not what the test will establish")
+        ok = copy.deepcopy(WAITING)
+        ok["scientific_rationale"] = ("PROP-003 tests sleep, which had the strongest negative point association "
+                                      "in EXP-001, and directly addresses HYP-005.")
+        self.assertEqual(validate(ok)["errors"], [])
+
     def test_human_review_constraints(self):
         self.assertRejected(lambda d: d.update(human_constraints_respected=["Association language only."]),
                             "REV-001")
@@ -174,6 +189,11 @@ class CapabilityRerun(unittest.TestCase):
         # The committed engine (binary moderator interactions): same preference, new status.
         self.assertTrue(any("expected READY_TO_EXECUTE" in e for e in validate(WAITING)["errors"]))
         self.assertEqual(validate(READY)["errors"], [])
+
+    def test_ready_decision_names_the_human_approval(self):
+        no_gate = {**copy.deepcopy(READY), "next_action": "The next step is to run PROP-003 with the engine "
+                                                          "using its interaction specification."}
+        self.assertTrue(any("human approval" in e for e in validate(no_gate)["errors"]))
 
 
 class Persistence(unittest.TestCase):

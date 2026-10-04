@@ -45,6 +45,16 @@ SIGNIFICANCE = re.compile(r"\bsignifican\w*|\bp[- ]?values?\b|\bp\s*[<=]|\bpower
                           r"\blikely to (find|detect|show) (an? )?(effect|difference|association)", re.IGNORECASE)
 EXECUTION_CLAIM = re.compile(r"\b(was|were|has been|have been|is being) (run|executed)\b|\b(i|we) (ran|executed)\b",
                              re.IGNORECASE)
+# EXP-001's ranking is INCONCLUSIVE: sleep has the most negative POINT estimate, not the "strongest association"
+# (AGENTS.md §7.5). "strongest negative point association" is the accepted wording.
+RANKING_OVERCLAIM = re.compile(r"\b(strongest|largest|biggest|most negative)\b(?:(?!\bpoint\b)[^.;]){0,40}?\bassociation|"
+                               r"\bmost (displaced|affected|sacrificed)\b", re.IGNORECASE)
+# One moderator test on one outcome cannot settle the ranking across outcomes, and no test "will" settle anything.
+RANKING_RESOLUTION = re.compile(r"\b(resolv\w*|clarif\w*|settl\w*|determin\w*|establish\w*)\b[^.;]{0,40}\branking\b",
+                                re.IGNORECASE)
+CERTAINTY = re.compile(r"\bwill (resolve|establish|confirm|prove|determine|settle|show)\b|\bdefinitive\w*|"
+                       r"\bconclusive(ly)?\b", re.IGNORECASE)
+HUMAN_APPROVAL = re.compile(r"\b(human|approv\w*|review\w*)\b", re.IGNORECASE)
 REGRESSION_TERMS = re.compile(r"\binteraction (term|coefficient|effect)s?\b", re.IGNORECASE)
 IDS = re.compile(r"\b(EXP|PROP|HYP|CRIT|REV|DEC)-\d{3,}(?:-\d{3,})?\b")
 SENTENCE = re.compile(r"(?<=[.;!?])\s+")
@@ -335,6 +345,20 @@ def _check(d: dict, ctx: dict) -> list[str]:
     causal = [s for s in texts["selection"] if CAUSAL.search(REGRESSION_TERMS.sub(" ", MAIN_EFFECT.sub(" ", s)))]
     if causal:
         errors.append(f"causal wording in the decision; use association language: {causal[:2]}")
+    # The EXP-001 ranking stays inconclusive; outcomes are possibilities, not promises.
+    for text in texts["all"]:
+        for pattern, message in ((RANKING_OVERCLAIM, "EXP-001 gives sleep the most negative POINT estimate with an "
+                                  "INCONCLUSIVE ranking: say 'strongest negative point association', never the "
+                                  "strongest association"),
+                                 (RANKING_RESOLUTION, "a single moderator test does not resolve or clarify the ranking "
+                                  "across outcomes"),
+                                 (CERTAINTY, "state what each result would indicate, not what the test will establish")):
+            match = pattern.search(text)
+            if match:
+                errors.append(f"{message}: {match.group(0)!r}")
+    if d["decision_status"] == "READY_TO_EXECUTE" and not HUMAN_APPROVAL.search(str(d["next_action"])):
+        errors.append("READY_TO_EXECUTE: next_action must say that human approval of this decision comes before "
+                      "any execution")
     # An exploratory subgroup model cannot establish heterogeneity.
     exploratory = [pid for pid in proposals if view[pid]["analysis_role"] == "EXPLORATORY_SUBGROUP"]
     for text in texts["all"]:

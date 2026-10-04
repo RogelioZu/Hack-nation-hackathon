@@ -496,6 +496,52 @@
           "field": "based_on_ids[]"
         }
       ]
+    },
+    {
+      "decision_id": "DEC-002",
+      "artifact": "reports/discovery/local/decisions/DEC-002.json",
+      "sha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
     }
   ],
   "reviews": [
@@ -690,6 +736,48 @@
       "field": "preferred_proposal_id"
     },
     {
+      "from": "DEC-002",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
       "from": "HYP-005",
       "to": "CRIT-EXP-001-001",
       "relation": "motivated_by",
@@ -756,13 +844,13 @@
     "pending_human_review": [
       "EXP-001"
     ],
-    "stage": "engine_extension",
-    "agent": "human",
+    "stage": "run_experiment",
+    "agent": "experiment_runner",
     "inputs": [
-      "DEC-001"
+      "DEC-002"
     ],
-    "decision_status": "WAITING_FOR_ENGINE_CAPABILITY",
-    "then": "rerun discovery_director: it recomputes executability from the engine"
+    "decision_status": "READY_TO_EXECUTE",
+    "requires": "human approval of the decision before execution"
   },
   "provenance": {
     "workspace": "reports/discovery/local",
@@ -778,6 +866,7 @@
       "reports/discovery/local/candidates/PROP-009.json": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
       "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
       "reports/discovery/local/decisions/DEC-001.json": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+      "reports/discovery/local/decisions/DEC-002.json": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
       "reports/discovery/local/hypotheses/HYP-005.json": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
       "reports/discovery/local/hypotheses/HYP-007.json": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
       "reports/discovery/local/hypotheses/HYP-008.json": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
@@ -786,7 +875,7 @@
       "reports/experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
       "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d"
     },
-    "inputs_sha256": "cfb759f599b54a7913751c26e52efb18b70046ead4ec19cb8df86b0169f2edfa",
+    "inputs_sha256": "5c38ba0987fff0ad5a523d10e93b5b87903a5f58c2512839f2faad5f46443330",
     "generator_sha256": "a5a626accc2c56af562afa1f42bff2fb428f2506be274796782306866a854897",
     "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
   },

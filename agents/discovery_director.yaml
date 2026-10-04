@@ -70,8 +70,13 @@ prompt: |
     copied exactly from read_engine_capabilities.
   - uncertainties: what limits this decision.
   - human_constraints_respected: cite the review id (e.g. REV-001) and how each constraint is kept.
-  - next_action: one sentence, e.g. the engine extension to request, or the human approval needed
-    before execution. Never say an experiment was run.
+  - next_action: one sentence, e.g. the engine extension to request, or (READY_TO_EXECUTE) that human
+    approval of this decision is required before any execution. Never say an experiment was run.
+
+  EXP-001 wording: its ranking is INCONCLUSIVE. Sleep has the most negative POINT estimate; never call
+  it "the strongest association" (say "strongest negative point association"). A moderator test on
+  one outcome does not resolve or clarify the ranking across outcomes. Describe what each possible
+  result would indicate; never say a test "will resolve", "will establish" or is "definitive".
 
   Scientific rules: observational, cross-sectional data. Association language only; never
   "causes", "leads to", "reduces", "increases", "drives", "impact" or "effect" (say "interaction
