@@ -1,0 +1,48 @@
+{
+  "review_id": "REV-001",
+  "review_type": "HYPOTHESIS_REVIEW",
+  "decision": "APPROVED_FOR_PLANNING",
+  "approved_hypotheses": [
+    {
+      "hypothesis_id": "HYP-005",
+      "question": "Does the commute–sleep association differ between women and men?",
+      "expected_direction_as_hypothesis": "More negative among women."
+    },
+    {
+      "hypothesis_id": "HYP-007",
+      "question": "Does the commute–sleep association differ according to whether the household contains a child under age 15?",
+      "expected_direction_as_hypothesis": "More negative among workers living with children under 15."
+    },
+    {
+      "hypothesis_id": "HYP-008",
+      "question": "Does the commute–leisure association differ between women and men?",
+      "expected_direction_as_hypothesis": "Difference in either direction."
+    }
+  ],
+  "reviewed_artifacts": [
+    {
+      "path": "reports/discovery/local/hypotheses/HYP-005.json",
+      "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f"
+    },
+    {
+      "path": "reports/discovery/local/hypotheses/HYP-007.json",
+      "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc"
+    },
+    {
+      "path": "reports/discovery/local/hypotheses/HYP-008.json",
+      "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2"
+    }
+  ],
+  "constraints": [
+    "Expected directions are hypotheses, NOT established evidence.",
+    "Formal claims of heterogeneity require inference on the difference between groups.",
+    "Running separate subgroup regressions and visually comparing point estimates is NOT sufficient to establish heterogeneity.",
+    "The analysis remains observational.",
+    "No causal language is permitted."
+  ],
+  "scope": "Approves these hypotheses as inputs to the Experiment Planner only. Does not choose EXP-002, authorize running an experiment, or modify analytic_v1, EXP-001 or the experiment engine.",
+  "reviewer": "human project lead (the user of the Claude Code session)",
+  "recorded_by": "Claude Code, verbatim transcription of the user's review message",
+  "source": "User message 'TIME POVERTY LAB — EXPERIMENT PLANNER' (CURRENT CHECKPOINT, IMPORTANT HUMAN CONSTRAINTS)",
+  "recorded_at": "2026-10-04T03:24:02.123491+00:00"
+}

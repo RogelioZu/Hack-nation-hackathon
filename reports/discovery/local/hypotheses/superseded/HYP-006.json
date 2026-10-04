@@ -1,0 +1,76 @@
+{
+  "hypothesis_id": "HYP-006",
+  "source_experiment_ids": [
+    "EXP-001"
+  ],
+  "source_critique_ids": [
+    "CRIT-EXP-001-001"
+  ],
+  "scientific_question": "Is the association between commuting and personal hygiene time positive?",
+  "falsifiable_claim": "The adjusted personal_hygiene_weekday_min coefficient is greater than zero.",
+  "motivation": {
+    "observed_evidence": [
+      {
+        "kind": "OBSERVED_EVIDENCE",
+        "statement": "Adjusted personal_hygiene_weekday_min coefficient = 3.094 (95% pointwise CI [-0.76, 6.948]; Bonferroni outcome interval [-1.826, 8.014])",
+        "source": "estimates[adjusted:personal_hygiene_weekday_min].coefficient"
+      }
+    ],
+    "scientific_inference": [
+      {
+        "kind": "INFERENCE",
+        "statement": "The point estimate is positive, but the confidence interval includes zero, leaving the sign ambiguous."
+      }
+    ],
+    "unresolved_uncertainty": [
+      "Whether the true association is truly positive or could be null cannot be resolved from the interval."
+    ]
+  },
+  "required_variables": [
+    "commute_5h",
+    "personal_hygiene_weekday_min"
+  ],
+  "expected_direction": "positive",
+  "supporting_observation": "the 95% interval of the coefficient lies entirely above zero",
+  "contradicting_observation": "the 95% interval of the coefficient includes zero or values below zero",
+  "current_evidence_status": "UNTESTED",
+  "kind": "NEW_HYPOTHESIS",
+  "engine_capability_assessment": {
+    "known_executable": true,
+    "reason": "Single-outcome coefficient can be compared to zero using its confidence interval",
+    "assessed_by": "hypothesis_agent (provisional; the Experiment Planner decides feasibility)"
+  },
+  "limitations": [
+    "Observational, cross‑sectional association; cannot infer causality.",
+    "Confidence interval includes zero, indicating uncertainty about sign."
+  ],
+  "review_status": "REQUIRES_HUMAN_REVIEW",
+  "provenance": {
+    "dataset_version": "analytic_v1",
+    "agent": "hypothesis_agent",
+    "model": "databricks-gpt-oss-120b",
+    "harness": "openai-agents",
+    "timestamp": "2026-10-04T03:03:49.396692+00:00",
+    "code_version": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+    "source_artifacts": [
+      {
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "3113a9eecf8d7458cc482c78da9e47386ec574b976f094ccdbb8dbde59c384aa",
+        "integrity": "content identical; LF checkout of CRLF-validated bytes"
+      },
+      {
+        "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+      },
+      {
+        "path": "metadata/analytic_v1_manifest.json",
+        "sha256": "f23add970d81e9bab5930a793a301d8512208b08b8948084d99d4a63c5afb8d3"
+      },
+      {
+        "path": "metadata/experiment_contract.schema.json",
+        "sha256": "113a14d1acfd5f935c2e831d500d6dd7748bcf89c180de094806ab6672fbce54"
+      }
+    ],
+    "validation": "contract, approved variables, observational language, numbers traceable to sources"
+  }
+}

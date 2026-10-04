@@ -418,6 +418,10 @@ PYTHONUTF8=1 PYTHONPATH=agents:analysis omnigent run omnigent.yaml --server http
 omnigent stop
 # Solo el Scientific Critic sobre un resultado commiteado (2 tools locales, sin Supabase):
 PYTHONUTF8=1 PYTHONPATH=agents omnigent run agents/scientific_critic.yaml --server http://127.0.0.1:6767 -p "Critique the committed experiment EXP-001."
+# Hypothesis Agent sobre EXP-001 + su crítica (3 tools locales; se detiene antes del Experiment Planner):
+PYTHONUTF8=1 PYTHONPATH=agents omnigent run agents/hypothesis_agent.yaml --server http://127.0.0.1:6767 -p "Generate hypotheses from EXP-001 and CRIT-EXP-001-001."
+# Experiment Planner sobre las hipótesis aprobadas en REV-001 (propone; no elige ni corre):
+PYTHONUTF8=1 PYTHONPATH=agents omnigent run agents/experiment_planner.yaml --server http://127.0.0.1:6767 -p "Plan candidate experiments for the hypotheses approved in REV-001."
 # Validar el spec sin credenciales de modelo (cargar las tools no importa supabase, torch ni pypdf):
 PYTHONPATH=agents:analysis python -c "from pathlib import Path; from omnigent.spec import load; print(load(Path('omnigent.yaml')).name)"
 
@@ -501,6 +505,8 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | Los sub-agentes declaran sus tools directamente (anclas YAML), no con `inherit` | Omnigent 0.16 descarta `InheritedTool` al traducir sub-agentes inline: con `inherit` los especialistas no tenían tools |
 | 2026-10-03 | Executor `openai-agents` + `databricks-gpt-oss-120b` (Databricks Free Edition) con el provider `databricks-serving` (`/serving-endpoints`, `wire_api: chat`, `DATABRICKS_TOKEN`). Reemplaza `codex` + `gpt-5.6-terra` | Decisión del usuario: cuenta gratuita de Databricks. El workspace no tiene Claude ni GPT-5.x; la ruta por defecto de Omnigent (`/ai-gateway`, Unity Catalog model services) devuelve 403 para estos endpoints; `gpt-oss-120b`, `llama-3-3-70b`, `qwen3-next-80b` y `llama-4-maverick` pasaron un smoke test con function tool; se eligió el más grande de la familia OpenAI |
 | 2026-10-03 | Primera corrida real: solo el Scientific Critic (`agents/scientific_critic.yaml`) con dos tools de librería estándar (`commute_lab/critic_tools.py`) que leen el artefacto commiteado y guardan la crítica en `reports/discovery/local/critiques/`. Se excluyen las tools de Supabase, RAG y del motor. `db.py` importa `supabase` de forma diferida | Probar el primer traspaso científico real sin dependencias ajenas. Al guardar se rechazan cifras ausentes del artefacto, lenguaje causal y otros `EXP-*` |
+| 2026-10-04 | Hypothesis Agent aislado (`agents/hypothesis_agent.yaml`, `commute_lab/hypothesis_tools.py`): de EXP-001 + `CRIT-EXP-001-001` salen 2–4 hipótesis `HYP-NNN` en `reports/discovery/local/hypotheses/` (`UNTESTED`, `REQUIRES_HUMAN_REVIEW`). Se exige novedad respecto del experimento fuente y un criterio de decisión con incertidumbre. Las hipótesis retiradas se archivan en `superseded/` y sus IDs no se reutilizan | Separar evidencia, inferencia e hipótesis nueva, y que una hipótesis no repita lo que el experimento ya estimó. La revisión humana va antes del Experiment Planner |
+| 2026-10-04 | Experiment Planner aislado (`agents/experiment_planner.yaml`, `commute_lab/planner_tools.py`). Toma las hipótesis aprobadas en `reviews/REV-*.json` y genera `PROP-NNN` en `reports/discovery/local/candidates/` (el tipo `candidates` del Shared Research State). La factibilidad se audita contra el JSON Schema y el registro de métodos; no hay runner ni selección. Las heterogeneidades formales (interacciones) quedan como `REQUIRES_ENGINE_EXTENSION` | Los subgrupos separados no prueban diferencias entre grupos (REV-001). No se fingen capacidades del motor. La selección y la extensión del motor requieren revisión humana |
 
 ## Decisiones abiertas
 
