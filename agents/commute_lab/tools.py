@@ -25,6 +25,7 @@ from urllib.parse import quote_plus, urlparse
 
 import httpx
 
+from commute_lab.experiment_views import _compact, _interval, _ranking_view  # noqa: F401
 from db import client
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,7 +37,8 @@ APPROVAL = ROOT / "metadata" / "analytic_v1_experiment_approval.json"
 SPEC_DIR = ROOT / "experiments"
 REPORT_DIR = ROOT / "reports" / "experiments"
 DISCOVERY_DIR = ROOT / "reports" / "discovery"
-ENGINE_PYTHON = os.environ.get("EXPERIMENT_PYTHON") or str(ROOT / ".venv-experiments" / "bin" / "python")
+ENGINE_PYTHON = os.environ.get("EXPERIMENT_PYTHON") or str(
+    ROOT / ".venv-experiments" / ("Scripts/python.exe" if os.name == "nt" else "bin/python"))
 ENGINE_METHOD = "weighted_linear_regression"
 NEEDS_CONTRACT_REVISION = "requires_contract_revision"
 
@@ -172,72 +174,9 @@ def _next_experiment_id() -> str:
 
 # --- Compact views of an ExperimentResult -----------------------------------
 
-def _interval(i: dict) -> list[float]:
-    return [round(i["lower"], 3), round(i["upper"], 3)]
-
-
-def _ranking_view(ranking: dict) -> dict:
-    return {
-        "status": ranking.get("status"),
-        "point_estimate_order": [r["outcome"] for r in ranking.get("point_estimate_order", [])],
-        "paired_comparisons": [{
-            "a_minus_b": f'{c["outcome_a"]} - {c["outcome_b"]}',
-            "difference": round(c["difference_a_minus_b"], 3),
-            "interval": _interval(c["interval"]),
-            "adjustment": c["interval"].get("adjustment"),
-            "excludes_zero": c["interval"]["lower"] > 0 or c["interval"]["upper"] < 0,
-        } for c in ranking.get("paired_comparisons", [])],
-    }
-
-
 def _population_label(population: dict) -> str:
     sexes = population.get("sexes", [])
     return "all" if set(sexes) == {"male", "female"} else "+".join(sexes)
-
-
-def _compact(result: dict, spec: dict) -> dict:
-    """Everything the critic needs from an ExperimentResult, without covariance matrices."""
-    diagnostics = {}
-    for model_id, d in result["model_diagnostics"].items():
-        if not isinstance(d, dict) or not model_id.startswith("adjusted:"):
-            continue
-        diagnostics[model_id] = {k: d.get(k) for k in (
-            "n_model", "n_missing_excluded", "clusters", "strata", "singleton_strata", "inference_df",
-            "weighted_r_squared", "high_leverage_count_above_2p_over_n", "negative_fitted_count",
-            "kish_weight_effective_n", "warnings")}
-    return {
-        "experiment_id": result["experiment_id"],
-        "status": result["status"],
-        "review_status": result["review_status"],
-        "research_question": spec.get("research_question"),
-        "population": spec.get("population"),
-        "outcomes": spec.get("outcomes"),
-        "covariates": spec.get("covariates"),
-        "sample_size": result["sample_size"],
-        "weighted_population": result["weighted_population"],
-        "units": result["estimates"][0]["units"] if result["estimates"] else None,
-        "estimates": [{
-            "model_id": e["model_id"], "variant": e["variant"], "outcome": e["outcome"],
-            "coefficient": round(e["coefficient"], 3), "standard_error": round(e["standard_error"], 3),
-            "ci95_pointwise": _interval(e["interval"]),
-            "bonferroni_outcome_interval": _interval(e["simultaneous_outcome_interval"]),
-            "n": e["n"],
-        } for e in result["estimates"]],
-        "ranking": _ranking_view(result["ranking"]),
-        "sensitivity": [{
-            "name": s.get("name"), "rule": s.get("rule"), "n_before": s.get("n_before"),
-            "n_excluded": s.get("n_excluded"), "n_after": s.get("n_after"),
-            "ranking": _ranking_view(s.get("ranking") or {}),
-        } for s in result["sensitivity_results"]],
-        "population_counts": result["population_counts"],
-        "diagnostics_adjusted": diagnostics,
-        "quality_flags": result["quality_flags"],
-        "limitations": result["limitations"],
-        "supported_hypotheses": result["supported_hypotheses"],
-        "unsupported_hypotheses": result["unsupported_hypotheses"],
-        "inconclusive_hypotheses": result["inconclusive_hypotheses"],
-        "engine_candidate_next_experiments": result["candidate_next_experiments"],
-    }
 
 
 def _web_results(result: dict, spec: dict, compact: dict) -> dict:

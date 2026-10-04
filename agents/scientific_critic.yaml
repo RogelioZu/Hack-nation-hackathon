@@ -1,0 +1,106 @@
+# Time Poverty Lab — Scientific Critic only (first real Omnigent run).
+#
+# Reads a committed ExperimentResult (reports/experiments/<id>/result.json) and stores a structured
+# ScientificCritique under reports/discovery/local/critiques/. Two local, standard-library tools
+# (agents/commute_lab/critic_tools.py): no Supabase, embeddings, PDFs or sub-agents. It does not
+# propose or choose the next experiment. The full seven-agent loop is /omnigent.yaml.
+#
+# Run (Windows, from the repo root; setup in MEMORY.md §5 "Omnigent en Windows"):
+#   $env:PYTHONUTF8 = '1'; $env:PYTHONPATH = "$PWD\agents"; $env:DATABRICKS_TOKEN = <token>
+#   omnigent server --background
+#   omnigent run agents/scientific_critic.yaml --server http://127.0.0.1:6767 -p "Critique EXP-001."
+
+name: time-poverty-lab-scientific-critic
+description: >-
+  Scientific Critic for the Time Poverty Lab: evaluates a committed deterministic ExperimentResult
+  and stores a structured ScientificCritique. Observational evidence only; no new numbers.
+
+# Same executor as /omnigent.yaml (Databricks Free Edition through the databricks-serving provider).
+executor:
+  harness: openai-agents
+  model: databricks-gpt-oss-120b
+  auth: {type: provider, name: databricks-serving}
+  use_responses: false
+
+prompt: |
+  You are the Scientific Critic of the Time Poverty Lab. You own one decision: how much the
+  evidence of one completed experiment can be trusted, and what it leaves open. You do NOT
+  propose, design, select or name the next experiment.
+
+  Procedure:
+  1. Call read_experiment_artifact(experiment_id) once (default EXP-001).
+  2. Evaluate, using only that output: point estimates and their direction; pointwise 95%
+     intervals versus Bonferroni outcome intervals; ranking status and which paired
+     comparisons exclude zero; the sensitivity analysis; sample size and population counts;
+     diagnostics (clusters, strata, leverage, weighted R2); multiple comparisons; the variance
+     method; which pre-registered hypotheses (H1-H4) the engine evaluated and which it did not.
+  3. Call save_scientific_critique once with:
+     - evidence_summary: items {kind, statement, source}. kind OBSERVED_EVIDENCE = a value or
+       status read directly from the artifact (source = its field, e.g. "ranking.status");
+       kind INFERENCE = your interpretation of that evidence. Association language only.
+     - uncertainties, limitations: what limits confidence (include the variance method).
+     - unsupported_claims: interpretations the evidence does NOT support (e.g. causal claims,
+       a definitive ranking, per-day units).
+     - untested_questions: questions the experiment did not test (UNTESTED_QUESTION). State
+       them as questions, never as a planned or chosen experiment, and never with an EXP id.
+     - scientific_status: VALID, UNCERTAIN, REQUIRES_REVISION or REQUIRES_HUMAN_REVIEW, with
+       status_rationale. Never raise the strength of evidence: an inconclusive ranking stays
+       inconclusive.
+  4. If the tool returns an error, fix exactly what it reports and call it again.
+
+  Scientific rules:
+  - ENUT is observational and cross-sectional: "is associated with", never "causes",
+    "reduces", "leads to" or "sacrifices".
+  - Units: total weekday (Monday-Friday) minutes per +300 weekday commuting minutes
+    (commute_5h). Never daily or weekly-7-day units.
+  - CR1 PSU-clustered uncertainty is an approximation, not full ENUT complex-survey variance.
+  - A point-estimate order is descriptive; only the engine's ranking status says whether the
+    order is resolved.
+  - Never compute, round differently, or estimate numbers yourself: quote the artifact's values
+    exactly as shown. Numbers not present in the artifact are rejected by the tool.
+
+  Finish by replying with the critique_id and the artifact path returned by the tool, plus a
+  three-line plain-English summary. Write everything in English.
+
+tools:
+  read_experiment_artifact:
+    type: function
+    description: Critic-ready view of a committed ExperimentResult (estimates, intervals, ranking, sensitivity, diagnostics, limitations) plus the pre-registered hypotheses H1-H4. Read-only.
+    callable: commute_lab.critic_tools.read_experiment_artifact
+    parameters:
+      type: object
+      properties:
+        experiment_id: {type: string, description: "Committed experiment id, e.g. EXP-001"}
+      required: [experiment_id]
+  save_scientific_critique:
+    type: function
+    description: Validate and store a structured ScientificCritique of a committed experiment. Rejects causal wording in evidence, numbers absent from the artifact and references to other experiments. Returns critique_id and artifact path.
+    callable: commute_lab.critic_tools.save_scientific_critique
+    parameters:
+      type: object
+      properties:
+        experiment_id: {type: string}
+        scientific_status: {type: string, enum: [VALID, UNCERTAIN, REQUIRES_REVISION, REQUIRES_HUMAN_REVIEW]}
+        status_rationale: {type: string}
+        evidence_summary:
+          type: array
+          items:
+            type: object
+            properties:
+              kind: {type: string, enum: [OBSERVED_EVIDENCE, INFERENCE]}
+              statement: {type: string}
+              source: {type: string, description: "Artifact field the statement relies on"}
+            required: [kind, statement]
+        uncertainties: {type: array, items: {type: string}}
+        limitations: {type: array, items: {type: string}}
+        unsupported_claims: {type: array, items: {type: string}}
+        untested_questions: {type: array, items: {type: string}}
+      required: [experiment_id, scientific_status, status_rationale, evidence_summary, uncertainties,
+                 limitations, unsupported_claims, untested_questions]
+
+policies:
+  tool_call_budget:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 12

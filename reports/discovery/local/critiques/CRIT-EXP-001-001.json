@@ -1,0 +1,91 @@
+{
+  "critique_id": "CRIT-EXP-001-001",
+  "experiment_id": "EXP-001",
+  "scientific_status": "UNCERTAIN",
+  "status_rationale": "The experiment yields a negative association for sleep time, but the ranking of personal-time dimensions is inconclusive; variance estimates are approximated (CR1 PSU-clustered) and multiple comparison adjustments limit confidence.",
+  "evidence_summary": [
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "Adjusted sleep_weekday_min coefficient = -48.711 (95% pointwise CI [-63.481, -33.94]; Bonferroni outcome interval [-67.565, -29.856])",
+      "source": "estimates[adjusted:sleep_weekday_min].coefficient"
+    },
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "Adjusted personal_hygiene_weekday_min coefficient = 3.094 (95% pointwise CI [-0.76, 6.948]; Bonferroni outcome interval [-1.826, 8.014])",
+      "source": "estimates[adjusted:personal_hygiene_weekday_min].coefficient"
+    },
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "Adjusted household_conversation_weekday_min coefficient = -3.816 (95% pointwise CI [-10.344, 2.712]; Bonferroni outcome interval [-12.149, 4.517])",
+      "source": "estimates[adjusted:household_conversation_weekday_min].coefficient"
+    },
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "Adjusted leisure_weekday_min coefficient = -20.396 (95% pointwise CI [-43.436, 2.644]; Bonferroni outcome interval [-49.808, 9.015])",
+      "source": "estimates[adjusted:leisure_weekday_min].coefficient"
+    },
+    {
+      "kind": "INFERENCE",
+      "statement": "Sleep time shows the strongest negative association with an additional 300 minutes of weekday commuting among the four outcomes.",
+      "source": "ranking.point_estimate_order"
+    },
+    {
+      "kind": "INFERENCE",
+      "statement": "Paired comparisons sleep vs household_conversation and sleep vs personal_hygiene exclude zero after Bonferroni adjustment, indicating statistically distinguishable differences for those pairs.",
+      "source": "ranking.paired_comparisons"
+    }
+  ],
+  "uncertainties": [
+    "Cluster approximation (CR1 PSU‑clustered sandwich) is an approximation, not full ENUT complex‑survey variance.",
+    "High‑leverage observations retained (168 above 2p/n) may affect standard errors.",
+    "Pointwise 95% intervals are descriptive; Bonferroni families are separate for outcomes and pairwise differences.",
+    "No finite‑population correction, replicate weights, or calibration uncertainty adjustment.",
+    "Linear specification assumes a constant slope across the commuting exposure range."
+  ],
+  "limitations": [
+    "Observational, cross‑sectional design; associations cannot be interpreted as causal.",
+    "Units are minutes of outcome per additional 300 weekday commuting minutes; not daily or weekly units.",
+    "Weighted R² values are low (e.g., 0.058 for sleep), indicating limited explanatory power.",
+    "Sensitivity analysis (exclude_zero_weekday_work) reproduces the same inconclusive ranking."
+  ],
+  "unsupported_claims": [
+    "The evidence does not support that additional commuting *causes* reduced sleep or other personal‑time dimensions.",
+    "The evidence does not provide a definitive ranking of all four dimensions; ranking status is INCONCLUSIVE_RANKING.",
+    "The evidence does not allow conversion of the association to per‑day time units."
+  ],
+  "untested_questions": [
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "UNTESTED_QUESTION: Does the association between commuting burden and personal‑time allocation differ by sex (H3)?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "UNTESTED_QUESTION: Does household composition (e.g., presence of children) modify the association (H4)?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "UNTESTED_QUESTION: Is the relationship between commuting time and personal‑time outcomes nonlinear?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "UNTESTED_QUESTION: What mechanisms drive the observed negative association with sleep time?"
+    }
+  ],
+  "provenance": {
+    "source_experiment_id": "EXP-001",
+    "source_artifact": "reports/experiments/EXP-001/result.json",
+    "source_sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+    "dataset_version": "analytic_v1",
+    "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+    "engine_review_status": "REQUIRES_HUMAN_REVIEW",
+    "engine_ranking_status": "INCONCLUSIVE_RANKING",
+    "agent": "scientific_critic",
+    "declared_executor": {
+      "harness": "openai-agents",
+      "model": "databricks-gpt-oss-120b"
+    },
+    "code_version": "aa1120e08edfaa7f7aeb0502b99c5498068d8b64",
+    "created_at": "2026-10-04T02:12:58.284106+00:00",
+    "numbers_policy": "decimal numbers checked against the source artifact before saving"
+  }
+}

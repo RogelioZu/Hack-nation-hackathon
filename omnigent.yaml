@@ -21,17 +21,21 @@ description: >-
   specialists critique real experiment results, propose competing experiments, run the
   selected ExperimentSpec on a deterministic engine and update the next decision.
 
-# Shared by every agent. Codex CLI logged in with a ChatGPT plan (`codex login`): no API
-# key and no `auth` block, so the subscription is used. GPT-5.4 / 5.4-mini are no longer
-# served to ChatGPT logins in Codex; use gpt-5.6-terra or gpt-5.6-luna.
-# Delivery alternative (Databricks Foundation Model APIs through Unity AI Gateway):
-#   executor: &executor
-#     harness: codex
-#     model: databricks-gpt-5-6-terra
-#     auth: {type: databricks, profile: DEFAULT}
+# Shared by every agent (sub-agents reuse it through the *executor anchor).
+# Databricks Free Edition workspace dbc-1548c90f-c9ac, Foundation Model serving endpoint
+# databricks-gpt-oss-120b over the OpenAI-compatible chat/completions API.
+# - `auth: {type: provider, name: databricks-serving}` refers to a provider declared in
+#   ~/.omnigent/config.yaml (base_url .../serving-endpoints, api_key_ref env:DATABRICKS_TOKEN,
+#   wire_api chat). Omnigent's default Databricks route (/ai-gateway, Unity Catalog model
+#   services) answers 403 "no longer available" for these endpoints on Free Edition.
+# - use_responses: false because /serving-endpoints has no Responses API.
+# Verified 2026-10-03 with a function-tool smoke test on gpt-oss-120b, llama-3-3-70b,
+# qwen3-next-80b and llama-4-maverick. Setup steps: MEMORY.md §5 "Omnigent en Windows".
 executor: &executor
-  harness: codex
-  model: gpt-5.6-terra
+  harness: openai-agents
+  model: databricks-gpt-oss-120b
+  auth: {type: provider, name: databricks-serving}
+  use_responses: false
 
 prompt: |
   You are the Discovery Director of the Time Poverty Lab. You own one scientific decision:

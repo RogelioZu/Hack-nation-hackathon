@@ -78,7 +78,7 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 | Motor de experimentos | Python ≥ 3.11, pandas + pyarrow + numpy + scipy + pydantic (tests: statsmodels) → `src/experiments/` |
 | Web | Next.js 16 App Router + TypeScript + Tailwind 4 → `web/` (despliegue en Vercel) |
 | Embeddings | `intfloat/multilingual-e5-small`, 384 dimensiones, CPU |
-| LLM de los agentes | Omnigent de código abierto, harness `codex` con `gpt-5.6-terra` y la sesión de ChatGPT de `codex login` (sin API key). Alternativa para la entrega: Databricks Foundation Model APIs vía Unity AI Gateway (comentada en `omnigent.yaml`; ver [Decisiones abiertas](#decisiones-abiertas)) |
+| LLM de los agentes | Omnigent 0.16 de código abierto (`omnigent[databricks]`), harness `openai-agents` con `databricks-gpt-oss-120b` en Databricks Free Edition (workspace `dbc-1548c90f-c9ac`), vía `/serving-endpoints` con el provider `databricks-serving` de `~/.omnigent/config.yaml` y `DATABRICKS_TOKEN` (setup en `MEMORY.md` §5, "Omnigent en Windows") |
 | Búsqueda web en vivo | Bright Data SERP API (tool opcional `search_web` del Literature Agent; `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE`) |
 | Web desplegada | Vercel, proyecto `commute-time-lab` → https://commute-time-lab.vercel.app |
 
@@ -407,11 +407,18 @@ PYTHONPATH=. python -m unittest discover -s tests   # solo los 16 tests (tests/ 
 python scripts/run_experiment.py experiments/EXP-001/spec.json   # corre 2 veces y REESCRIBE reports/experiments/EXP-001/
 
 # Omnigent (desde la raíz; las tools necesitan agents/ y analysis/ en el path)
-uv tool install "omnigent[databricks]"            # o: pip install "omnigent[databricks]"
-npm install -g @openai/codex && codex login       # LLM: sesión de ChatGPT (sin API key)
-set -a; source .env; set +a                       # Supabase y, si se usa, Bright Data
-PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"
-# Validar el spec sin credenciales de modelo:
+uv tool install --python 3.12 "omnigent[databricks]"   # el extra trae databricks-sdk
+databricks auth login --host https://dbc-1548c90f-c9ac.cloud.databricks.com --profile DEFAULT
+#   + bloque providers.databricks-serving en ~/.omnigent/config.yaml (MEMORY.md §5)
+set -a; source .env; set +a                       # DATABRICKS_TOKEN, Supabase y, si se usa, Bright Data
+# Las function tools se importan en el proceso del SERVIDOR: PYTHONPATH va también ahí.
+# En Windows: PYTHONUTF8=1 y arrancar el servidor antes (bugs de Omnigent 0.16, MEMORY.md §5).
+PYTHONUTF8=1 PYTHONPATH=agents:analysis omnigent server --background
+PYTHONUTF8=1 PYTHONPATH=agents:analysis omnigent run omnigent.yaml --server http://127.0.0.1:6767 -p "$(cat initial_state.json)"
+omnigent stop
+# Solo el Scientific Critic sobre un resultado commiteado (2 tools locales, sin Supabase):
+PYTHONUTF8=1 PYTHONPATH=agents omnigent run agents/scientific_critic.yaml --server http://127.0.0.1:6767 -p "Critique the committed experiment EXP-001."
+# Validar el spec sin credenciales de modelo (cargar las tools no importa supabase, torch ni pypdf):
 PYTHONPATH=agents:analysis python -c "from pathlib import Path; from omnigent.spec import load; print(load(Path('omnigent.yaml')).name)"
 
 # Web (desde web/)
@@ -492,10 +499,12 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | El motor corre por subproceso en `.venv-experiments` (Python 3.12, versiones fijadas), no dentro de Omnigent | Omnigent corre en Python 3.14 con otras versiones de pandas/numpy; el motor debe usar el runtime registrado en la procedencia |
 | 2026-10-03 | Tool `search_web` con Bright Data (opcional) para el Literature Agent | Evidencia externa en vivo además de OpenAlex y el RAG de INEGI; si no está configurada, devuelve error y el agente sigue con OpenAlex |
 | 2026-10-03 | Los sub-agentes declaran sus tools directamente (anclas YAML), no con `inherit` | Omnigent 0.16 descarta `InheritedTool` al traducir sub-agentes inline: con `inherit` los especialistas no tenían tools |
+| 2026-10-03 | Executor `openai-agents` + `databricks-gpt-oss-120b` (Databricks Free Edition) con el provider `databricks-serving` (`/serving-endpoints`, `wire_api: chat`, `DATABRICKS_TOKEN`). Reemplaza `codex` + `gpt-5.6-terra` | Decisión del usuario: cuenta gratuita de Databricks. El workspace no tiene Claude ni GPT-5.x; la ruta por defecto de Omnigent (`/ai-gateway`, Unity Catalog model services) devuelve 403 para estos endpoints; `gpt-oss-120b`, `llama-3-3-70b`, `qwen3-next-80b` y `llama-4-maverick` pasaron un smoke test con function tool; se eligió el más grande de la familia OpenAI |
+| 2026-10-03 | Primera corrida real: solo el Scientific Critic (`agents/scientific_critic.yaml`) con dos tools de librería estándar (`commute_lab/critic_tools.py`) que leen el artefacto commiteado y guardan la crítica en `reports/discovery/local/critiques/`. Se excluyen las tools de Supabase, RAG y del motor. `db.py` importa `supabase` de forma diferida | Probar el primer traspaso científico real sin dependencias ajenas. Al guardar se rechazan cifras ausentes del artefacto, lenguaje causal y otros `EXP-*` |
 
 ## Decisiones abiertas
 
-1. **Modelo de los agentes.** `executor` usa el harness `codex` con `gpt-5.6-terra` y la sesión de ChatGPT (`codex login`). Falta instalar la CLI de Codex en la máquina que corre Omnigent y confirmar que `gpt-5.6-terra` está en el plan (si no, `gpt-5.6-luna`). El ancla `&executor` aplica a los 7 agentes. Para la entrega en Databricks (Omnigent administrado → Sandbox → Unity AI Gateway → FMAPI) hay un executor alternativo comentado en `omnigent.yaml`; confirmar el nombre real del endpoint en el workspace.
+1. **Modelo de los agentes.** `executor` usa `openai-agents` + `databricks-gpt-oss-120b` en Databricks Free Edition vía el provider `databricks-serving`. Los dos specs validan sin stubs, y el Scientific Critic ya corrió de verdad sobre EXP-001 (2026-10-03). Pendientes: (a) instalar `supabase` en el entorno de Omnigent (`--with supabase`) antes del ciclo completo, porque las tools que persisten la importan al ejecutarse; (b) un PAT para `DATABRICKS_TOKEN` (el OAuth caduca en ~1 h); (c) confirmar con el equipo si el track exige Omnigent administrado por Databricks. El ancla `&executor` aplica a los 7 agentes.
 2. **Empaquetado del motor.** ✅ Resuelto el 2026-10-03 (ver `MEMORY.md` §5). Queda borrar `audit/` (duplicado) y `metadata/provenance.json` (vacío). `omnigent.yaml` ✅ validado con `omnigent.spec.load` (Omnigent 0.16.0) y todas las tools resuelven su `callable`.
 3. **Alcance de las políticas en sub-agentes.** Comprobar en la primera sesión real que el ASK también se dispara cuando un sub-agente (runner, critic) llama a la tool. Si no, mover esas llamadas al Director.
 4. **`ExperimentResult` en Supabase.** ✅ Resuelto sin migración (ver §5 y §7.3). Si se quiere consultar veredictos o specs por SQL, una migración aditiva (`decisions.verdict`, `experiment_proposals.spec`) sería lo siguiente; requiere `SUPABASE_DB_URL` o el MCP.
