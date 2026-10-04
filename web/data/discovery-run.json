@@ -1,6 +1,6 @@
 {
   "note": "Derived UI bundle for REPLAY mode. Not a scientific source: the canonical artifacts are the files listed in sources.",
-  "commit": "43dcb395004d53d3dc21532fbe4d5b9536c5d40e",
+  "commit": "c2e8ea3e36d09b8e329054344795f97f2894ee60",
   "sources": [
     {
       "kind": "initial_state",

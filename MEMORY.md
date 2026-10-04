@@ -277,7 +277,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **2026-10-04:**
   - Los chips de experimento ya no se repiten: `EXP-001 spec`, `EXP-001 result` y `EXP-001 validation`.
   - `compactResult` (`collect.mjs`) conserva `candidate_next_experiments` (pregunta + factibilidad), que la banda muestra como "Listed by the engine, not selected".
-  - El enlace "GitHub at <commit>" del inspector usa `snapshot.commit`: ese commit tiene que estar en GitHub, o el enlace da 404. Tras `npm run snapshot`, hacer push antes de desplegar.
+  - El bundle guarda en `commit` **el último commit que tocó los artefactos**, no HEAD (`git log -1 -- initial_state.json metadata experiments reports/experiments reports/discovery`). Así el bundle no cambia entre commits que no tocan ciencia, `npm run build` no ensucia el árbol y el enlace "GitHub at <commit>" apunta a un commit que contiene exactamente esos archivos. Si los artefactos son nuevos, hay que hacer push antes de desplegar para que el enlace no dé 404.
   - El reloj del replay se calcula con `HOLD` y `timeline()` en `DiscoveryView.tsx`, ya no con `CUES` fijos. La banda es un solo paso.
   - Las capturas headless con `chromium-browser --headless=new --screenshot` salen en blanco si la página hace scroll sola (`/?stage=N`). Usar una ventana alta (p. ej. `--window-size=1440,4300`) para que no necesite scroll.
   - El commit `ed888f1` incluyó por error la inyección de `live.js` (Impeccable live) en `web/app/layout.tsx`. Ya se quitó del árbol de trabajo.

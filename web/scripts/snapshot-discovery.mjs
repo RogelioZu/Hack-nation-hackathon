@@ -43,8 +43,14 @@ if (!customRoot) {
     process.exit(0);
   }
   include = (rel) => tracked.has(rel);
+  // The last commit that changed the artifacts, not HEAD: the bundle stays byte-identical across unrelated commits
+  // (so a build never dirties the tree), and "open at commit" links point to a commit that holds these exact files.
   try {
-    commit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: repoRoot, encoding: "utf8" }).trim();
+    commit = execFileSync(
+      "git",
+      ["log", "-1", "--format=%H", "--", "initial_state.json", "metadata", "experiments", "reports/experiments", "reports/discovery"],
+      { cwd: repoRoot, encoding: "utf8" },
+    ).trim() || null;
   } catch {}
 }
 
