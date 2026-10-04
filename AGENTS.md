@@ -152,7 +152,7 @@ web/
   app/page.tsx             espina de descubrimiento (REPLAY por defecto, `?mode=live`, `?stage=N`)
   app/_components/discovery/  espina, forest plot, inspector de artefactos, controles de replay
   app/guide/               "Reading guide": cómo leer la espina (los cinco roles de artefacto)
-  app/audit/               lista de casos en Supabase (antes la portada)
+  app/audit/               lista de casos en Supabase (antes la portada; fuera de la navegación, solo por URL)
   app/research/[id]/       panel de auditoría del ciclo en Supabase (consulta cada 5 s)
   AGENTS.md                aviso autogenerado de Next.js 16: leer node_modules/next/dist/docs antes de escribir código Next
 ```

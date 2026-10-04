@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play, TriangleAlert } from "lucide-react";
+import { ChevronLeft, ChevronRight, Hourglass, Pause, Play, TriangleAlert } from "lucide-react";
 import Wordmark from "../Wordmark";
-import type { Discovery, DiscoveryPayload, Stage } from "@/lib/discovery/types";
+import type { Discovery, DiscoveryPayload, EvidenceView, Stage, StageKey } from "@/lib/discovery/types";
 import Inspector from "./Inspector";
-import { ArtifactChip, Awaiting, DiscoveryUiContext, StageMarker, TYPE, TypeBadge } from "./primitives";
+import { ArtifactChip, Awaiting, DiscoveryUiContext, StageMarker, TYPE, TypeBadge, VerbatimList } from "./primitives";
 import {
   CandidatesBody,
   CritiqueBody,
@@ -20,15 +20,43 @@ import {
   SelectionBody,
 } from "./stages";
 
-// Replay clock, in seconds, for stages 1–9 (docs/DEMO_STORYBOARD.md): a 40-second tour in which the recorded
-// evidence (0:08) and critique (0:16) hold longest. At OVERVIEW (0:37) the whole chain is shown again.
-const CUES = [0, 4, 8, 16, 22, 25, 28, 31, 34];
-const OVERVIEW = 37;
-const END = 40;
+// Replay clock (docs/DEMO_STORYBOARD.md): how long each recorded stage holds, in seconds. The recorded evidence and
+// critique hold longest. Stages still awaiting agents share one beat as the "Next in the loop" band; then the whole
+// chain is shown again before the clock stops. With all nine stages recorded this gives 0,4,8,16,22,25,28,31,34 · 37 · 40.
+const HOLD: Partial<Record<StageKey, number>> = { question: 4, experiment: 4, evidence: 8, critique: 6 };
+const LATER_HOLD = 3;
+const BAND_HOLD = 8;
+const OVERVIEW_HOLD = 3;
 const LIVE_REFRESH_MS = 3000;
 const FRESH_MS = 8000;
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+/** Index of the first stage after the last recorded one: from there on, every stage waits for agents. */
+function tailStart(stages: Stage[]): number {
+  let last = -1;
+  stages.forEach((s, i) => {
+    if (s.recorded) last = i;
+  });
+  return last + 1;
+}
+
+function timeline(stages: Stage[]) {
+  const tail = tailStart(stages);
+  const cues: number[] = [];
+  let t = 0;
+  stages.forEach((s, i) => {
+    cues.push(t);
+    if (i < tail) t += HOLD[s.key] ?? LATER_HOLD; // every awaiting stage shares the band's cue
+  });
+  const overview = tail < stages.length ? t + BAND_HOLD : t;
+  return { cues, overview, end: overview + OVERVIEW_HOLD, tail };
+}
+
+/** The evidence the lab currently stands on: the latest follow-up with a result, else the first experiment. */
+function latestEvidence(d: Discovery): EvidenceView | null {
+  return [...d.followUps].reverse().find((f) => f.evidence)?.evidence ?? d.baselineEvidence;
+}
 
 function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -61,7 +89,13 @@ function StageBody({ stage, d }: { stage: Stage; d: Discovery }) {
   );
   switch (stage.key) {
     case "question":
-      return <QuestionBody q={d.question} />;
+      return (
+        <QuestionBody
+          q={d.question}
+          assessments={d.baselineEvidence?.assessments ?? []}
+          assessedIn={d.baselineEvidence?.experimentId ?? null}
+        />
+      );
     case "experiment":
       return d.baseline ? <ExperimentBody exp={d.baseline} /> : null;
     case "evidence":
@@ -127,13 +161,13 @@ function StageItem({
           aria-labelledby={`stage-${stage.key}-title`}
           className={`scroll-mt-28 rounded-lg p-5 sm:p-7 ${
             stage.recorded ? "bg-white" : "bg-gray-50 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-300"
-          } ${animate ? "stage-enter" : ""} ${fresh ? "fresh" : ""} ${active ? "ring-2 ring-blue-200" : ""}`}
+          } ${animate ? "stage-enter" : ""} ${fresh ? "fresh" : ""} ${active ? "ring-2 ring-blue-300" : ""}`}
         >
           <header className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-3">
             <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h3 id={`stage-${stage.key}-title`} className="text-h4 text-gray-900 sm:text-h3">
+              <h2 id={`stage-${stage.key}-title`} className="text-h4 text-gray-900 sm:text-h3">
                 {stage.title}
-              </h3>
+              </h2>
               {/* A title that already names its role ("Evidence", "First experiment") keeps only the swatch. */}
               <TypeBadge type={stage.type} compact={stage.title.toLowerCase().includes(TYPE[stage.type].label.toLowerCase().slice(0, -2))} />
             </span>
@@ -155,7 +189,120 @@ function StageItem({
         </article>
       ) : (
         <div id={`stage-${stage.key}`} className="flex min-h-[68px] items-center gap-3 rounded-lg px-1 sm:min-h-[84px]">
-          <h3 className="text-h4 text-gray-700">{stage.title}</h3>
+          <h2 className="text-h4 text-gray-700">{stage.title}</h2>
+          <span className="text-caption text-gray-700">upcoming</span>
+        </div>
+      )}
+    </li>
+  );
+}
+
+/**
+ * Every stage after the last recorded one, as one compact band: what the critique hands to the next agent, the
+ * directions the engine listed (never a selection), and each awaiting stage with the agent and path that will fill it.
+ * A stage leaves the band the moment its artifact exists and becomes a full card again.
+ */
+function NextInLoop({
+  stages,
+  d,
+  evidence,
+  shown,
+  active,
+  listening,
+}: {
+  stages: Stage[];
+  d: Discovery;
+  evidence: EvidenceView | null;
+  shown: boolean;
+  active: boolean;
+  listening: boolean;
+}) {
+  const critique = [...d.followUps].reverse().find((f) => f.critiques.length)?.critiques[0] ?? d.baselineCritiques[0] ?? null;
+  const questions = critique?.openQuestions ?? [];
+  const directions = evidence?.nextDirections ?? [];
+  return (
+    <li className="relative grid grid-cols-[32px_minmax(0,1fr)] gap-x-3 pb-5 sm:gap-x-5">
+      <div className="pt-[18px] sm:pt-[26px]">
+        <span
+          className={`relative z-10 flex size-8 items-center justify-center rounded-sm bg-gray-100 text-gray-700 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-400 transition-[box-shadow] duration-200 ${
+            active ? "shadow-[0_0_0_4px_var(--color-blue-300)]" : ""
+          }`}
+        >
+          <Hourglass aria-hidden size={16} strokeWidth={1.75} />
+        </span>
+      </div>
+
+      {shown ? (
+        <article
+          id="stage-band"
+          aria-labelledby="stage-band-title"
+          className={`scroll-mt-28 rounded-lg bg-gray-50 p-5 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-300 sm:p-7 ${
+            active ? "stage-enter ring-2 ring-blue-300" : ""
+          }`}
+        >
+          <header className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h2 id="stage-band-title" className="text-h4 text-gray-900 sm:text-h3">
+              Next in the loop
+            </h2>
+            <span className="text-caption font-medium text-gray-700 tabular">
+              {stages.length} stage{stages.length === 1 ? "" : "s"} awaiting agents
+            </span>
+            {listening && (
+              <span className="inline-flex items-center gap-2 text-caption font-medium text-blue-700 sm:ml-auto">
+                <span aria-hidden className="size-2 animate-pulse rounded-full bg-blue-500" />
+                Listening for new files
+              </span>
+            )}
+          </header>
+
+          {(questions.length > 0 || directions.length > 0) && (
+            <div className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+              {critique && questions.length > 0 && (
+                <div className="min-w-0">
+                  <p className="mb-2 flex flex-wrap items-center gap-2 text-body-sm font-semibold text-gray-900">
+                    {questions.length} untested question{questions.length === 1 ? "" : "s"} handed on by
+                    <ArtifactChip artifactKey={critique.artifact.key} />
+                  </p>
+                  <VerbatimList items={questions} initial={2} />
+                </div>
+              )}
+              {evidence && directions.length > 0 && (
+                <div className="min-w-0">
+                  <p className="mb-2 flex flex-wrap items-center gap-2 text-body-sm font-semibold text-gray-900">
+                    Directions listed by
+                    <ArtifactChip artifactKey={evidence.artifact.key} />
+                  </p>
+                  <VerbatimList items={directions} initial={directions.length} />
+                  <p className="mt-2 text-body-sm text-gray-700">
+                    Listed by the engine, not selected. The Director chooses after the planner proposes at least two candidates.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <ol className="mt-5 border-t border-gray-200">
+            {stages.map((s) => (
+              <li
+                key={s.key}
+                id={`stage-${s.key}`}
+                className="grid scroll-mt-28 grid-cols-[2rem_minmax(0,1fr)] gap-x-3 border-b border-gray-200 py-3 last:border-b-0"
+              >
+                <span className="pt-px text-body-sm font-bold text-gray-700 tabular">{s.number}</span>
+                <div className="min-w-0">
+                  <h3 className="text-body font-semibold text-gray-900">{s.title}</h3>
+                  <p className="mt-0.5 text-body-sm text-gray-700">
+                    Awaiting {s.awaiting.what} · <span className="font-semibold">{s.awaiting.producer}</span>
+                  </p>
+                  <p className="mt-0.5 font-mono text-caption break-all text-gray-700">{s.awaiting.path}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </article>
+      ) : (
+        <div id="stage-band" className="flex min-h-[68px] items-center gap-3 rounded-lg px-1 sm:min-h-[84px]">
+          <h2 className="text-h4 text-gray-700">Next in the loop</h2>
           <span className="text-caption text-gray-700">upcoming</span>
         </div>
       )}
@@ -193,13 +340,19 @@ export default function DiscoveryView({
   const { discovery: d, mode, liveUnavailable } = payload;
   const router = useRouter();
   const live = mode === "live" && !liveUnavailable;
+  const total = d.stages.length;
+  const { cues, overview, end, tail } = useMemo(() => timeline(d.stages), [d.stages]);
+  // The band is one replay step: its cursor is the last stage, so every awaiting stage shows together.
+  const units = useMemo(() => [...Array(tail).keys(), ...(tail < total ? [total - 1] : [])], [tail, total]);
+  const toCursor = useCallback((i: number) => (i >= tail ? total - 1 : i), [tail, total]);
 
   const [selectedKey, setSelectedKey] = useState<string | null>(() =>
     initialStage != null ? (d.stages[initialStage]?.artifactKeys[0] ?? defaultSelection(d)) : defaultSelection(d),
   );
-  const [cursor, setCursor] = useState<number | null>(initialStage ?? null); // null = whole chain
+  const [cursor, setCursor] = useState<number | null>(initialStage != null ? toCursor(initialStage) : null); // null = whole chain
   const [playing, setPlaying] = useState(false);
-  const [elapsed, setElapsed] = useState(initialStage != null ? (CUES[initialStage] ?? 0) : 0);
+  const [pausedMid, setPausedMid] = useState(false);
+  const [elapsed, setElapsed] = useState(initialStage != null ? (cues[initialStage] ?? 0) : 0);
   const [now, setNow] = useState(() => Date.parse(payload.loadedAt));
   const started = useRef(0);
   const cursorRef = useRef<number | null>(null);
@@ -240,70 +393,75 @@ export default function DiscoveryView({
   }, [live, router]);
 
   useEffect(() => {
-    if (initialStage != null) scrollToStage(d.stages[initialStage].key, false);
+    if (initialStage != null) scrollToStage(initialStage >= tail ? "band" : d.stages[initialStage].key, false);
     // Only on first mount: later changes come from the replay controls.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const goTo = useCallback(
-    (i: number | null) => {
-      setCursor(i);
+    (i: number | null, scrollKey?: string) => {
       if (i == null) {
+        setCursor(null);
         setSelectedKey(defaultSelection(d));
         setTimeout(() => window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" }), 60);
         return;
       }
+      setCursor(toCursor(i));
       const stage = d.stages[i];
       if (stage.artifactKeys[0]) setSelectedKey(stage.artifactKeys[0]);
-      scrollToStage(stage.key);
+      scrollToStage(scrollKey ?? (i >= tail ? "band" : stage.key));
     },
-    [d],
+    [d, tail, toCursor],
   );
 
-  // REPLAY clock: reveal stages on the storyboard cues.
+  // REPLAY clock: reveal stages on their cues.
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => {
       const t = (performance.now() - started.current) / 1000;
       setElapsed(t);
-      if (t >= END) {
+      if (t >= end) {
         setPlaying(false);
         return;
       }
-      const target = t >= OVERVIEW ? null : CUES.reduce((acc, c, i) => (t >= c ? i : acc), 0);
+      const target = t >= overview ? null : toCursor(cues.reduce((acc, c, i) => (t >= c ? i : acc), 0));
       if (cursorRef.current !== target) {
         cursorRef.current = target;
         goTo(target);
       }
     }, 250);
     return () => clearInterval(id);
-  }, [playing, goTo]);
+  }, [playing, goTo, cues, overview, end, toCursor]);
 
   const play = useCallback(() => {
     if (playing) {
       setPlaying(false);
+      setPausedMid(true);
       return;
     }
-    const from = elapsed > 0 && elapsed < END ? elapsed : 0;
+    const from = elapsed > 0 && elapsed < end ? elapsed : 0;
     started.current = performance.now() - from * 1000;
     if (from === 0) goTo(0);
     setElapsed(from);
+    setPausedMid(false);
     setPlaying(true);
-  }, [playing, elapsed, goTo]);
+  }, [playing, elapsed, end, goTo]);
 
   const step = useCallback(
     (delta: number) => {
       setPlaying(false);
-      const base = cursor ?? (delta > 0 ? -1 : d.stages.length);
-      const next = Math.min(d.stages.length - 1, Math.max(0, base + delta));
-      setElapsed(CUES[next] ?? 0);
+      setPausedMid(false);
+      const pos = cursor == null ? (delta > 0 ? -1 : units.length) : units.indexOf(toCursor(cursor));
+      const next = units[Math.min(units.length - 1, Math.max(0, pos + delta))];
+      setElapsed(cues[next] ?? 0);
       goTo(next);
     },
-    [cursor, d.stages.length, goTo],
+    [cursor, units, cues, goTo, toCursor],
   );
 
   const restart = useCallback(() => {
     setPlaying(false);
+    setPausedMid(false);
     setElapsed(0);
     goTo(0);
   }, [goTo]);
@@ -313,7 +471,8 @@ export default function DiscoveryView({
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const el = e.target as HTMLElement;
-      if (el.closest("input, textarea, select, [contenteditable=true]")) return;
+      // Text fields and the inspector keep their own keys; the replay shortcuts work everywhere else.
+      if (el.closest("input, textarea, select, [contenteditable=true], #inspector")) return;
       if (e.key === "ArrowRight") step(1);
       else if (e.key === "ArrowLeft") step(-1);
       else if (e.key === " " && !el.closest("button, a")) {
@@ -322,6 +481,7 @@ export default function DiscoveryView({
       } else if (e.key === "Home") restart();
       else if (e.key === "Escape") {
         setPlaying(false);
+        setPausedMid(false);
         goTo(null);
       } else return;
     };
@@ -330,23 +490,31 @@ export default function DiscoveryView({
   }, [mode, step, play, restart, goTo]);
 
   const recorded = d.stages.filter((s) => s.recorded).length;
-  const total = d.stages.length;
   const ago = Math.max(0, Math.round((now - Date.parse(payload.loadedAt)) / 1000));
+  const evidence = latestEvidence(d);
+  const headline = evidence ? [evidence.sentences[0], evidence.rankingSentence].filter(Boolean).join(" ") : "";
+  const position = cursor == null ? "Overview" : cursor >= tail ? "Next in the loop" : `Stage ${cursor + 1} of ${total}`;
 
   const ui = useMemo(
-    () => ({ selectedKey, select: setSelectedKey, fresh, artifacts: d.artifacts }),
-    [selectedKey, fresh, d.artifacts],
+    () => ({ selectedKey, select: setSelectedKey, fresh, artifacts: d.artifacts, commit: payload.commit }),
+    [selectedKey, fresh, d.artifacts, payload.commit],
   );
 
   return (
     <DiscoveryUiContext.Provider value={ui}>
+      <a
+        href="#stages"
+        className="sr-only rounded-full bg-white px-4 py-2 text-body font-semibold text-blue-700 focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60]"
+      >
+        Skip to discovery stages
+      </a>
       <header className="sticky top-0 z-40 flex h-20 items-center gap-4 bg-gray-100 px-4 md:gap-6 md:px-8 lg:top-[var(--frame)] lg:rounded-tr-2xl">
         {/* Replay is the only mode with a control; LIVE stays reachable for the team at /?mode=live. */}
         <Link href="/" className="mr-auto rounded-sm text-gray-900" aria-label="tiemPO, replay from the start">
           <Wordmark className="text-[26px] leading-none sm:text-[30px]" />
         </Link>
         {mode === "replay" ? (
-          <div className="flex items-center gap-1" role="group" aria-label="Replay controls (← → Space, Home restarts, Esc shows all)">
+          <div className="flex items-center gap-1" role="group" aria-label="Replay controls">
             <span className="hidden sm:contents">
               <GhostButton label="Previous stage (←)" onClick={() => step(-1)}>
                 <ChevronLeft aria-hidden size={18} strokeWidth={2} />
@@ -359,16 +527,17 @@ export default function DiscoveryView({
               className="flex h-10 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold whitespace-nowrap text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
             >
               {playing ? <Pause aria-hidden size={15} strokeWidth={2.5} /> : <Play aria-hidden size={15} strokeWidth={2.5} />}
-              {playing ? "Pause" : elapsed > 0 && elapsed < END && cursor != null ? "Resume" : "Start discovery"}
+              {playing ? "Pause" : pausedMid ? "Resume" : "Start discovery"}
             </button>
             <GhostButton label="Next stage (→)" onClick={() => step(1)}>
               <ChevronRight aria-hidden size={18} strokeWidth={2} />
             </GhostButton>
-            <span className="ml-3 hidden min-w-[9.5rem] text-body-sm font-semibold text-gray-900 tabular md:block" aria-live="polite">
-              {cursor == null ? `Overview · ${recorded} of ${total} recorded` : `Stage ${cursor + 1} of ${total}`}
+            <span className="ml-3 hidden min-w-[9.5rem] text-body-sm font-semibold text-gray-900 tabular md:block">
+              {/* Only the stage is announced; the ticking clock stays silent. */}
+              <span aria-live="polite">{position}</span>
               {(playing || elapsed > 0) && cursor != null && (
                 <span className="block text-caption font-medium text-gray-700">
-                  {clock(elapsed)} / {clock(END)}
+                  {clock(elapsed)} / {clock(end)}
                 </span>
               )}
             </span>
@@ -383,7 +552,7 @@ export default function DiscoveryView({
               </>
             ) : (
               <>
-                <TriangleAlert aria-hidden size={16} className="text-yellow-600" />
+                <TriangleAlert aria-hidden size={16} className="text-yellow-700" />
                 Live needs the local lab server
               </>
             )}
@@ -397,10 +566,21 @@ export default function DiscoveryView({
           className="grid gap-6 rounded-xl bg-white p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-center xl:gap-10"
         >
           <div>
+            {/* The headline is the latest evidence in the engine's own words, so it updates when a new result lands. */}
             <h1 id="thesis" className="text-[26px] leading-[32px] font-extrabold sm:text-[30px] sm:leading-[36px] tracking-[-0.02em] text-balance text-gray-900">
-              A discovery loop that turns uncertainty into the next experiment.
+              {headline || d.question.text || "A discovery loop that turns uncertainty into the next experiment."}
             </h1>
-            <p className="mt-3 max-w-[64ch] text-[15px] leading-6 text-gray-700">
+            {evidence && (
+              <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-gray-700">
+                <ArtifactChip artifactKey={evidence.artifact.key} />
+                {evidence.sampleSize != null && <span className="tabular">n = {evidence.sampleSize.toLocaleString("en-US")}</span>}
+                <span aria-hidden className="text-gray-300">
+                  ·
+                </span>
+                <span>{payload.source}</span>
+              </p>
+            )}
+            <p className="mt-4 max-w-[64ch] text-[17px] leading-7 text-gray-700">
               Agents examine the evidence, name what is uncertain, decide what is worth testing next, run a reproducible experiment and
               update the scientific decision. Every recorded stage is read from a real artifact; the rest wait, named, for the agent that
               produces them.
@@ -411,7 +591,7 @@ export default function DiscoveryView({
             <div className="flex items-baseline justify-between gap-3">
               <p className="text-title-card text-gray-900">Discovery loop</p>
               <p className="text-body-sm font-semibold text-gray-900 tabular">
-                {recorded} of {total} stages
+                {recorded} of {total} recorded
               </p>
             </div>
             <ol aria-label="Stages" className="mt-3 grid grid-cols-9 gap-1">
@@ -421,9 +601,11 @@ export default function DiscoveryView({
                     type="button"
                     onClick={() => {
                       setPlaying(false);
-                      if (mode === "replay" && cursor != null) setElapsed(CUES[i] ?? 0);
-                      if (mode === "replay" && cursor != null) goTo(i);
-                      else {
+                      setPausedMid(false);
+                      if (mode === "replay" && cursor != null) {
+                        setElapsed(cues[i] ?? 0);
+                        goTo(i, s.key);
+                      } else {
                         if (s.artifactKeys[0]) setSelectedKey(s.artifactKeys[0]);
                         scrollToStage(s.key);
                       }
@@ -431,8 +613,8 @@ export default function DiscoveryView({
                     aria-label={`Stage ${s.number}, ${s.title}: ${s.recorded ? "recorded" : "awaiting agents"}`}
                     title={`${s.number} · ${s.title}`}
                     className={`flex h-7 w-full items-center justify-center rounded-sm text-caption font-bold tabular transition-transform duration-[120ms] hover:-translate-y-0.5 ${
-                      s.recorded ? TYPE[s.type].solid : "bg-gray-50 text-gray-500 outline-1 outline-dashed -outline-offset-1 outline-gray-400"
-                    } ${cursor === i ? "shadow-[0_0_0_3px_var(--color-blue-200)]" : ""}`}
+                      s.recorded ? TYPE[s.type].solid : "bg-gray-50 text-gray-700 outline-1 outline-dashed -outline-offset-1 outline-gray-400"
+                    } ${cursor === i || (cursor != null && cursor >= tail && i >= tail) ? "shadow-[0_0_0_3px_var(--color-blue-300)]" : ""}`}
                   >
                     {s.number}
                   </button>
@@ -440,7 +622,6 @@ export default function DiscoveryView({
               ))}
             </ol>
           </div>
-
         </section>
 
         {d.sessions.length > 1 && (
@@ -460,9 +641,9 @@ export default function DiscoveryView({
         )}
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
-          <section aria-label="Discovery stages">
+          <section id="stages" tabIndex={-1} aria-label="Discovery stages" className="focus:outline-none">
             <ol>
-              {d.stages.map((s, i) => {
+              {d.stages.slice(0, tail).map((s, i) => {
                 const shown = cursor == null || i <= cursor;
                 const next = d.stages[i + 1];
                 const nextShown = cursor == null || i + 1 <= cursor;
@@ -476,14 +657,27 @@ export default function DiscoveryView({
                     fresh={s.artifactKeys.some((k) => fresh.has(k))}
                     animate={cursor === i}
                     lineFilled={Boolean(next && nextShown && next.recorded && s.recorded)}
-                    last={i === d.stages.length - 1}
+                    last={i === total - 1}
                     listening={live}
                   />
                 );
               })}
+              {tail < total && (
+                <NextInLoop
+                  stages={d.stages.slice(tail)}
+                  d={d}
+                  evidence={evidence}
+                  shown={cursor == null || cursor >= tail}
+                  active={cursor != null && cursor >= tail}
+                  listening={live}
+                />
+              )}
             </ol>
           </section>
-          <div className="lg:sticky lg:top-[calc(var(--frame)+92px)] lg:max-h-[calc(100dvh-2*var(--frame)-92px)] lg:self-start lg:overflow-y-auto lg:pb-3">
+          <div
+            id="inspector"
+            className="lg:sticky lg:top-[calc(var(--frame)+92px)] lg:max-h-[calc(100dvh-2*var(--frame)-92px)] lg:self-start lg:overflow-y-auto lg:pb-3"
+          >
             <Inspector />
           </div>
         </div>

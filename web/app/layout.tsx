@@ -20,10 +20,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div aria-hidden className="app-frame hidden lg:block" />
         <Sidebar />
         <div className="pb-20 md:pb-0 md:pl-[72px] lg:py-3 lg:pr-3 lg:pl-[calc(var(--sidebar)+var(--frame))]">{children}</div>
-      {/* impeccable-live-start */}
-<script src="http://localhost:8400/live.js?token=a4aa66f0-1159-4391-b7ec-6c29bba3ae3c"></script>
-{/* impeccable-live-end */}
-</body>
+      </body>
     </html>
   );
 }

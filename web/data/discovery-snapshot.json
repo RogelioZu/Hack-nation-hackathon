@@ -1,6 +1,6 @@
 {
   "source": "git-tracked artifacts",
-  "commit": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+  "commit": "ed888f1cff5f62038eb724913ff6bb7d01ed2ae1",
   "artifacts": [
     {
       "kind": "initial_state",
@@ -710,7 +710,17 @@
           }
         ],
         "unsupported_hypotheses": [],
-        "inconclusive_hypotheses": []
+        "inconclusive_hypotheses": [],
+        "candidate_next_experiments": [
+          {
+            "question": "Is the commuting association nonlinear?",
+            "feasibility": "Variables available; method and specification require review"
+          },
+          {
+            "question": "Does the association differ by sex?",
+            "feasibility": "Variables available; interactions require a new approved specification"
+          }
+        ]
       }
     },
     {

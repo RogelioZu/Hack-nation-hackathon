@@ -20,7 +20,7 @@ export default async function AuditPage() {
       <main className="space-y-6 px-4 pb-10 md:px-8">
         <section className="rounded-lg bg-white p-6">
           <h1 className="text-h1 text-gray-900">Research cases in the database</h1>
-          <p className="mt-2 max-w-[70ch] text-[15px] leading-6 text-gray-700">
+          <p className="mt-2 max-w-[68ch] text-[17px] leading-7 text-gray-700">
             Every agent tool call, proposal, run and decision that the Omnigent tools persist in Supabase. The discovery spine reads the JSON
             artifacts in the repository; this view is the database side of the same audit trail. All times are total Monday–Friday minutes,
             and every result is an observational association.

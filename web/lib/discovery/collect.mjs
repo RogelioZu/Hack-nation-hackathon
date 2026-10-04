@@ -98,6 +98,11 @@ export function compactResult(r) {
     supported_hypotheses: r.supported_hypotheses ?? [],
     unsupported_hypotheses: r.unsupported_hypotheses ?? [],
     inconclusive_hypotheses: r.inconclusive_hypotheses ?? [],
+    // Directions the engine lists for later work; shown verbatim as "not selected", never as a choice.
+    candidate_next_experiments: (r.candidate_next_experiments ?? []).map((c) => ({
+      question: c.question,
+      feasibility: c.feasibility,
+    })),
   };
 }
 

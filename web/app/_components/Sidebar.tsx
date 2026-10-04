@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Database, GitBranch, Waypoints, type LucideIcon } from "lucide-react";
+import { BookOpen, GitBranch, Waypoints, type LucideIcon } from "lucide-react";
 import Wordmark from "./Wordmark";
 
 // `footer`: on desktop the item leaves the main nav and sits in the footer, above Repository.
 const NAV: { href: string; label: string; icon: LucideIcon; match: (p: string) => boolean; footer?: boolean }[] = [
   { href: "/", label: "Discovery", icon: Waypoints, match: (p) => p === "/" },
   { href: "/guide", label: "Reading guide", icon: BookOpen, match: (p) => p.startsWith("/guide"), footer: true },
-  { href: "/audit", label: "Audit trail", icon: Database, match: (p) => p.startsWith("/audit") || p.startsWith("/research") },
 ];
 
 /** Solid blue sidebar: expanded on desktop, icon rail on tablet, bottom bar on phones. */

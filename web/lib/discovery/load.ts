@@ -20,12 +20,14 @@ export async function getDiscovery(mode: DiscoveryMode, session?: string): Promi
 
   let raw: RawArtifact[];
   let source: string;
+  let commit: string | null = null;
   if (mode === "live" && liveReachable) {
     raw = (await collectArtifacts(root)) as RawArtifact[];
     source = "reports/ on this machine";
   } else {
     raw = snapshot.artifacts as RawArtifact[];
-    source = snapshot.commit ? `committed artifacts @ ${snapshot.commit.slice(0, 7)}` : "committed artifacts";
+    commit = snapshot.commit || null;
+    source = commit ? `committed artifacts @ ${commit.slice(0, 7)}` : "committed artifacts";
   }
   if (session) raw = raw.filter((a) => a.session == null || a.session === session);
 
@@ -34,6 +36,7 @@ export async function getDiscovery(mode: DiscoveryMode, session?: string): Promi
     mode,
     liveUnavailable: mode === "live" && !liveReachable,
     source,
+    commit,
     loadedAt: new Date().toISOString(),
   };
 }

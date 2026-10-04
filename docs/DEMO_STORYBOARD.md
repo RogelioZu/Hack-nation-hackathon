@@ -5,31 +5,29 @@ Guion para grabar o presentar el demo de **tiemPO** sobre la pantalla de descubr
 ## Cómo se maneja la pantalla
 
 - **REPLAY** (por defecto, `/`): muestra los artefactos commiteados. Funciona sin agentes y en Vercel.
-  - `Start discovery` (o `Space`) revela las 9 etapas en 40 s con el reloj de abajo. La pantalla hace scroll sola y el inspector sigue a la etapa activa.
-  - `→` / `←` avanzan o retroceden una etapa (pausan el reloj). `Home` reinicia (no hay botón: así la barra queda limpia). `Esc` muestra la cadena completa.
+  - `Start discovery` (o `Space`) revela las etapas con el reloj de abajo. La pantalla hace scroll sola y el inspector sigue a la etapa activa.
+  - Las etapas que aún esperan agentes (hoy 5–9) se agrupan en una sola banda, **Next in the loop**: muestra qué preguntas abiertas recibe el siguiente agente, las direcciones que listó el motor (sin elegir) y cada etapa pendiente con su agente y ruta. Cuando llega el artefacto de una etapa, esa etapa sale de la banda y vuelve a ser tarjeta.
+  - `→` / `←` avanzan o retroceden una etapa; la banda cuenta como un solo paso (pausan el reloj). `Home` reinicia (no hay botón: así la barra queda limpia). `Esc` muestra la cadena completa. Los atajos no se muestran en pantalla: cada botón los nombra en su tooltip.
+  - El titular de la portada es la frase del hallazgo leída del `result.json` más reciente, con su chip y la línea de procedencia (`n`, commit del snapshot).
   - `/?stage=4` abre el replay detenido en la etapa 4 (útil para ensayar un tramo).
 - **LIVE** (`/?mode=live`, sin botón en la interfaz; se abre por URL): solo en la máquina donde corre Omnigent. El servidor lee `reports/` cada 3 s y marca como **New** cada artefacto que llega.
 - Antes de grabar, regenerar el snapshot si hay artefactos nuevos commiteados: `cd web && npm run snapshot` (solo incluye archivos versionados en git).
 
 ## Reloj del replay
 
-`Play` recorre las 9 etapas en **40 s**: un recorrido automático corto, no la narración de 2 minutos. Para narrar las escenas de abajo, avanza con `→` al ritmo de la voz (o abre una etapa con `/?stage=N`).
+`Play` es un recorrido automático corto, no la narración de 2 minutos. Con los artefactos de hoy dura **33 s**. Para narrar las escenas de abajo, avanza con `→` al ritmo de la voz (o abre una etapa con `/?stage=N`).
 
 | Tiempo | Etapa que se revela | Artefacto |
 |---|---|---|
 | 0:00 | 1 · Research question | `initial_state.json` |
-| 0:04 | 2 · First experiment | `EXP-001` (spec + validación) |
-| 0:08 | 3 · Evidence | `EXP-001` `result.json` |
+| 0:04 | 2 · First experiment | `EXP-001 spec` + `EXP-001 validation` |
+| 0:08 | 3 · Evidence | `EXP-001 result` |
 | 0:16 | 4 · Scientific critique | `CRIT-EXP-001-001` |
-| 0:22 | 5 · New hypotheses | pendiente (hypothesis_agent) |
-| 0:25 | 6 · Candidate experiments | pendiente (experiment_planner) |
-| 0:28 | 7 · Selected experiment | pendiente (discovery_director) |
-| 0:31 | 8 · New evidence | pendiente (experiment_runner + engine) |
-| 0:34 | 9 · Updated decision | pendiente (discovery_director) |
-| 0:37 | Cadena completa | — |
-| 0:40 | Fin | — |
+| 0:22 | Next in the loop (5–9 pendientes) | traspaso de la crítica + direcciones del motor |
+| 0:30 | Cadena completa | — |
+| 0:33 | Fin | — |
 
-La evidencia (8 s) y la crítica (6 s) son las que más duran porque son los artefactos reales. Las marcas viven en `CUES` de `web/app/_components/discovery/DiscoveryView.tsx`; si cambian aquí, cambian allá.
+Las marcas se calculan a partir de las etapas registradas: cada etapa dura lo que dice `HOLD` en `web/app/_components/discovery/DiscoveryView.tsx` (pregunta 4 s, experimento 4 s, evidencia 8 s, crítica 6 s, etapas posteriores 3 s). La banda dura 8 s y la vista completa 3 s. Con las 9 etapas registradas, el reloj vuelve a 0:00, 0:04, 0:08, 0:16, 0:22, 0:25, 0:28, 0:31, 0:34 · 0:37 · 0:40. Si cambian aquí, cambian allá.
 
 ## Escenas
 
@@ -56,13 +54,13 @@ La evidencia (8 s) y la crítica (6 s) son las que más duran porque son los art
 
 ### 1:00–1:25 · El científico de IA responde a la incertidumbre
 
-- **En pantalla:** etapa 4 (`CRIT-EXP-001-001`, veredicto `UNCERTAIN`), luego 5, 6 y 7.
+- **En pantalla:** etapa 4 (`CRIT-EXP-001-001`, veredicto `UNCERTAIN`), luego 5, 6 y 7 (o la banda **Next in the loop** si aún no existen).
 - **Voz (lo que ya existe):** "Instead of declaring a winner, the critic agent flags what the evidence cannot settle: it is observational, the ranking is uncertain, the variance is an approximation, and sex and household differences, H3 and H4, are untested."
 - **Voz (depende de artefactos futuros):**
   - Si existen hipótesis: "From that critique, the hypothesis agent proposes {código H5…}: {statement del artefacto}." Leer el texto de la tarjeta, no parafrasearlo con más fuerza.
   - Si existen candidatos: "The planner proposes {N} competing experiments; {A} fits the current engine contract, {B} would need a contract revision."
   - Si existe la selección: "The Director chooses {label} for expected learning, not for the chance of a significant result: {rationale del artefacto}."
-  - **Si todavía no existen:** "These stages are waiting for the agents. The interface shows them as pending instead of inventing them."
+  - **Si todavía no existen:** "These stages are waiting for the agents. The critique already hands them four untested questions; the interface shows the rest as pending instead of inventing them."
 
 ### 1:25–1:45 · Nuevo experimento → decisión actualizada
 

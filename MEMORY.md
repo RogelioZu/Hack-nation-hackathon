@@ -14,7 +14,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Migraciones Supabase (extensiones, tablas, RAG, RLS) | ✅ Aplicadas en remoto |
 | Seed demo | ✅ Cargado en remoto |
 | Ingesta RAG (3 PDFs INEGI ENUT 2024) | ✅ 535 pasajes limpios con embedding: cuestionario por pregunta (88), diseño conceptual (402), diseño muestral (45). FTS en español |
-| Web: espina de descubrimiento (`/`) | ✅ 2026-10-03. Nombre en la web: **tiemPO** (wordmark Inter 900); polish "menos saturado": banner blanco, controles en texto, etiquetas de tipo como muestra de color. Sistema Education2025. Lee artefactos del repo: REPLAY (snapshot `web/data/discovery-snapshot.json`, solo archivos versionados) y LIVE (`/?mode=live`, solo local). Etapas 1–4 reales; 5–9 se muestran como pendientes hasta que los agentes escriban sus artefactos. Probado con un fixture sintético fuera del repo. `npm run build` pasa |
+| Web: espina de descubrimiento (`/`) | ✅ 2026-10-04: tras `/impeccable critique` (22/40, `.impeccable/critique/`), el titular es el hallazgo leído de `result.json`, las etapas pendientes forman la banda **Next in the loop**, el aviso de ranking nombra los 6 pares, H1/H2 muestran la evaluación del motor, el inspector enlaza a GitHub en el commit del snapshot y da el comando de reproducción, y se corrigió la accesibilidad (región viva, foco, skip link, contraste). "Audit trail" salió del sidebar (`/audit` sigue por URL). Escala de lectura subida para proyección (body 16/24, body-sm 15/22, caption 13/18, párrafos de apoyo 17/28; ver `DESIGN.md`). 2026-10-03: Nombre en la web: **tiemPO** (wordmark Inter 900); polish "menos saturado": banner blanco, controles en texto, etiquetas de tipo como muestra de color. Sistema Education2025. Lee artefactos del repo: REPLAY (snapshot `web/data/discovery-snapshot.json`, solo archivos versionados) y LIVE (`/?mode=live`, solo local). Etapas 1–4 reales; 5–9 se muestran como pendientes hasta que los agentes escriban sus artefactos. Probado con un fixture sintético fuera del repo. `npm run build` pasa |
 | Web: auditoría Supabase (`/audit`, `/research/[id]`) | ✅ Restilizada; misma lógica |
 | Pipeline ENUT → `analytic_v1` | ✅ Construido y validado fuera del repo (fases 1 → 2A → 2B). **`APPROVED_FOR_EXPERIMENTS`**. ENUT 2024, n = 2,563. Documentación en `docs/` y `metadata/analytic_v1_manifest.json` (commit `805b7c2`) |
 | Motor de experimentos (`src/experiments/`) | ✅ Determinista, `ExperimentSpec` → `ExperimentResult`, solo `weighted_linear_regression` con CR1 por UPM. Tests en `tests/` |
@@ -199,6 +199,13 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - LIVE usa `DISCOVERY_REPO_ROOT` si está definida (por defecto, el padre de `web/`). Así se probó con un fixture sintético en el scratchpad.
 - **Next 16 no permite dos `next dev` en el mismo directorio.** Para un segundo servidor: `npm run build && npx next start -p 3100`.
 - `reports/experiments/EXP-001/result.json` en este checkout Linux tiene SHA-256 `3113a9ee…` (LF), distinto del `result_sha256` de `validation.json` (`5e4084a3…`, CRLF). El UI no afirma que coincidan.
+- **2026-10-04:**
+  - Los chips de experimento ya no se repiten: `EXP-001 spec`, `EXP-001 result` y `EXP-001 validation`.
+  - `compactResult` (`collect.mjs`) conserva `candidate_next_experiments` (pregunta + factibilidad), que la banda muestra como "Listed by the engine, not selected".
+  - El enlace "GitHub at <commit>" del inspector usa `snapshot.commit`: ese commit tiene que estar en GitHub, o el enlace da 404. Tras `npm run snapshot`, hacer push antes de desplegar.
+  - El reloj del replay se calcula con `HOLD` y `timeline()` en `DiscoveryView.tsx`, ya no con `CUES` fijos. La banda es un solo paso.
+  - Las capturas headless con `chromium-browser --headless=new --screenshot` salen en blanco si la página hace scroll sola (`/?stage=N`). Usar una ventana alta (p. ej. `--window-size=1440,4300`) para que no necesite scroll.
+  - El commit `ed888f1` incluyó por error la inyección de `live.js` (Impeccable live) en `web/app/layout.tsx`. Ya se quitó del árbol de trabajo.
 - La cuenta de Gemini (`GEMINI_API_KEY`) tiene cuota 0 para `gemini-3-pro-image` y no hay `OPENAI_API_KEY`: no hay generación de imágenes. El build de diseño fue code-first aunque `.impeccable/config.json` guarda `comp`.
 
 ### Vercel

@@ -14,6 +14,7 @@ colors:
   focus-blue: "#3d7bff"
   uncertainty-yellow: "#ffc83d"
   uncertainty-yellow-ink: "#d99a00"
+  uncertainty-yellow-deep: "#9a6b00"
   live-green: "#22c55e"
   live-green-ink: "#16a34a"
   card-white: "#ffffff"
@@ -46,56 +47,56 @@ typography:
     letterSpacing: "-0.01em"
   title-lg:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
+    fontSize: "22px"
+    fontWeight: 700
+    lineHeight: "30px"
+  title-md:
+    fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
     fontSize: "20px"
     fontWeight: 700
     lineHeight: "28px"
-  title-md:
-    fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "18px"
-    fontWeight: 700
-    lineHeight: "26px"
   title-sm:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "16px"
+    fontSize: "18px"
     fontWeight: 600
-    lineHeight: "22px"
+    lineHeight: "26px"
   title-card:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "15px"
+    fontSize: "17px"
     fontWeight: 600
-    lineHeight: "20px"
+    lineHeight: "24px"
   lead:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "15px"
+    fontSize: "17px"
     fontWeight: 400
-    lineHeight: "24px"
+    lineHeight: "28px"
   body:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "14px"
+    fontSize: "16px"
     fontWeight: 400
-    lineHeight: "20px"
+    lineHeight: "24px"
     fontFeature: "\"cv11\", \"ss01\""
   body-sm:
+    fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
+    fontSize: "15px"
+    fontWeight: 400
+    lineHeight: "22px"
+  caption:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
     fontSize: "13px"
     fontWeight: 400
     lineHeight: "18px"
-  caption:
-    fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "12px"
-    fontWeight: 400
-    lineHeight: "16px"
   micro:
     fontFamily: "Inter, Segoe UI, Roboto, Arial, sans-serif"
-    fontSize: "10px"
+    fontSize: "11px"
     fontWeight: 600
-    lineHeight: "12px"
+    lineHeight: "14px"
     letterSpacing: "0.04em"
   mono:
     fontFamily: "Geist Mono, ui-monospace, SFMono-Regular, Menlo, monospace"
-    fontSize: "12px"
+    fontSize: "13px"
     fontWeight: 400
-    lineHeight: "16px"
+    lineHeight: "18px"
 rounded:
   swatch: "3px"
   sm: "6px"
@@ -236,7 +237,7 @@ components:
 
 El sistema es Education2025 (fijado por el usuario en `web/education2025-design-system.md`) adaptado a un laboratorio científico y llevado a un registro más sereno. El shell de plataforma educativa se mantiene: sidebar azul sólido, canvas gris, superficies blancas planas, Inter y píldoras en la navegación. Dentro aloja un ciclo de descubrimiento leído como un temario de nueve módulos numerados. Cada módulo es un artefacto real con ID; lo que todavía no existe se muestra como un hueco honesto, con contorno discontinuo, que nombra al agente y la ruta que lo llenará. La incertidumbre tiene el mismo peso que la evidencia: es el único amarillo de la pantalla.
 
-La saturación está contenida a propósito: el azul sólido vive en el sidebar, la píldora "Start discovery", las marcas de evidencia y los estados seleccionados. La tesis se apoya en una superficie blanca, no en un banner azul. Las etiquetas son discretas: el rol es una muestra de color de 10 px con una palabra, los IDs son etiquetas de código de esquinas suaves y los hechos van en línea sin contenedor. La densidad es de lectura a distancia, porque la pantalla se proyecta para jueces: el cuerpo nunca baja de 12 px y los números van en cifras tabulares. El sistema es solo claro (`color-scheme: light`) y rechaza explícitamente la transcripción de chat y el tablero de KPIs.
+La saturación está contenida a propósito: el azul sólido vive en el sidebar, la píldora "Start discovery", las marcas de evidencia y los estados seleccionados. La tesis se apoya en una superficie blanca, no en un banner azul. Las etiquetas son discretas: el rol es una muestra de color de 10 px con una palabra, los IDs son etiquetas de código de esquinas suaves y los hechos van en línea sin contenedor. La densidad es de lectura a distancia, porque la pantalla se proyecta para jueces: el cuerpo nunca baja de 13 px (escala subida el 2026-10-04 para leer a distancia) y los números van en cifras tabulares. El sistema es solo claro (`color-scheme: light`) y rechaza explícitamente la transcripción de chat y el tablero de KPIs.
 
 El build adapta la fuente en puntos concretos:
 - un logo que es solo el wordmark "tiemPO";
@@ -278,7 +279,7 @@ Una paleta de un solo acento: azul eléctrico saturado, usado con moderación so
   - el marcador de la etapa de crítica;
   - la etiqueta "Demo data".
 
-  Siempre lleva texto en `decision-ink`, nunca blanco. `uncertainty-yellow-ink` colorea solo iconos de advertencia sobre blanco.
+  Siempre lleva texto en `decision-ink`, nunca blanco. Los iconos de advertencia sobre blanco usan `uncertainty-yellow-deep` (`yellow-700`, ≥4.5:1); `uncertainty-yellow-ink` (≈2.3:1) ya no colorea iconos sobre blanco.
 
 ### Tertiary
 - **Live Green** (`live-green`): solo el punto pulsante del modo LIVE. `live-green-ink` colorea el icono de un hecho `good` y el check de "copiado". El verde ya no marca etapas registradas: eso lo hace el relleno del marcador.
@@ -329,23 +330,23 @@ QUESTION es blanco con anillo gris. Un color de rol no se usa como decoración f
 - **Wordmark** (Montserrat 900, 30 px; 26 px en la topbar móvil; −0.04em; interlineado 1): el nombre "tiemPO" con la capitalización exacta del usuario. Es el logo completo del sidebar, el nombre de la topbar y el `<title>`.
 - **Display** (800, 30/36 en ≥640 px y 26/32 en móvil, −0.02em): solo la tesis.
 - **Headline** (700, 28/36, −0.01em): H1 de las páginas de auditoría.
-- **Title-lg** (700, 20/28): encabezado del inspector y título de la guía de lectura.
-- **Title-md** (700, 18/26): título de tarjeta de etapa en ≥640 px y frase principal de una etapa.
-- **Title-sm** (600, 16/22): título de etapa en móvil, nombre de página junto al wordmark ("Reading guide", "Audit trail", `body-gray`), encabezados de bloque y "Awaiting …".
-- **Title-card** (600, 15/20): títulos de candidato, de proyecto y "Discovery loop".
-- **Lead** (400, 15/24, máx. ~64ch): párrafo de la tesis y de las páginas de auditoría.
-- **Body** (400–600, 14/20): texto general, navegación (500), la píldora de reproducción (600), filas del forest plot.
-- **Body-sm** (400, 13/18): hechos en línea, listas literales del artefacto y valores del inspector.
-- **Caption** (400–600, 12/16): ejes, notas de método, etiquetas de definición, palabra del rol (600), conteos y la nota "ENUT 2024 · INEGI microdata" del sidebar (`blue-tint`).
-- **Micro** (600, 10/12, 0.04em, mayúsculas): solo las marcas de estado "New" y "Demo data".
-- **Mono** (12/16): IDs de artefacto, hashes SHA-256, rutas de archivo y códigos de estado (`INCONCLUSIVE_RANKING`).
+- **Title-lg** (700, 22/30): encabezado del inspector y título de la guía de lectura.
+- **Title-md** (700, 20/28): título de tarjeta de etapa en ≥640 px y frase principal de una etapa.
+- **Title-sm** (600, 18/26): título de etapa en móvil, nombre de página junto al wordmark ("Reading guide", "Audit trail", `body-gray`), encabezados de bloque y "Awaiting …".
+- **Title-card** (600, 17/24): títulos de candidato, de proyecto y "Discovery loop".
+- **Lead** (400, 17/28, máx. ~64–68ch): párrafo de la tesis, frases de apoyo de cada etapa y páginas de auditoría. La pregunta de investigación va en 18/28 (500).
+- **Body** (400–600, 16/24): texto general, navegación (500), la píldora de reproducción (600), filas del forest plot.
+- **Body-sm** (400, 15/22): hechos en línea, listas literales del artefacto y valores del inspector.
+- **Caption** (400–600, 13/18): ejes, notas de método, etiquetas de definición, palabra del rol (600), conteos y la nota "ENUT 2024 · INEGI microdata" del sidebar (`blue-tint`).
+- **Micro** (600, 11/14, 0.04em, mayúsculas): solo las marcas de estado "New" y "Demo data".
+- **Mono** (13/18): IDs de artefacto, hashes SHA-256, rutas de archivo y códigos de estado (`INCONCLUSIVE_RANKING`).
 
 ### Named Rules
 **The Wordmark Rule.** El nombre del producto es "tiemPO": Montserrat 900 con −0.04em y la capitalización exacta del usuario. Montserrat no se usa en ningún otro texto. El logo es solo texto: sin símbolo, pastilla ni punto de estado. No se escribe en mayúsculas, no se traduce y no se compone en otro peso.
 
 **The Literal Mono Rule.** Geist Mono solo para valores que existen tal cual en un archivo: IDs, hashes, rutas, claves y códigos. Nunca para prosa ni títulos.
 
-**The Sentence Case Rule.** Títulos, botones y etiquetas de rol van en *sentence case*. Las mayúsculas quedan para las marcas de estado de 10 px ("New", "Demo data") y para los códigos literales del artefacto.
+**The Sentence Case Rule.** Títulos, botones y etiquetas de rol van en *sentence case*. Las mayúsculas quedan para las marcas de estado de 11 px ("New", "Demo data") y para los códigos literales del artefacto.
 
 **The True Minus Rule.** Las cifras van en `tabular-nums`, con signo menos tipográfico (−) y con `+` explícito en positivos, para que la dirección nunca dependa solo del color.
 
@@ -429,7 +430,7 @@ No hay selector de modo: replay es el modo por defecto. LIVE solo se abre por UR
 
 ### Tags
 - **Role tag:** muestra cuadrada de 10 px (radio 3 px) con el relleno del rol, más la palabra en caption 600 `body-gray`. Va después del título de la etapa. Si el título ya nombra el rol, solo se ve la muestra y la palabra queda para lectores de pantalla. En ese caso QUESTION no muestra muestra, porque un cuadrado blanco solo se lee como una casilla vacía.
-- **Artifact tag:** el ID en mono 12 px, 28 px de alto, radio 6 px, fondo `panel-gray`, sin anillo ni icono. En hover pasa a `blue-wash` con texto `electric-blue-press`; seleccionado añade además un anillo de 1 px `blue-select-ring`. Al hacer clic abre el artefacto en el inspector.
+- **Artifact tag:** el ID en mono 13 px, 28 px de alto, radio 6 px, fondo `panel-gray`, sin anillo ni icono. En hover pasa a `blue-wash` con texto `electric-blue-press`; seleccionado añade además un anillo de 1 px `blue-select-ring`. Al hacer clic abre el artefacto en el inspector.
 - **Code tag:** rectángulo de 6 px para el código de hipótesis (contorno azul discontinuo, texto azul) y para "Selected by the Director" (fondo tinta, texto blanco).
 - **Inline fact:** sin contenedor: icono de 15 px más texto body-sm. El tono colorea solo el icono (`good` verde, `warn` amarillo, `brand` azul). Una fila de hechos se separa con puntos medios en `divider-gray`.
 
@@ -497,7 +498,7 @@ Cuadrado de 28 px con radio 6 px, relleno del rol e icono Lucide de 15 px. Es la
 Página con PageHeader "Reading guide" y una sola tarjeta blanca de lectura:
 - **Tarjeta:** máx. 720 px de ancho, 16 px de radio, padding de 24 px (32 px en ≥768 px).
 - **Título:** "Reading the spine" en Title-lg.
-- **Lista:** los cinco roles más QUESTION. Cada fila lleva la marca de rol de 28 px y, al lado, el nombre en bold tinta seguido de su significado en body 14/20 `body-gray`, con 16 px entre filas.
+- **Lista:** los cinco roles más QUESTION. Cada fila lleva la marca de rol de 28 px y, al lado, el nombre en bold tinta seguido de su significado en body 16/24 `body-gray`, con 16 px entre filas.
 - **Cierre:** bajo una línea fina, la frase de que ENUT 2024 es observacional y toda cifra es una asociación, nunca una causa.
 
 ### Awaiting

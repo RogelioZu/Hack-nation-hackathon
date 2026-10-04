@@ -48,10 +48,11 @@ export default function ForestPlot({ rows, highlight, caption }: { rows: Estimat
             <th scope="col" className="relative pb-2 font-normal">
               <span className="sr-only">Interval on a shared axis</span>
               <span aria-hidden className="relative block h-4">
-                {ticks.map((t) => (
+                {ticks.map((t, i) => (
                   <span
                     key={t}
-                    className={`absolute -translate-x-1/2 tabular ${t === 0 ? "font-semibold text-gray-900" : ""}`}
+                    // Phones keep every other label (and zero) so the numbers do not collide.
+                    className={`absolute -translate-x-1/2 tabular ${t === 0 ? "font-semibold text-gray-900" : i % 2 ? "max-sm:hidden" : ""}`}
                     style={{ left: `${x(t)}%` }}
                   >
                     {plain(t, 0)}
@@ -83,7 +84,7 @@ export default function ForestPlot({ rows, highlight, caption }: { rows: Estimat
               .filter(Boolean)
               .join(" · ");
             return (
-              <tr key={r.outcome} tabIndex={0} aria-label={tip} className="group outline-none">
+              <tr key={r.outcome} tabIndex={0} aria-label={tip} className="group">
                 <th
                   scope="row"
                   className={`border-t border-gray-200 py-3 pr-3 text-body group-focus-visible:text-blue-700 ${
@@ -113,7 +114,7 @@ export default function ForestPlot({ rows, highlight, caption }: { rows: Estimat
                     />
                     <span
                       role="tooltip"
-                      className="pointer-events-none absolute bottom-full z-20 mb-2 -translate-x-1/2 rounded-md bg-gray-900 px-3 py-2 text-caption whitespace-nowrap text-white opacity-0 transition-opacity duration-[120ms] group-hover:opacity-100 group-focus-visible:opacity-100"
+                      className="pointer-events-none absolute bottom-full z-20 mb-2 w-max max-w-[min(22rem,70vw)] -translate-x-1/2 rounded-md bg-gray-900 px-3 py-2 text-caption text-white opacity-0 transition-opacity duration-[120ms] group-hover:opacity-100 group-focus-visible:opacity-100"
                       style={{ left: `${Math.min(80, Math.max(20, x(r.coefficient)))}%` }}
                     >
                       {tip}
@@ -134,8 +135,28 @@ export default function ForestPlot({ rows, highlight, caption }: { rows: Estimat
             );
           })}
         </tbody>
+        <tfoot aria-hidden>
+          <tr className="text-caption text-gray-700">
+            <td />
+            <td className="pt-1.5">
+              <span className="flex justify-between gap-2 whitespace-nowrap">
+                <span>
+                  ← fewer<span className="max-sm:hidden"> minutes</span>
+                </span>
+                <span>
+                  more<span className="max-sm:hidden"> minutes</span> →
+                </span>
+              </span>
+            </td>
+            <td />
+            <td className="hidden sm:table-cell" />
+          </tr>
+        </tfoot>
       </table>
-      <figcaption className="mt-2 text-caption text-gray-700">{caption}</figcaption>
+      {/* The table caption already carries this for screen readers; the visible copy is not read twice. */}
+      <figcaption aria-hidden className="mt-3 max-w-[72ch] text-body-sm text-gray-700">
+        {caption}
+      </figcaption>
     </figure>
   );
 }

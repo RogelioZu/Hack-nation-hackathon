@@ -13,7 +13,7 @@ export default function SpineGuide() {
       <ul className="mt-5 space-y-4">
         {(Object.keys(TYPE) as ArtifactType[]).map((t) => (
           <li key={t} className="flex items-start gap-3">
-            <TypeMark type={t} />
+            <TypeMark type={t} labelled={false} />
             <span className="min-w-0 text-body text-gray-700">
               <span className="font-semibold text-gray-900">{TYPE[t].label}.</span> {TYPE[t].meaning}
             </span>

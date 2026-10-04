@@ -64,6 +64,23 @@ export interface EstimateRow {
   n: number | null;
 }
 
+/** One Bonferroni-adjusted paired difference between two outcomes, as written in result.json. */
+export interface PairView {
+  a: string; // outcome label
+  b: string;
+  difference: number;
+  interval: Interval | null;
+  resolved: boolean; // the interval excludes zero
+}
+
+/** The engine's own assessment of a protocol hypothesis (result.json supported/unsupported/inconclusive lists). */
+export interface AssessmentView {
+  id: string;
+  assessment: string;
+  evidence: string | null;
+  bucket: "supported" | "unsupported" | "inconclusive";
+}
+
 export interface EvidenceView {
   experimentId: string;
   artifact: ArtifactRef;
@@ -72,7 +89,9 @@ export interface EvidenceView {
   sentences: string[]; // scientifically safe statements derived from the rows and the ranking status
   rankingStatus: string | null;
   rankingSentence: string | null;
-  pairs: { resolved: number; total: number; adjustment: string | null } | null;
+  pairs: { resolved: number; total: number; adjustment: string | null; items: PairView[] } | null;
+  assessments: AssessmentView[];
+  nextDirections: string[]; // result.json candidate_next_experiments[].question, verbatim; never a selection
   units: string | null;
   sampleSize: number | null;
   covariates: string[];
@@ -107,7 +126,7 @@ export interface CritiqueView {
   experimentId: string | null;
   verdict: string | null;
   rationale: string | null;
-  evidence: { kind: string; statement: string }[];
+  evidence: { kind: string; statement: string; source: string | null }[];
   uncertainties: string[];
   limitations: string[];
   unsupported: string[];
@@ -230,5 +249,6 @@ export interface DiscoveryPayload {
   mode: DiscoveryMode;
   liveUnavailable: boolean; // live requested but the repo files are not reachable (e.g. on Vercel)
   source: string; // "Committed snapshot @ ca6c7d7" or "reports/ on this machine"
+  commit: string | null; // full commit of the REPLAY snapshot; null in LIVE
   loadedAt: string;
 }

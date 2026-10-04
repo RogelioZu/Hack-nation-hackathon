@@ -6,6 +6,7 @@
 import type {
   ArtifactRef,
   ArtifactType,
+  AssessmentView,
   CandidateView,
   CritiqueView,
   DecisionView,
@@ -17,6 +18,7 @@ import type {
   FollowUp,
   HypothesisView,
   Interval,
+  PairView,
   RawArtifact,
   SelectionView,
   Stage,
@@ -163,7 +165,7 @@ function experimentView(spec: RawArtifact, result: RawArtifact | undefined, vali
   const r = result?.data ?? null;
   const v = validation?.data ?? null;
   const id = str(s.experiment_id) ?? stem(spec.path.replace(/\/spec\.json$/, ""));
-  const specRef = ref(spec, "EXPERIMENT", "Experiment spec", { id, full: null }, {
+  const specRef = ref(spec, "EXPERIMENT", "Experiment spec", { id: `${id} spec`, full: null }, {
     producer: "ExperimentSpec (agents propose, engine validates)",
     facts: [
       { label: "Method", value: str(s.method) ?? "—", mono: true },
@@ -172,7 +174,7 @@ function experimentView(spec: RawArtifact, result: RawArtifact | undefined, vali
     ],
   });
   const resultRef = result
-    ? ref(result, "EVIDENCE", "Experiment result", { id, full: null }, {
+    ? ref(result, "EVIDENCE", "Experiment result", { id: `${id} result`, full: null }, {
         producer: "Deterministic engine (src/experiments)",
         facts: [
           { label: "Status", value: str(r?.status) ?? "—", mono: true },
@@ -261,10 +263,30 @@ function evidenceView(exp: ExperimentView, result: RawArtifact): EvidenceView {
         : null;
 
   const comparisons = (r.ranking?.paired_comparisons ?? []) as Record<string, unknown>[];
-  const resolved = comparisons.filter((c) => {
-    const i = interval(c.interval);
-    return i ? i.lower > 0 || i.upper < 0 : false;
-  }).length;
+  // Unresolved pairs first: they are the reason a ranking stays inconclusive.
+  const pairItems: PairView[] = comparisons
+    .map((c) => {
+      const i = interval(c.interval);
+      return {
+        a: outcomeLabel(String(c.outcome_a)),
+        b: outcomeLabel(String(c.outcome_b)),
+        difference: num(c.difference_a_minus_b) ?? 0,
+        interval: i,
+        resolved: i ? i.lower > 0 || i.upper < 0 : false,
+      };
+    })
+    .sort((x, y) => Number(x.resolved) - Number(y.resolved));
+  const resolved = pairItems.filter((p) => p.resolved).length;
+  const assessments: AssessmentView[] = (["supported", "unsupported", "inconclusive"] as const).flatMap((bucket) =>
+    (Array.isArray(r[`${bucket}_hypotheses`]) ? r[`${bucket}_hypotheses`] : [])
+      .filter((h: unknown) => h && typeof h === "object" && str((h as Record<string, unknown>).id))
+      .map((h: Record<string, unknown>) => ({
+        id: String(h.id),
+        assessment: str(h.assessment) ?? bucket,
+        evidence: str(h.evidence),
+        bucket,
+      })),
+  );
 
   const first = adjusted[0] as Record<string, unknown> | undefined;
   return {
@@ -276,8 +298,12 @@ function evidenceView(exp: ExperimentView, result: RawArtifact): EvidenceView {
     rankingStatus: status,
     rankingSentence,
     pairs: comparisons.length
-      ? { resolved, total: comparisons.length, adjustment: interval(comparisons[0].interval)?.adjustment ?? null }
+      ? { resolved, total: comparisons.length, adjustment: interval(comparisons[0].interval)?.adjustment ?? null, items: pairItems }
       : null,
+    assessments,
+    nextDirections: (Array.isArray(r.candidate_next_experiments) ? r.candidate_next_experiments : [])
+      .map((c: Record<string, unknown>) => str(c?.question))
+      .filter((q: string | null): q is string => Boolean(q)),
     units: str(first?.units),
     sampleSize: num(r.sample_size),
     covariates: exp.covariates,
@@ -319,7 +345,11 @@ function critiqueView(a: RawArtifact): CritiqueView {
     rationale: first(d.status_rationale, d.summary),
     evidence: (Array.isArray(d.evidence_summary) ? d.evidence_summary : [])
       .filter((e: unknown) => e && typeof e === "object")
-      .map((e: Record<string, unknown>) => ({ kind: String(e.kind ?? "EVIDENCE"), statement: String(e.statement ?? "") })),
+      .map((e: Record<string, unknown>) => ({
+        kind: String(e.kind ?? "EVIDENCE"),
+        statement: String(e.statement ?? ""),
+        source: str(e.source),
+      })),
     uncertainties: [...texts(d.uncertainties), ...texts(d.uncertainty), ...texts(d.diagnostics_review)],
     limitations: texts(d.limitations),
     unsupported: [...texts(d.unsupported_claims), ...texts(d.unsupported_interpretations)],

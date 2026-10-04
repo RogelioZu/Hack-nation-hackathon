@@ -20,6 +20,7 @@ interface DiscoveryUi {
   select: (key: string) => void;
   fresh: Set<string>;
   artifacts: Record<string, ArtifactRef>;
+  commit: string | null; // REPLAY snapshot commit, for "open at commit" links
 }
 
 export const DiscoveryUiContext = createContext<DiscoveryUi>({
@@ -27,6 +28,7 @@ export const DiscoveryUiContext = createContext<DiscoveryUi>({
   select: () => {},
   fresh: new Set(),
   artifacts: {},
+  commit: null,
 });
 
 export const useDiscoveryUi = () => useContext(DiscoveryUiContext);
@@ -84,12 +86,13 @@ export function TypeBadge({ type, compact = false, className = "" }: { type: Art
 }
 
 /** The role as a square mark (spine marker grammar), so the heading stays the dominant first line. */
-export function TypeMark({ type }: { type: ArtifactType }) {
+export function TypeMark({ type, labelled = true }: { type: ArtifactType; labelled?: boolean }) {
   const Icon = TYPE[type].icon;
   return (
     <span className={`flex size-7 shrink-0 items-center justify-center rounded-sm ${TYPE[type].solid}`}>
       <Icon aria-hidden size={15} strokeWidth={2.25} />
-      <span className="sr-only">{TYPE[type].label}:</span>
+      {/* Unlabelled when the text beside it already names the role. */}
+      {labelled && <span className="sr-only">{TYPE[type].label}:</span>}
     </span>
   );
 }
@@ -108,11 +111,11 @@ export function StageMarker({
 }) {
   const fill = recorded
     ? TYPE[type].solid
-    : "bg-gray-100 text-gray-500 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-400";
+    : "bg-gray-100 text-gray-700 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-400";
   return (
     <span
       className={`relative z-10 flex size-8 items-center justify-center rounded-sm text-body-sm font-bold tabular transition-[box-shadow] duration-200 ${fill} ${
-        active ? "shadow-[0_0_0_4px_var(--color-blue-200)]" : ""
+        active ? "shadow-[0_0_0_4px_var(--color-blue-300)]" : ""
       }`}
     >
       {number}
@@ -129,7 +132,13 @@ export function ArtifactChip({ artifactKey, className = "" }: { artifactKey: str
   return (
     <button
       type="button"
-      onClick={() => select(artifactKey)}
+      onClick={() => {
+        select(artifactKey);
+        // Where the inspector sits beside the spine (lg+), move focus to it so keyboard and screen-reader users land on the details.
+        if (window.matchMedia("(min-width: 1024px)").matches) {
+          requestAnimationFrame(() => document.getElementById("inspector-title")?.focus({ preventScroll: true }));
+        }
+      }}
       aria-pressed={selected}
       title={`${a.label} · ${a.path}`}
       className={`inline-flex h-7 max-w-full shrink-0 items-center rounded-sm px-2 font-mono text-caption transition-colors duration-[120ms] ${
@@ -153,7 +162,7 @@ export function Pill({
   title?: string;
 }) {
   const text = { neutral: "text-gray-700", good: "text-gray-900", warn: "text-gray-900", brand: "text-blue-700" };
-  const iconTone = { neutral: "text-gray-500", good: "text-green-600", warn: "text-yellow-600", brand: "text-blue-600" };
+  const iconTone = { neutral: "text-gray-500", good: "text-green-600", warn: "text-yellow-700", brand: "text-blue-600" };
   return (
     <span title={title} className={`inline-flex items-center gap-1.5 text-body-sm ${text[tone]}`}>
       {Icon && <Icon aria-hidden size={15} strokeWidth={2} className={`shrink-0 ${iconTone[tone]}`} />}

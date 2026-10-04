@@ -29,6 +29,7 @@
   --color-green-600: #16a34a;
   --color-yellow-400: #ffc83d;
   --color-yellow-600: #d99a00;
+  --color-yellow-700: #9a6b00; /* uncertainty ink on white: icons and small text (≥4.5:1) */
   --color-red-500: #ef4444;
 
   /* Artifact roles */
@@ -78,40 +79,40 @@
   letter-spacing: -0.01em;
 }
 @utility text-h2 {
+  font-size: 22px;
+  line-height: 30px;
+  font-weight: 700;
+}
+@utility text-h3 {
   font-size: 20px;
   line-height: 28px;
   font-weight: 700;
 }
-@utility text-h3 {
+@utility text-h4 {
   font-size: 18px;
   line-height: 26px;
-  font-weight: 700;
-}
-@utility text-h4 {
-  font-size: 16px;
-  line-height: 22px;
   font-weight: 600;
 }
 @utility text-title-card {
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 17px;
+  line-height: 24px;
   font-weight: 600;
 }
 @utility text-body {
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 16px;
+  line-height: 24px;
 }
 @utility text-body-sm {
+  font-size: 15px;
+  line-height: 22px;
+}
+@utility text-caption {
   font-size: 13px;
   line-height: 18px;
 }
-@utility text-caption {
-  font-size: 12px;
-  line-height: 16px;
-}
 @utility text-micro {
-  font-size: 10px;
-  line-height: 12px;
+  font-size: 11px;
+  line-height: 14px;
   font-weight: 600;
   letter-spacing: 0.04em;
 }

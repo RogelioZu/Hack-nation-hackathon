@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 import { ArtifactChip, TypeMark, useDiscoveryUi } from "./primitives";
 
 function CopyButton({ value, label }: { value: string; label: string }) {
@@ -53,6 +53,7 @@ function PathText({ path }: { path: string }) {
 }
 
 const HASH = /^[0-9a-f]{40,64}$/i;
+const REPO = "https://github.com/RogelioZu/Hack-nation-hackathon";
 
 function when(iso: string | null): string | null {
   if (!iso) return null;
@@ -62,15 +63,25 @@ function when(iso: string | null): string | null {
 
 /** Provenance of the selected artifact: where it lives, its bytes, who produced it, what it links to. */
 export default function Inspector() {
-  const { selectedKey, artifacts } = useDiscoveryUi();
+  const { selectedKey, artifacts, commit } = useDiscoveryUi();
   const a = selectedKey ? artifacts[selectedKey] : null;
+  // Experiments reproduce from their spec: the spec itself, or the spec linked to a result (one hop) or validation (two hops).
+  const isSpec = (k: string) => k.startsWith("experiments/") && k.endsWith("/spec.json");
+  const specPath = a
+    ? isSpec(a.path)
+      ? a.path
+      : a.path.startsWith("reports/experiments/")
+        ? (a.links.find(isSpec) ?? a.links.flatMap((k) => artifacts[k]?.links ?? []).find(isSpec) ?? null)
+        : null
+    : null;
+  const reproduce = specPath ? `python scripts/run_experiment.py ${specPath}` : null;
 
   return (
     <aside aria-label="Artifact inspector" className="space-y-4">
-      <section className="rounded-lg bg-white p-5" aria-live="polite">
+      <section className="rounded-lg bg-white p-5">
         {a ? (
           <>
-            <h2 className="flex items-center gap-2.5 text-h2 text-gray-900">
+            <h2 id="inspector-title" tabIndex={-1} className="flex items-center gap-2.5 rounded-sm text-h2 text-gray-900">
               <TypeMark type={a.type} />
               {a.label}
             </h2>
@@ -85,6 +96,20 @@ export default function Inspector() {
                   <CopyButton value={a.path} label="path" />
                 </span>
               </Row>
+              {commit && (
+                <Row label="Source">
+                  <a
+                    href={`${REPO}/blob/${commit}/${a.path}`}
+                    title={`Open ${a.path} on GitHub at commit ${commit}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 font-medium text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline"
+                  >
+                    GitHub at <span className="font-mono text-caption">{commit.slice(0, 7)}</span>
+                    <ExternalLink aria-hidden size={13} strokeWidth={2} />
+                  </a>
+                </Row>
+              )}
               <Row label="SHA-256">
                 <span className="flex items-start gap-1">
                   <span className="min-w-0 font-mono text-caption break-all" title={a.sha256}>
@@ -99,6 +124,15 @@ export default function Inspector() {
               {a.session && (
                 <Row label="Session">
                   <span className="font-mono text-caption">{a.session}</span>
+                </Row>
+              )}
+              {reproduce && (
+                <Row label="Reproduce">
+                  <span className="flex items-start gap-1">
+                    <code className="min-w-0 font-mono text-caption [overflow-wrap:anywhere]">{reproduce}</code>
+                    <CopyButton value={reproduce} label="reproduce command" />
+                  </span>
+                  <span className="mt-1 block text-caption text-gray-700">Runs the spec twice and requires identical results.</span>
                 </Row>
               )}
               {a.facts.map((f) => (
