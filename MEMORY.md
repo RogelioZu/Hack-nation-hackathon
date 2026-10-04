@@ -19,10 +19,12 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Pipeline ENUT → `analytic_v1` | ✅ Construido y validado fuera del repo (fases 1 → 2A → 2B). **`APPROVED_FOR_EXPERIMENTS`**. ENUT 2024, n = 2,563. Documentación en `docs/` y `metadata/analytic_v1_manifest.json` (commit `805b7c2`) |
 | Motor de experimentos (`src/experiments/`) | ✅ Determinista, `ExperimentSpec` → `ExperimentResult`, solo `weighted_linear_regression` con CR1 por UPM. Tests en `tests/` |
 | EXP-001 | ✅ `EXPERIMENT_COMPLETED`, `REQUIRES_HUMAN_REVIEW`, `INCONCLUSIVE_RANKING`. Resultados en `reports/experiments/EXP-001/` (ver §4) |
-| Motor de experimentos: empaquetado | ✅ Clon limpio verificado el 2026-10-03: `pip install -r requirements-experiments.txt`, validador PASS, EXP-001 con 0 diferencias numéricas, sin datos crudos ni `staging_v1` (§5). Pendiente: borrar `audit/` y `metadata/provenance.json`; validar `omnigent.yaml` en un entorno con Omnigent |
+| Motor de experimentos: empaquetado | ✅ Clon limpio verificado el 2026-10-03: `pip install -r requirements-experiments.txt`, validador PASS, EXP-001 con 0 diferencias numéricas, sin datos crudos ni `staging_v1` (§5). Ese clon era Windows; en Linux pasa desde el 2026-10-03 con tolerancia relativa 1e-9 en floats (§5). Pendiente: borrar `audit/` y `metadata/provenance.json`; validar `omnigent.yaml` en un entorno con Omnigent |
 | Tools (`agents/commute_lab/tools.py`) | ✅ Reescritas el 2026-10-03: 15 tools conectadas al motor real (`run_experiment` → `scripts/run_experiment.py` en `.venv-experiments`; `save_proposals` verifica specs en seco con `scripts/check_experiment_spec.py`). Smoke test completo contra Supabase sin LLM (ver §5) |
 | Capa agéntica de descubrimiento | ✅ Implementada en `omnigent.yaml` + `initial_state.json`: EXP-001 → crítico → literatura → hipótesis → Data Steward → ≥2 candidatos → el Director elige → runner → crítico → decisión actualizada (`AGENTS.md` §7.2). ⏳ Falta la primera sesión real con LLM |
 | Agentes Omnigent | 🟡 Executor: `openai-agents` + `databricks-gpt-oss-120b` (Databricks Free Edition) vía el provider `databricks-serving`. Specs validados **sin stubs** (`omnigent.yaml`: 15 tools; `agents/scientific_critic.yaml`: 2). ✅ **Primera corrida real**: el Scientific Critic criticó EXP-001 → `reports/discovery/local/critiques/CRIT-EXP-001-001.json` (§5, "Omnigent en Windows"). Falta instalar `supabase` en el entorno de Omnigent para las tools que persisten. Bright Data (`search_web`) sin credenciales todavía |
+| Shared Research State | ✅ Rama `feat/research-state` (2026-10-03): `agents/commute_lab/research_state.py` + `scripts/build_research_state.py` reconstruyen el estado desde `reports/experiments/` y `reports/discovery/local/` (sin BD, sin cifras copiadas: punteros JSON). Snapshot generado en `reports/discovery/local/research_state.json`. Contrato de IDs y referencias para hipótesis, candidatos y decisiones en `docs/RESEARCH_STATE.md`; escribir artefactos con `save_artifact` (nunca sobrescribe). Tests: `PYTHONPATH=agents python -m unittest discover -s agents/tests` |
+| Discovery Director | ✅ Rama `feat/discovery-director` (2026-10-03): `agents/discovery_director.yaml` + `commute_lab/director_tools.py` (5 tools, solo librería estándar, sin ExperimentRunner). Recalcula la ejecutabilidad de cada `PROP-*` con la auditoría en vivo del motor (`planner_tools.capability_audit`) y distingue la mejor propuesta científica de la mejor ejecutable hoy. **Corrida real** (Linux, Databricks `gpt-oss-120b`): `DEC-001` = `WAITING_FOR_ENGINE_CAPABILITY`, preferida PROP-003, ejecutable hoy PROP-005, falta `interaction_terms`. Al extender el motor se vuelve a correr y crea `DEC-002` (nunca sobrescribe). La ejecutabilidad combina la auditoría del schema con `metadata/experiment_engine_capabilities.json` (export del motor): con las interacciones de moderador binario (PR #3), PROP-003, PROP-008 (`has_child_u15` entra como moderador, no como covariable) y PROP-009 ya son ejecutables. ✅ **RUN B** (rama `feat/director-rerun`): `DEC-002` = `READY_TO_EXECUTE`, misma preferencia PROP-003, ahora ejecutable; `next_action` del estado = `run_experiment` con aprobación humana previa. Una primera corrida de RUN B se descartó sin commitear porque decía "strongest observed negative association" y que el test aclararía el ranking: el validador ahora rechaza `RANKING_OVERCLAIM`, "resolve/clarify the ranking", "will resolve/establish" y un `READY_TO_EXECUTE` sin aprobación humana en `next_action` |
 | Papers de OpenAlex | 🟡 `search_openalex` funciona y registra cada paper en `sources` (`kind = 'paper'`, solo metadatos y resumen, sin pasajes) |
 | Despliegue en Vercel | ✅ https://commute-time-lab.vercel.app (producción, pública) |
 | Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
@@ -137,8 +139,10 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **Verificado desde un clon limpio** (`core.autocrlf=true`, sin `data/raw/` ni `data/interim/`, venv nuevo con solo `pip install -r requirements-experiments.txt`): 16 tests OK, `validate_experiment_engine.py` PASS, `run_experiment.py` reproduce EXP-001 con **0 diferencias en 1,801 valores numéricos**, y el SHA256 del parquet no cambia.
 - `requirements-experiments.txt` es autocontenido: numpy, pandas, pyarrow, pydantic, scipy (motor) + statsmodels, patsy (tests), con las versiones del runtime de EXP-001. Requiere Python ≥ 3.11; el Python por defecto de esta máquina es 3.7, así que usar `py -3.12`.
 - **Ruta larga en Windows:** instalar statsmodels en un venv con ruta profunda falla con `OSError [Errno 2]` (límite de 260 caracteres por sus archivos de test anidados). Usar una ruta de venv corta o habilitar rutas largas.
-- `validate_experiment_engine.py` ya **no** lee datos crudos ni `staging_v1`, y no cuenta los tests del pipeline. Comprueba: hash aprobado (parquet = manifiesto = aprobación) y consistencia con el manifiesto (vía `load_approved`), JSON Schema = modelos Pydantic, registro de métodos = esquema, tests del motor, EXP-001 dos veces idéntico, igualdad exacta con el `result.json` commiteado (salvo `code_sha256`, `code_fingerprints`, `protocol_fingerprints` y `runtime`), bytes de `result.json` = `result_sha256` de `validation.json`, y entradas sin cambios. Escribe `engine_validation.json`.
+- `validate_experiment_engine.py` ya **no** lee datos crudos ni `staging_v1`, y no cuenta los tests del pipeline. Comprueba: hash aprobado (parquet = manifiesto = aprobación) y consistencia con el manifiesto (vía `load_approved`), JSON Schema = modelos Pydantic, registro de métodos = esquema, tests del motor, EXP-001 dos veces idéntico, igualdad con el `result.json` commiteado (floats con tolerancia relativa `FLOAT_REL_TOL = 1e-9`; enteros, IDs, estados, hashes y claves exactos; salvo `code_sha256`, `code_fingerprints`, `protocol_fingerprints` y `runtime`), bytes de `result.json` = `result_sha256` de `validation.json`, y entradas sin cambios. Escribe `engine_validation.json`.
 - **Finales de línea (`.gitattributes`):** LF forzado en `*.py`, `*.md`, `*.json`, `*.yaml`, `*.yml` y `*.txt`; parquet y PDF binarios. Dos excepciones con `-text` (bytes exactos): `metadata/analytic_v1_manifest.json` y `reports/experiments/EXP-001/result.json`. Ambos se generaron con CRLF, y la procedencia registra el hash de esos bytes (`manifest_sha256` f800513b…, `result_sha256` 5e4084a3…), pero git los había guardado con LF (f23add97…, 3113a9ee…). Un clon limpio no coincidía con la procedencia de EXP-001. Las cifras nunca cambiaron.
+  - ⚠️ El commit `2d00fda` puso `-text` pero **no** volvió a agregar los bytes CRLF: git siguió guardando LF y en cualquier clon nuevo el validador daba `RESULT_BYTES_DRIFT` y `read_experiment_artifact` del crítico rechazaba EXP-001. Solo funcionaba en la máquina donde los archivos seguían con CRLF. Corregido el 2026-10-03 convirtiendo LF → CRLF (los hashes coinciden exactamente con f800513b… y 5e4084a3…). Comprobar con `git ls-files --eol`: debe decir `i/crlf`.
+- **Reproducción entre plataformas:** reejecutar EXP-001 en Linux da 821 de 1,127 floats no idénticos bit a bit frente al resultado generado en Windows, con diferencia relativa máxima 3.4 × 10⁻¹¹ (BLAS/libm). Por eso el validador compara floats con tolerancia relativa 1e-9 y reporta `exp001_floats_not_bit_identical` y `exp001_max_float_relative_difference`. `run_experiment.py` sigue exigiendo igualdad exacta entre sus dos corridas en la misma máquina.
 - **Al commitear:** git no detecta solo que esos dos archivos cambiaron, porque su fecha de modificación no cambió. Agregarlos explícitamente: `git add .gitattributes metadata/analytic_v1_manifest.json reports/experiments/EXP-001/result.json`. El diff muestra ~8,000 líneas por archivo, pero solo cambian los finales de línea.
 - `scripts/run_experiment.py` ahora escribe siempre LF (`newline="
 "`), así que sus salidas y `result_sha256` son iguales en cualquier sistema. Antes, en Windows escribía CRLF.
@@ -169,6 +173,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   En `omnigent.yaml`: `auth: {type: provider, name: databricks-serving}`.
   - `wire_api: chat` fuerza Chat Completions también en los sub-agentes, que **no heredan** `use_responses` del ancla `&executor`.
   - Definir `HARNESS_OPENAI_AGENTS_GATEWAY_BASE_URL` como variable de entorno **no** sirve: Omnigent limpia el entorno del harness.
+- **Linux (verificado el 2026-10-03):** `~/.omnigent/config.yaml` con el mismo provider `databricks-serving`, `DATABRICKS_TOKEN` (PAT) en `.env` y `set -a; source .env; set +a; PYTHONPATH=agents omnigent run agents/discovery_director.yaml -p "…"`. En Linux no hacen falta `PYTHONUTF8` ni `omnigent server --background`: `run` levanta el servidor local solo (queda corriendo en `127.0.0.1:6767`).
 - **Token:** `DATABRICKS_TOKEN` tiene que estar en el entorno del servidor y del `run`.
   - El token OAuth de `databricks auth token` caduca en ~1 h; para sesiones largas, usar un PAT.
   - `auth_command` (renovación automática) no sirve en Windows: Omnigent lo ejecuta con `sh -c`, y `sh` no está en el PATH (solo existe en `C:\Program Files\Git\usr\bin`).
@@ -192,13 +197,71 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **Motor en Windows:** `.venv-experiments` creado con `uv venv -p 3.12` + `requirements-experiments.txt`; el validador da PASS. `tools.py` ahora usa por defecto `.venv-experiments/Scripts/python.exe` en Windows (y `bin/python` en el resto); `EXPERIMENT_PYTHON` sigue teniendo prioridad.
 - **Bootstrap anterior con `OPENAI_API_KEY`:** la llave es válida, pero su organización **no tiene créditos** ("You have no credits remaining"). El harness `codex` descarta `OPENAI_API_KEY` y necesita la CLI `codex`, que no está instalada (la app de escritorio de Codex no la expone).
 
+- **Hypothesis Agent (2026-10-04):** `agents/hypothesis_agent.yaml` con tres tools de librería estándar (`commute_lab/hypothesis_tools.py`):
+  - `read_hypothesis_context`: entrega el resultado de EXP-001, la crítica, las 22 variables aprobadas, H1–H4 y el contrato del motor, leído del JSON Schema.
+  - `validate_hypothesis`: validación en seco, sin guardar.
+  - `save_hypothesis`: asigna `HYP-NNN` secuencial (contando también `superseded/`), no sobrescribe y permite máximo 4 hipótesis activas por crítica.
+  - Los artefactos van en `reports/discovery/local/hypotheses/` (misma convención que las críticas), con estado `UNTESTED` y `REQUIRES_HUMAN_REVIEW`.
+- **El validador rechaza:**
+  - lenguaje causal (incluido "effect");
+  - "strongest negative association" (se debe decir "point estimate");
+  - afirmaciones vagas o sin comparación;
+  - criterios de apoyo y refutación sin incertidumbre (se exige un intervalo que excluya o incluya el cero);
+  - variables o nombres `snake_case` fuera del contrato;
+  - variables que el experimento no estimó, presentadas como evidencia observada;
+  - cifras, decimales o enteros, que no estén en las fuentes;
+  - `known_executable: true` para interacciones, formas no lineales, variables fuera del schema o diferencias entre grupos;
+  - otros `EXP-*`, frases que eligen la siguiente prueba y duplicados (Jaccard ≥ 0.6);
+  - **hipótesis que no son nuevas**: deben agregar un subgrupo, una comparación entre grupos, una variable aprobada no usada o una forma funcional distinta.
+- **Corridas reales** con `databricks-gpt-oss-120b`:
+  - Primera corrida: HYP-001 a 003. Segunda: HYP-004 a 006.
+  - Las dos pasaron el validador de ese momento, pero la revisión encontró huecos: criterios basados solo en estimaciones puntuales, "effect", `known_executable: true` en una diferencia entre grupos, y re-pruebas de coeficientes que EXP-001 ya estimó.
+  - Después de cada revisión se endureció el validador y se archivaron esas hipótesis sin cambios en `hypotheses/superseded/` (con `README.md`). Sus IDs no se reutilizan. HYP-005, de la segunda corrida, sí era válida y sigue activa.
+  - Tercera corrida: HYP-007 y 008.
+  - **Activas:** HYP-005 (sueño, mujeres vs. hombres), HYP-007 (sueño, con vs. sin `has_child_u15`) y HYP-008 (ocio, por sexo). Las tres con `known_executable: null`. Esperan revisión humana; no van al Experiment Planner.
+- **Trampa de escritura:** al parchear Python con heredocs, `\b` dentro de strings no-raw se escribió como el carácter de retroceso (0x08). Las regex no fallan; simplemente nunca coinciden. Parchear desde archivos `.py` y revisar que el archivo no tenga caracteres de control.
+- ✅ **Bytes de EXP-001 en git (resuelto el 2026-10-04):** `main` (commit `2bd1fbf`) restauró los bytes CRLF certificados de `reports/experiments/EXP-001/result.json` (`5e4084a3…`) y `metadata/analytic_v1_manifest.json` (`f800513b…`). `feat/hypothesis-agent` los recibió al fusionar `main` (merge por fast-forward a `555ea10`). El crítico, el validador y las tools leen EXP-001 con bytes exactos.
+  - Las hipótesis y propuestas generadas antes del arreglo guardaron el hash LF observado (`3113a9ee…`) como `sha256`. `hypotheses/PROVENANCE_NOTE.md` y `candidates/PROVENANCE_NOTE.md` aclaran cuál es el hash canónico; esos artefactos no se reescriben porque REV-001 certifica los bytes de las hipótesis.
+  - Desde entonces, `hypothesis_tools` y `planner_tools` guardan `observed_sha256` y `certified_sha256` por separado (`_experiment_provenance`).
+
+- **Revisión humana REV-001 (2026-10-04):** `reports/discovery/local/reviews/REV-001.json`. Aprueba HYP-005, HYP-007 y HYP-008 para la planificación, con 5 restricciones: las direcciones son hipótesis; la heterogeneidad exige inferir sobre la diferencia entre grupos; los subgrupos separados no bastan; el análisis es observacional; sin lenguaje causal. Es una transcripción literal del mensaje del usuario, marcada como tal y con los hashes de las hipótesis. El Planner rechaza cualquier hipótesis que haya cambiado después de la revisión.
+- **Experiment Planner:** `agents/experiment_planner.yaml` con tres tools de librería estándar (`commute_lab/planner_tools.py`):
+  - `read_planning_context`: entrega la revisión, las hipótesis aprobadas, la crítica, EXP-001, las variables y la **auditoría de capacidades**. La auditoría se deriva en cada llamada del JSON Schema y del registro de métodos: interacciones, comparación formal entre grupos, no linealidad y filtro por `has_child_u15` → **no soportados**; filtros por sexo, estado y edad → sí.
+  - `validate_proposal` (en seco) y `save_proposal`, que escribe `reports/discovery/local/candidates/PROP-NNN.json` (el tipo `candidates` del Shared Research State; antes era `proposals/`, que el estado ignoraba) con `selected=false`, `experiment_id=null` y `REQUIRES_HUMAN_REVIEW`.
+- **El validador de propuestas exige:**
+  - que la factibilidad coincida con la auditoría;
+  - que `FORMAL_HETEROGENEITY_TEST` liste `interaction_terms` o `formal_between_group_comparison`;
+  - que `EXPLORATORY_SUBGROUP` declare que no establece heterogeneidad y no se compare contra el estimado global;
+  - que la interacción incluya el término principal del moderador, declarando `covariates_outside_schema` si el moderador no está en el schema;
+  - que "incluye el cero" sea inconcluso;
+  - que en una hipótesis bidireccional el apoyo acepte ambos sentidos y la refutación sea por equivalencia, con un margen fijado por humanos;
+  - que no repita EXP-001;
+  - sin sobreafirmaciones ("definitive", "prove"), sin lenguaje causal ("main effect" sí está permitido), sin elegir ni asignar EXP-*, sin cifras inventadas y sin duplicados (mismas hipótesis y mismo outcome).
+- **Corridas reales:** cinco, con `databricks-gpt-oss-120b`. PROP-001, 002, 004, 006 y 007 se archivaron en `candidates/superseded/` (con `README.md`); el validador de cada momento no había detectado sus fallas.
+  - En la primera corrida el agente afirmó haber guardado PROP-003 sin llamar a `save_proposal`. **Siempre verificar en disco, nunca el resumen del agente.**
+  - En la cuarta, el CLI de Omnigent terminó con "Turn did not complete within 120s" (subscribe-after-post race).
+- **Activas:**
+  - PROP-003: HYP-005, interacción traslado × sexo para sueño.
+  - PROP-008: HYP-007, interacción × `has_child_u15`, que también requiere esa covariable fuera del schema.
+  - PROP-009: HYP-008, interacción × sexo para ocio, bidireccional.
+  - Las tres anteriores son `REQUIRES_ENGINE_EXTENSION`.
+  - PROP-005: HYP-005, modelo exploratorio solo de mujeres, `EXECUTABLE_NOW`, declarado insuficiente para establecer heterogeneidad.
+  - Esperan revisión humana. No se eligió ninguna ni se asignó EXP-002.
+
+- **Extensión del motor: interacción con moderador binario (rama `feat/interaction-engine`, 2026-10-04):**
+  - Campo opcional `interaction` en `ExperimentSpec`; resultados en `ExperimentResult.interactions`; capacidades en `metadata/experiment_engine_capabilities.json`, que el validador compara con `src/experiments/capabilities.py`.
+  - Usa la misma WLS + CR1 que EXP-001. La pendiente del grupo de comparación sale de la covarianza completa. El moderador entra una sola vez, aunque también esté en las covariables. Los faltantes del moderador se excluyen y se cuentan, nunca se rellenan.
+  - Validación: 29 tests del motor (13 sintéticos nuevos, sin resultados reales); validador PASS; EXP-001 sin diferencias no ambientales, ni siquiera de 1 bit; `analytic_v1` y el `result.json` de EXP-001 conservan sus hashes.
+  - El auditor del Planner (sin cambios) detecta `interaction_terms = True` por el campo `interaction`. `formal_between_group_comparison` sigue en `False` en su auditoría, porque busca otros nombres de campo.
+  - PROP-003, PROP-008 y PROP-009 traducidas a `ExperimentSpec` validan contra el esquema; no se ejecutaron. No hay EXP-002.
+
 ### Web: espina de descubrimiento (2026-10-03)
 - `web/lib/discovery/collect.mjs` es JS plano (lo usan el servidor y `scripts/snapshot-discovery.mjs`); `model.ts` es puro y se puede probar con `node --input-type=module -e 'await import("./lib/discovery/model.ts")'` desde `web/`.
 - Los lectores toleran los dos formatos de crítica (`critic_tools.py` local y `tools.py` con Supabase) y nombres alternativos en hipótesis/candidatos/decisiones. Un campo ausente se muestra como "Not stated in the artifact", nunca se rellena.
 - Vínculos sin Supabase: candidato → experimento comparando el spec (sin `experiment_id`); selección → candidato por `proposal_id`; crítica → experimento por `experiment_id`. Una decisión actualizada solo cita `experiment_run_id` (UUID de Supabase), así que no se enlaza a un `EXP-NNN`.
 - LIVE usa `DISCOVERY_REPO_ROOT` si está definida (por defecto, el padre de `web/`). Así se probó con un fixture sintético en el scratchpad.
 - **Next 16 no permite dos `next dev` en el mismo directorio.** Para un segundo servidor: `npm run build && npx next start -p 3100`.
-- `reports/experiments/EXP-001/result.json` en este checkout Linux tiene SHA-256 `3113a9ee…` (LF), distinto del `result_sha256` de `validation.json` (`5e4084a3…`, CRLF). El UI no afirma que coincidan.
+- Desde el merge de `main` (2026-10-04, commit `2bd1fbf`), `reports/experiments/EXP-001/result.json` conserva sus bytes CRLF certificados (`5e4084a3…`), así que el hash que muestra el inspector coincide con `validation.json` y con `research_state.json`.
 - **2026-10-04:**
   - Los chips de experimento ya no se repiten: `EXP-001 spec`, `EXP-001 result` y `EXP-001 validation`.
   - `compactResult` (`collect.mjs`) conserva `candidate_next_experiments` (pregunta + factibilidad), que la banda muestra como "Listed by the engine, not selected".
@@ -225,7 +288,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 7. Próximos pasos
 
-1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): revisión humana de `CRIT-EXP-001-001`; luego conectar el Hypothesis Agent a esa crítica. Para el ciclo completo: `--with supabase` en el entorno de Omnigent, un PAT en `DATABRICKS_TOKEN` y la receta de §5. Comprobar que el ASK salta cuando un sub-agente llama a `run_experiment`.
+1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): el motor ya soporta interacciones con moderador binario. Falta la decisión del Discovery Director y la revisión humana de PROP-003, PROP-005, PROP-008 y PROP-009 antes de ejecutar cualquier `ExperimentSpec`. Para el ciclo completo: `--with supabase`, un PAT en `DATABRICKS_TOKEN` y la receta de §5.
 2. Probar `search_web` con `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE` reales.
 3. Panel web: ✅ la espina (`/`) ya muestra críticas, hipótesis, candidatos, selección, nueva evidencia y decisión desde los JSON de `reports/discovery/`. Cada vez que se commiteen artefactos nuevos: `cd web && npm run snapshot` y commitear `web/data/discovery-snapshot.json` (si no, el REPLAY de Vercel no los muestra).
 4. Borrar `audit/` y `metadata/provenance.json` (§5).

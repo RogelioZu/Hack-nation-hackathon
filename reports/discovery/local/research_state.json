@@ -1,0 +1,1535 @@
+{
+  "_generated": {
+    "note": "GENERATED SNAPSHOT - do not edit. Rebuild with: python scripts/build_research_state.py. Sources of truth are the artifacts in provenance.inputs.",
+    "state_version": "1.0",
+    "generator": "agents/commute_lab/research_state.py"
+  },
+  "research_id": "time-poverty-lab/local",
+  "research_question": "Among workers aged 18-65 living in Mexico City and Estado de Mexico, which dimension of personal time (sleep, exclusive personal hygiene, exclusive household conversation, leisure) shows the strongest negative association with 5 additional hours of weekday commuting (commute_5h: +300 minutes Monday-Friday)? Does the association differ by sex or by the presence of minors in the household?",
+  "research_question_source": "initial_state.json",
+  "dataset": {
+    "version": "analytic_v1",
+    "population_n": 2563,
+    "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+    "approval_status": "APPROVED_FOR_EXPERIMENTS",
+    "manifest": "metadata/analytic_v1_manifest.json",
+    "approval": "metadata/analytic_v1_experiment_approval.json",
+    "contract": "docs/DATA_CONTRACT.md"
+  },
+  "evidence": [
+    {
+      "evidence_id": "CRIT-EXP-001-001/evidence/1",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-001-001",
+      "source_field": "estimates[adjusted:sleep_weekday_min].coefficient",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/evidence_summary/0"
+    },
+    {
+      "evidence_id": "CRIT-EXP-001-001/evidence/2",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-001-001",
+      "source_field": "estimates[adjusted:personal_hygiene_weekday_min].coefficient",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/evidence_summary/1"
+    },
+    {
+      "evidence_id": "CRIT-EXP-001-001/evidence/3",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-001-001",
+      "source_field": "estimates[adjusted:household_conversation_weekday_min].coefficient",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/evidence_summary/2"
+    },
+    {
+      "evidence_id": "CRIT-EXP-001-001/evidence/4",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-001-001",
+      "source_field": "estimates[adjusted:leisure_weekday_min].coefficient",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/evidence_summary/3"
+    },
+    {
+      "evidence_id": "CRIT-EXP-001-001/evidence/5",
+      "kind": "critique_inference",
+      "critique_id": "CRIT-EXP-001-001",
+      "source_field": "ranking.point_estimate_order",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/evidence_summary/4"
+    },
+    {
+      "evidence_id": "CRIT-EXP-001-001/evidence/6",
+      "kind": "critique_inference",
+      "critique_id": "CRIT-EXP-001-001",
+      "source_field": "ranking.paired_comparisons",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/evidence_summary/5"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/1",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.reference_group_slope",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/0"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/10",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "hypotheses_evaluated_by_engine",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/9"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/11",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "prior_scientific_state.experiments[0].ranking_status",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/10"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/12",
+      "kind": "critique_inference",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.interaction_comparison_minus_reference",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/11"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/2",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.comparison_group_slope",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/1"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/3",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "estimates[0].ci95_pointwise, estimates[0].bonferroni_outcome_interval",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/2"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/4",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "ranking.status",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/3"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/5",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "sensitivity",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/4"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/6",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "sample_size, weighted_population",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/5"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/7",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "diagnostics_adjusted.adjusted:sleep_weekday_min",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/6"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/8",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "ranking.paired_comparisons",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/7"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/9",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "limitations[0]",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/8"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/adjusted:household_conversation_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "adjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/2"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/adjusted:leisure_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "adjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/3"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/adjusted:personal_hygiene_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "adjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/1"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/adjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/0"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:adjusted:household_conversation_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/10"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:adjusted:leisure_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/11"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:adjusted:personal_hygiene_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/9"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:adjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/8"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:unadjusted:household_conversation_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/14"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:unadjusted:leisure_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/15"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:unadjusted:personal_hygiene_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/13"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/exclude_zero_weekday_work:unadjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "exclude_zero_weekday_work:unadjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/12"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/unadjusted:household_conversation_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "unadjusted",
+      "outcome": "household_conversation_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/6"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/unadjusted:leisure_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "unadjusted",
+      "outcome": "leisure_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/7"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/unadjusted:personal_hygiene_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "unadjusted",
+      "outcome": "personal_hygiene_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/5"
+    },
+    {
+      "evidence_id": "EXP-001/estimates/unadjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-001",
+      "variant": "unadjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/estimates/4"
+    },
+    {
+      "evidence_id": "EXP-001/hypotheses/H1",
+      "kind": "engine_hypothesis_assessment",
+      "experiment_id": "EXP-001",
+      "hypothesis_id": "H1",
+      "assessment": "supported",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/supported_hypotheses/0"
+    },
+    {
+      "evidence_id": "EXP-001/hypotheses/H2",
+      "kind": "engine_hypothesis_assessment",
+      "experiment_id": "EXP-001",
+      "hypothesis_id": "H2",
+      "assessment": "supported",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/supported_hypotheses/1"
+    },
+    {
+      "evidence_id": "EXP-001/ranking",
+      "kind": "experiment_ranking",
+      "experiment_id": "EXP-001",
+      "status": "INCONCLUSIVE_RANKING",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/ranking"
+    },
+    {
+      "evidence_id": "EXP-001/sensitivity/exclude_zero_weekday_work",
+      "kind": "experiment_sensitivity",
+      "experiment_id": "EXP-001",
+      "status": "INCONCLUSIVE_RANKING",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/sensitivity_results/0"
+    },
+    {
+      "evidence_id": "EXP-002/estimates/adjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-002",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/estimates/0"
+    },
+    {
+      "evidence_id": "EXP-002/hypotheses/H3",
+      "kind": "engine_hypothesis_assessment",
+      "experiment_id": "EXP-002",
+      "hypothesis_id": "H3",
+      "assessment": "inconclusive",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/inconclusive_hypotheses/0"
+    },
+    {
+      "evidence_id": "EXP-002/ranking",
+      "kind": "experiment_ranking",
+      "experiment_id": "EXP-002",
+      "status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/ranking"
+    }
+  ],
+  "critiques": [
+    {
+      "critique_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+      "scientific_status": "UNCERTAIN",
+      "references": [
+        {
+          "to": "EXP-001",
+          "relation": "interprets",
+          "field": "experiment_id"
+        }
+      ]
+    },
+    {
+      "critique_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "sha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+      "scientific_status": "UNCERTAIN",
+      "references": [
+        {
+          "to": "EXP-002",
+          "relation": "interprets",
+          "field": "experiment_id"
+        },
+        {
+          "to": "HYP-005",
+          "relation": "assesses",
+          "field": "hypothesis_assessments[].hypothesis_id"
+        },
+        {
+          "to": "H3",
+          "relation": "assesses",
+          "field": "hypothesis_assessments[].protocol_hypothesis_id"
+        }
+      ]
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "source": "protocol",
+      "title": "Time Displacement",
+      "artifact": "docs/EXPERIMENT_PROTOCOL.md",
+      "pointer": "#H1",
+      "evaluated_in": [
+        "EXP-001/hypotheses/H1"
+      ],
+      "references": []
+    },
+    {
+      "hypothesis_id": "H2",
+      "source": "protocol",
+      "title": "Unequal Displacement",
+      "artifact": "docs/EXPERIMENT_PROTOCOL.md",
+      "pointer": "#H2",
+      "evaluated_in": [
+        "EXP-001/hypotheses/H2"
+      ],
+      "references": []
+    },
+    {
+      "hypothesis_id": "H3",
+      "source": "protocol",
+      "title": "Sex Heterogeneity",
+      "artifact": "docs/EXPERIMENT_PROTOCOL.md",
+      "pointer": "#H3",
+      "evaluated_in": [
+        "EXP-002/hypotheses/H3"
+      ],
+      "references": [],
+      "assessed_in": [
+        "CRIT-EXP-002-002"
+      ]
+    },
+    {
+      "hypothesis_id": "H4",
+      "source": "protocol",
+      "title": "Household Constraint",
+      "artifact": "docs/EXPERIMENT_PROTOCOL.md",
+      "pointer": "#H4",
+      "evaluated_in": [],
+      "references": []
+    },
+    {
+      "hypothesis_id": "HYP-005",
+      "artifact": "reports/discovery/local/hypotheses/HYP-005.json",
+      "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+      "references": [
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "motivated_by",
+          "field": "source_critique_ids[]"
+        }
+      ],
+      "source": "agent",
+      "approved_in": [
+        "REV-001"
+      ],
+      "assessed_in": [
+        "CRIT-EXP-002-002"
+      ]
+    },
+    {
+      "hypothesis_id": "HYP-007",
+      "artifact": "reports/discovery/local/hypotheses/HYP-007.json",
+      "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+      "references": [
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "motivated_by",
+          "field": "source_critique_ids[]"
+        }
+      ],
+      "source": "agent",
+      "approved_in": [
+        "REV-001"
+      ]
+    },
+    {
+      "hypothesis_id": "HYP-008",
+      "artifact": "reports/discovery/local/hypotheses/HYP-008.json",
+      "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+      "references": [
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "motivated_by",
+          "field": "source_critique_ids[]"
+        }
+      ],
+      "source": "agent",
+      "approved_in": [
+        "REV-001"
+      ]
+    }
+  ],
+  "candidate_experiments": [
+    {
+      "candidate_id": "PROP-003",
+      "artifact": "reports/discovery/local/candidates/PROP-003.json",
+      "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+      "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+      "references": [
+        {
+          "to": "HYP-005",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    },
+    {
+      "candidate_id": "PROP-005",
+      "artifact": "reports/discovery/local/candidates/PROP-005.json",
+      "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+      "analysis_role": "EXPLORATORY_SUBGROUP",
+      "references": [
+        {
+          "to": "HYP-005",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    },
+    {
+      "candidate_id": "PROP-008",
+      "artifact": "reports/discovery/local/candidates/PROP-008.json",
+      "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+      "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+      "references": [
+        {
+          "to": "HYP-007",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    },
+    {
+      "candidate_id": "PROP-009",
+      "artifact": "reports/discovery/local/candidates/PROP-009.json",
+      "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+      "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+      "references": [
+        {
+          "to": "HYP-008",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    }
+  ],
+  "experiments": [
+    {
+      "experiment_id": "EXP-001",
+      "status": "EXPERIMENT_COMPLETED",
+      "review_status": "REQUIRES_HUMAN_REVIEW",
+      "dataset_version": "analytic_v1",
+      "method": "weighted_linear_regression",
+      "hypothesis_ids": [
+        "H1",
+        "H2"
+      ],
+      "ranking_status": "INCONCLUSIVE_RANKING",
+      "quality_flags": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED",
+        "INCONCLUSIVE_RANKING",
+        "MULTIPLE_COMPARISON_FAMILIES",
+        "REQUIRES_HUMAN_REVIEW"
+      ],
+      "artifacts": {
+        "spec": "reports/experiments/EXP-001/spec.json",
+        "result": "reports/experiments/EXP-001/result.json",
+        "validation": "reports/experiments/EXP-001/validation.json"
+      },
+      "result_sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+      "selected_by": [],
+      "critiques": [
+        "CRIT-EXP-001-001"
+      ]
+    },
+    {
+      "experiment_id": "EXP-002",
+      "status": "EXPERIMENT_COMPLETED",
+      "review_status": "REQUIRES_HUMAN_REVIEW",
+      "dataset_version": "analytic_v1",
+      "method": "weighted_linear_regression",
+      "hypothesis_ids": [
+        "H3"
+      ],
+      "ranking_status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+      "quality_flags": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED",
+        "REQUIRES_HUMAN_REVIEW"
+      ],
+      "artifacts": {
+        "spec": "reports/experiments/EXP-002/spec.json",
+        "result": "reports/experiments/EXP-002/result.json",
+        "validation": "reports/experiments/EXP-002/validation.json"
+      },
+      "result_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+      "selected_by": [],
+      "critiques": [
+        "CRIT-EXP-002-002"
+      ],
+      "authorized_by": [
+        "REV-DEC-005-001"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": "DEC-001",
+      "artifact": "reports/discovery/local/decisions/DEC-001.json",
+      "sha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+      "type": "discovery_decision",
+      "decision_status": "WAITING_FOR_ENGINE_CAPABILITY",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-005",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    },
+    {
+      "decision_id": "DEC-002",
+      "artifact": "reports/discovery/local/decisions/DEC-002.json",
+      "sha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    },
+    {
+      "decision_id": "DEC-003",
+      "artifact": "reports/discovery/local/decisions/DEC-003.json",
+      "sha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    },
+    {
+      "decision_id": "DEC-004",
+      "artifact": "reports/discovery/local/decisions/DEC-004.json",
+      "sha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    },
+    {
+      "decision_id": "DEC-005",
+      "artifact": "reports/discovery/local/decisions/DEC-005.json",
+      "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "review_id": "REV-001",
+      "artifact": "reports/discovery/local/reviews/REV-001.json",
+      "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+      "review_type": "HYPOTHESIS_REVIEW",
+      "decision": "APPROVED_FOR_PLANNING",
+      "references": [
+        {
+          "to": "HYP-005",
+          "relation": "approves",
+          "field": "approved_hypotheses[].hypothesis_id"
+        },
+        {
+          "to": "HYP-007",
+          "relation": "approves",
+          "field": "approved_hypotheses[].hypothesis_id"
+        },
+        {
+          "to": "HYP-008",
+          "relation": "approves",
+          "field": "approved_hypotheses[].hypothesis_id"
+        }
+      ]
+    },
+    {
+      "review_id": "REV-DEC-005-001",
+      "artifact": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+      "sha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+      "review_type": "DECISION_APPROVAL",
+      "decision": "APPROVED_FOR_EXECUTION",
+      "references": [
+        {
+          "to": "DEC-005",
+          "relation": "approves",
+          "field": "approved_decision_id"
+        },
+        {
+          "to": "EXP-002",
+          "relation": "authorizes",
+          "field": "approved_experiment.experiment_id_to_assign"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/0",
+      "text": "Observational associations; no identification of mechanisms or intervention effects."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/2",
+      "text": "EST_DIS identifies nested PSUs and is reported, but covariance does not center scores within strata or apply stratification gains."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/3",
+      "text": "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/4",
+      "text": "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/5",
+      "text": "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/6",
+      "text": "Pointwise 95% intervals are descriptive. Separate Bonferroni families cover primary outcomes and pairwise differences; no joint guarantee across both families or sensitivity models."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/7",
+      "text": "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/8",
+      "text": "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs."
+    },
+    {
+      "source_id": "EXP-001",
+      "artifact": "reports/experiments/EXP-001/result.json",
+      "pointer": "/limitations/9",
+      "text": "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/0",
+      "text": "Observational associations; no identification of mechanisms or intervention effects."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/2",
+      "text": "EST_DIS identifies nested PSUs and is reported, but covariance does not center scores within strata or apply stratification gains."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/3",
+      "text": "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/4",
+      "text": "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/5",
+      "text": "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/6",
+      "text": "Pointwise 95% intervals are descriptive. With one primary outcome there are no Bonferroni outcome or pairwise-difference families; no joint guarantee across sensitivity models."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/7",
+      "text": "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/8",
+      "text": "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/9",
+      "text": "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/10",
+      "text": "Observational, cross-sectional association; the interaction does not identify a causal effect or mechanism."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/11",
+      "text": "The interaction coefficient is the formal estimand for the difference in exposure slopes between the two moderator groups."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/12",
+      "text": "An interval that includes zero is inconclusive about heterogeneity; it is not evidence of no difference."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/13",
+      "text": "No equivalence margin has been approved, so equivalence is not assessed."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/14",
+      "text": "CR1 PSU-cluster uncertainty is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/15",
+      "text": "Rows missing the moderator are excluded under the model-specific complete-case policy, never assigned to a group."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/16",
+      "text": "In moderated models the Estimate coefficient refers to the reference-group exposure slope; heterogeneity is assessed only through the interaction coefficient."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/limitations/0",
+      "text": "Observational, cross‑sectional design; associations cannot be interpreted as causal."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/limitations/1",
+      "text": "Units are minutes of outcome per additional 300 weekday commuting minutes; not daily or weekly units."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/limitations/2",
+      "text": "Weighted R² values are low (e.g., 0.058 for sleep), indicating limited explanatory power."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/limitations/3",
+      "text": "Sensitivity analysis (exclude_zero_weekday_work) reproduces the same inconclusive ranking."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/uncertainties/0",
+      "text": "Cluster approximation (CR1 PSU‑clustered sandwich) is an approximation, not full ENUT complex‑survey variance."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/uncertainties/1",
+      "text": "High‑leverage observations retained (168 above 2p/n) may affect standard errors."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/uncertainties/2",
+      "text": "Pointwise 95% intervals are descriptive; Bonferroni families are separate for outcomes and pairwise differences."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/uncertainties/3",
+      "text": "No finite‑population correction, replicate weights, or calibration uncertainty adjustment."
+    },
+    {
+      "source_id": "CRIT-EXP-001-001",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "pointer": "/uncertainties/4",
+      "text": "Linear specification assumes a constant slope across the commuting exposure range."
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/0",
+      "text": "Observational cross‑sectional design; associations do not imply causation"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER‑weighted point estimates; variance method is an approximation"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/2",
+      "text": "Linear specification of commute exposure may miss non‑linear patterns"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/3",
+      "text": "Intervals that include zero are inconclusive and do not establish equivalence (no equivalence margin exists)"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/4",
+      "text": "CR1 PSU-cluster sandwich approximation, not full ENUT complex-survey variance"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/uncertainties/1",
+      "text": "High leverage observations retained (183), possibly influencing estimates"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/uncertainties/2",
+      "text": "Limited power to detect interaction effects with sample size 2563"
+    }
+  ],
+  "links": [
+    {
+      "from": "CRIT-EXP-001-001",
+      "to": "EXP-001",
+      "relation": "interprets",
+      "field": "experiment_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "H3",
+      "relation": "assesses",
+      "field": "hypothesis_assessments[].protocol_hypothesis_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "HYP-005",
+      "relation": "assesses",
+      "field": "hypothesis_assessments[].hypothesis_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "EXP-002",
+      "relation": "interprets",
+      "field": "experiment_id"
+    },
+    {
+      "from": "DEC-001",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "DEC-002",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-002",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "DEC-003",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "DEC-004",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "DEC-005",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "HYP-005",
+      "to": "CRIT-EXP-001-001",
+      "relation": "motivated_by",
+      "field": "source_critique_ids[]"
+    },
+    {
+      "from": "HYP-007",
+      "to": "CRIT-EXP-001-001",
+      "relation": "motivated_by",
+      "field": "source_critique_ids[]"
+    },
+    {
+      "from": "HYP-008",
+      "to": "CRIT-EXP-001-001",
+      "relation": "motivated_by",
+      "field": "source_critique_ids[]"
+    },
+    {
+      "from": "PROP-003",
+      "to": "HYP-005",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "PROP-005",
+      "to": "HYP-005",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "PROP-008",
+      "to": "HYP-007",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "PROP-009",
+      "to": "HYP-008",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "REV-001",
+      "to": "HYP-005",
+      "relation": "approves",
+      "field": "approved_hypotheses[].hypothesis_id"
+    },
+    {
+      "from": "REV-001",
+      "to": "HYP-007",
+      "relation": "approves",
+      "field": "approved_hypotheses[].hypothesis_id"
+    },
+    {
+      "from": "REV-001",
+      "to": "HYP-008",
+      "relation": "approves",
+      "field": "approved_hypotheses[].hypothesis_id"
+    },
+    {
+      "from": "REV-DEC-005-001",
+      "to": "DEC-005",
+      "relation": "approves",
+      "field": "approved_decision_id"
+    },
+    {
+      "from": "REV-DEC-005-001",
+      "to": "EXP-002",
+      "relation": "authorizes",
+      "field": "approved_experiment.experiment_id_to_assign"
+    }
+  ],
+  "next_action": {
+    "derived": true,
+    "latest_experiment_id": "EXP-002",
+    "pending_human_review": [
+      "EXP-001",
+      "EXP-002"
+    ],
+    "stage": "hypotheses",
+    "agent": "hypothesis_agent",
+    "inputs": [
+      "CRIT-EXP-002-002"
+    ]
+  },
+  "provenance": {
+    "workspace": "reports/discovery/local",
+    "inputs": {
+      "docs/EXPERIMENT_PROTOCOL.md": "32eda44226c54c75fb5442a338bc489dbedfb904c3e78c836b71a9970239d0ed",
+      "experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+      "experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+      "initial_state.json": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755",
+      "metadata/analytic_v1_experiment_approval.json": "0844f5f5cb0a4c936e3e0551542055961c5e6293e8305e2c5c181a0620186081",
+      "metadata/analytic_v1_manifest.json": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+      "reports/discovery/local/candidates/PROP-003.json": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+      "reports/discovery/local/candidates/PROP-005.json": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+      "reports/discovery/local/candidates/PROP-008.json": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+      "reports/discovery/local/candidates/PROP-009.json": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+      "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+      "reports/discovery/local/critiques/CRIT-EXP-002-002.json": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+      "reports/discovery/local/decisions/DEC-001.json": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+      "reports/discovery/local/decisions/DEC-002.json": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+      "reports/discovery/local/decisions/DEC-003.json": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+      "reports/discovery/local/decisions/DEC-004.json": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+      "reports/discovery/local/decisions/DEC-005.json": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+      "reports/discovery/local/hypotheses/HYP-005.json": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+      "reports/discovery/local/hypotheses/HYP-007.json": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+      "reports/discovery/local/hypotheses/HYP-008.json": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+      "reports/discovery/local/reviews/REV-001.json": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+      "reports/discovery/local/reviews/REV-DEC-005-001.json": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+      "reports/experiments/EXP-001/result.json": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+      "reports/experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+      "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+      "reports/experiments/EXP-002/result.json": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+      "reports/experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+      "reports/experiments/EXP-002/validation.json": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee"
+    },
+    "inputs_sha256": "b640466410b4e0f3cc4c06a55287605f213cea66c5aa95c865b34168b22c8190",
+    "generator_sha256": "a942004b7d9ef6ee6a169f229d4e049f65e2dda2984cf4d18c1aaf575c400685",
+    "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": []
+  }
+}

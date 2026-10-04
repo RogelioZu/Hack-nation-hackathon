@@ -46,6 +46,25 @@ prompt: |
      - scientific_status: VALID, UNCERTAIN, REQUIRES_REVISION or REQUIRES_HUMAN_REVIEW, with
        status_rationale. Never raise the strength of evidence: an inconclusive ranking stays
        inconclusive.
+     If the artifact view contains "lineage" (an experiment produced by the discovery loop), also pass:
+     - hypothesis_assessments: one item per entry of required_hypothesis_assessments, with
+       hypothesis_id, previous_status and new_status copied exactly from it, and a reason.
+     - point_estimate_observations: DESCRIPTIVE group slopes (quote both from result.interactions);
+       a comparison between groups is a point-estimate observation and must say so.
+     - formal_inference: the FORMAL heterogeneity evidence: the interaction estimate, its 95% interval
+       and its interpretation_status, quoted exactly. Only this supports or not a group difference.
+     - scientific_update: what_was_known_before, what_was_tested, what_changed (the hypothesis status
+       change, e.g. UNTESTED -> INCONCLUSIVE), what_remains_unresolved.
+     Preserve the source experiment's ranking status from prior_scientific_state (quote the status).
+     An interval that includes zero is INCONCLUSIVE: never "no difference", "equal", "the same
+     association" or "H3 is false", and never an established difference either. Limitations must
+     include CR1, the observational cross-sectional design, FAC_PER weighting, the linear commute
+     specification, retained high-leverage observations, possibly limited power to detect an
+     interaction, and that an interval including zero does not establish equivalence (no equivalence
+     margin exists).
+     In a moderated model the 'Adjusted' estimate is the REFERENCE-group slope, never a pooled
+     association: every sentence quoting a group slope names that group (e.g. "male reference group").
+     No causal verbs anywhere, questions included (not "affect", "impact", "reduce").
   4. If the tool returns an error, fix exactly what it reports and call it again.
 
   Scientific rules:
@@ -65,7 +84,7 @@ prompt: |
 tools:
   read_experiment_artifact:
     type: function
-    description: Critic-ready view of a committed ExperimentResult (estimates, intervals, ranking, sensitivity, diagnostics, limitations) plus the pre-registered hypotheses H1-H4. Read-only.
+    description: Critic-ready view of a committed ExperimentResult (estimates, intervals, ranking, interactions, sensitivity, diagnostics, limitations), the pre-registered hypotheses H1-H4 and, for discovery-loop experiments, the verified lineage and prior hypothesis status. Read-only.
     callable: commute_lab.critic_tools.read_experiment_artifact
     parameters:
       type: object
@@ -95,6 +114,27 @@ tools:
         limitations: {type: array, items: {type: string}}
         unsupported_claims: {type: array, items: {type: string}}
         untested_questions: {type: array, items: {type: string}}
+        hypothesis_assessments:
+          type: array
+          description: "Required when the artifact has lineage: copy statuses from required_hypothesis_assessments"
+          items:
+            type: object
+            properties:
+              hypothesis_id: {type: string}
+              previous_status: {type: string, enum: [UNTESTED, SUPPORTED, NOT_SUPPORTED, INCONCLUSIVE]}
+              new_status: {type: string, enum: [UNTESTED, SUPPORTED, NOT_SUPPORTED, INCONCLUSIVE]}
+              reason: {type: string}
+            required: [hypothesis_id, previous_status, new_status, reason]
+        point_estimate_observations: {type: array, items: {type: string}, description: "Descriptive group slopes"}
+        formal_inference: {type: array, items: {type: string}, description: "Interaction estimate, 95% interval, status"}
+        scientific_update:
+          type: object
+          properties:
+            what_was_known_before: {type: string}
+            what_was_tested: {type: string}
+            what_changed: {type: string}
+            what_remains_unresolved: {type: string}
+          required: [what_was_known_before, what_was_tested, what_changed, what_remains_unresolved]
       required: [experiment_id, scientific_status, status_rationale, evidence_summary, uncertainties,
                  limitations, unsupported_claims, untested_questions]
 

@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / ".local_deps"))
 
 from pydantic.json_schema import models_json_schema
 
+from src.experiments.capabilities import EXPORT_PATH as CAPABILITIES_PATH, capabilities
 from src.experiments.methods import METHODS
 from src.experiments.models import ExperimentError
 from src.experiments.runner import canonical_json, load_approved, run_experiment, sha
@@ -29,10 +30,25 @@ OUTPUT = "reports/experiments/EXP-001/engine_validation.json"
 # Provenance describing the code, protocol text and runtime of a run; it legitimately
 # changes with source edits or line endings, never with the estimates.
 ENVIRONMENT_PROVENANCE = {"code_sha256", "code_fingerprints", "protocol_fingerprints", "runtime"}
+# Derived floats (estimates, intervals, covariances, diagnostics) may differ in the last bits across
+# platforms and BLAS builds. They must agree within this relative tolerance; everything else
+# (integers such as n, strings such as IDs, statuses and hashes, booleans, nulls, keys) stays exact.
+FLOAT_REL_TOL = 1e-9
 
 
-def differences(reference, actual, path=""):
-    """Paths whose values or types differ, skipping environment provenance. Floats must be equal."""
+def float_drift(reference, actual):
+    """Relative difference of two floats, by the larger magnitude (0 when bit-identical)."""
+    if reference == actual:
+        return 0.0
+    return abs(reference - actual) / max(abs(reference), abs(actual))
+
+
+def differences(reference, actual, path="", stats=None):
+    """Paths whose values or types differ, skipping environment provenance.
+
+    Floats are compared with FLOAT_REL_TOL; `stats` (if given) collects how many floats were not
+    bit-identical and the largest relative difference seen.
+    """
     if isinstance(reference, dict) and isinstance(actual, dict):
         found = []
         for key in sorted(set(reference) | set(actual)):
@@ -41,12 +57,19 @@ def differences(reference, actual, path=""):
             if key not in reference or key not in actual:
                 found.append(f"{path}.{key}")
             else:
-                found += differences(reference[key], actual[key], f"{path}.{key}")
+                found += differences(reference[key], actual[key], f"{path}.{key}", stats)
         return found
     if isinstance(reference, list) and isinstance(actual, list):
         if len(reference) != len(actual):
             return [path]
-        return [d for i, (a, b) in enumerate(zip(reference, actual)) for d in differences(a, b, f"{path}[{i}]")]
+        return [d for i, (a, b) in enumerate(zip(reference, actual))
+                for d in differences(a, b, f"{path}[{i}]", stats)]
+    if type(reference) is float and type(actual) is float:
+        drift = float_drift(reference, actual)
+        if stats is not None and drift:
+            stats["not_bit_identical"] += 1
+            stats["max_relative_difference"] = max(stats["max_relative_difference"], drift)
+        return [] if drift <= FLOAT_REL_TOL else [path]
     return [] if type(reference) is type(actual) and reference == actual else [path]
 
 
@@ -74,6 +97,9 @@ def main():
     _, generated = models_json_schema([(ExperimentSpec, "validation"), (ExperimentResult, "validation")])
     committed = json.loads((ROOT / "metadata/experiment_contract.schema.json").read_text(encoding="utf-8"))
     check(committed["$defs"] == generated["$defs"], "SCHEMA_DRIFT", "experiment_contract.schema.json differs from schemas.py")
+    # Published capability metadata agents read must equal what the engine actually supports.
+    published = json.loads((ROOT / CAPABILITIES_PATH).read_text(encoding="utf-8"))
+    check(published == capabilities(), "CAPABILITIES_DRIFT", f"{CAPABILITIES_PATH} differs from capabilities.py")
     spec_data = json.loads((ROOT / SPEC).read_text(encoding="utf-8"))
     ExperimentSpec.model_validate(spec_data)
 
@@ -87,7 +113,8 @@ def main():
     tests = unittest.TextTestRunner(verbosity=2).run(suite)
     check(tests.wasSuccessful(), "TESTS_FAILED", f"{len(tests.failures)} failures, {len(tests.errors)} errors")
 
-    # EXP-001: repeated execution and exact numerical equivalence with the committed result.
+    # EXP-001: identical repeated execution here, and equivalence with the committed result
+    # (floats within FLOAT_REL_TOL, everything else exact).
     first, second = run_experiment(spec_data), run_experiment(spec_data)
     check(canonical_json(first.model_dump()) == canonical_json(second.model_dump()),
           "NONREPRODUCIBLE_RESULT", "Repeated execution differs")
@@ -97,8 +124,10 @@ def main():
           f"{REFERENCE} bytes differ from result_sha256 in {RUN_RECORD}")
     reference = json.loads((ROOT / REFERENCE).read_text(encoding="utf-8"))
     ExperimentResult.model_validate(reference)
-    drift = differences(reference, actual)
-    check(not drift, "EXP001_DRIFT", f"Committed result differs at {drift[:10]}")
+    stats = {"not_bit_identical": 0, "max_relative_difference": 0.0}
+    drift = differences(reference, actual, stats=stats)
+    check(not drift, "EXP001_DRIFT",
+          f"Committed result differs (floats beyond rel_tol {FLOAT_REL_TOL}) at {drift[:10]}")
     environment_changes = sorted(k for k in ENVIRONMENT_PROVENANCE
                                  if reference["provenance"].get(k) != actual["provenance"].get(k))
 
@@ -115,13 +144,17 @@ def main():
         "canonical_variables_checked": len(variables),
         "missingness_matches_manifest": True,
         "json_schema_matches_models": True,
+        "capabilities_match_engine": True,
         "supported_methods": sorted(METHODS),
         "experiment_engine_tests_run": tests.testsRun,
         "experiment_engine_test_failures": len(tests.failures) + len(tests.errors),
         "exp001_result_bytes_match_validation_record": True,
         "exp001_repeated_execution_identical": True,
         "exp001_numeric_values_compared": numeric_leaves(reference),
-        "exp001_numerical_differences": 0,
+        "exp001_float_relative_tolerance": FLOAT_REL_TOL,
+        "exp001_numerical_differences_beyond_tolerance": 0,
+        "exp001_floats_not_bit_identical": stats["not_bit_identical"],
+        "exp001_max_float_relative_difference": stats["max_relative_difference"],
         "exp001_non_environment_differences": 0,
         "exp001_environment_provenance_changed": environment_changes,
         "analytic_v1_unchanged": True,

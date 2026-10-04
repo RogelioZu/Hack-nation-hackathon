@@ -23,6 +23,30 @@ def _ranking_view(ranking: dict) -> dict:
     }
 
 
+def _slope_view(s: dict) -> dict:
+    return {"estimate": round(s["estimate"], 3), "standard_error": round(s["standard_error"], 3),
+            "ci95": _interval(s["interval"])}
+
+
+def _interactions_view(interactions: list[dict]) -> list[dict]:
+    """Binary-moderator interactions: group slopes are descriptive; the interaction is the formal test."""
+    return [{
+        "model_id": r["model_id"], "variant": r["variant"], "outcome": r["outcome"], "exposure": r["exposure"],
+        "moderator": r["moderator"], "reference_level": r["reference_level"], "comparison_level": r["comparison_level"],
+        "coding": r["coding"],
+        "groups": [{"role": g["role"], "level": g["level"], "n": g["n"],
+                    "weighted_population": g["weighted_population"]} for g in r["groups"]],
+        "reference_group_slope": _slope_view(r["reference_group_slope"]),
+        "comparison_group_slope": _slope_view(r["comparison_group_slope"]),
+        "interaction_comparison_minus_reference": _slope_view(r["interaction"]),
+        "moderator_main_effect": _slope_view(r["moderator_main_effect"]),
+        "interpretation_status": r["interpretation_status"],
+        "equivalence_assessed": r["equivalence_assessed"],
+        "input_n": r["input_n"], "analysis_n": r["analysis_n"], "excluded_n": r["excluded_n"],
+        "missing_moderator_n": r["missing_moderator_n"],
+    } for r in interactions]
+
+
 def _compact(result: dict, spec: dict) -> dict:
     """Everything the critic needs from an ExperimentResult, without covariance matrices."""
     diagnostics = {}
@@ -33,7 +57,7 @@ def _compact(result: dict, spec: dict) -> dict:
             "n_model", "n_missing_excluded", "clusters", "strata", "singleton_strata", "inference_df",
             "weighted_r_squared", "high_leverage_count_above_2p_over_n", "negative_fitted_count",
             "kish_weight_effective_n", "warnings")}
-    return {
+    view = {
         "experiment_id": result["experiment_id"],
         "status": result["status"],
         "review_status": result["review_status"],
@@ -66,3 +90,6 @@ def _compact(result: dict, spec: dict) -> dict:
         "inconclusive_hypotheses": result["inconclusive_hypotheses"],
         "engine_candidate_next_experiments": result["candidate_next_experiments"],
     }
+    if result.get("interactions"):  # absent for results without a moderator (EXP-001 view unchanged)
+        view["interactions"] = _interactions_view(result["interactions"])
+    return view

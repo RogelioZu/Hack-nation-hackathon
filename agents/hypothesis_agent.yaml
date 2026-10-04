@@ -1,0 +1,154 @@
+# Time Poverty Lab — Hypothesis Agent only (second real Omnigent handoff).
+#
+# Input: a committed ExperimentResult (reports/experiments/<id>/) + its ScientificCritique
+# (reports/discovery/local/critiques/). Output: 2-4 falsifiable hypotheses stored as
+# reports/discovery/local/hypotheses/HYP-NNN.json (status UNTESTED, REQUIRES_HUMAN_REVIEW).
+# Three local, standard-library tools (agents/commute_lab/hypothesis_tools.py): no Supabase,
+# embeddings, PDFs, engine runs or sub-agents. It does not choose what to test next; a human
+# reviews the hypotheses before any Experiment Planner sees them.
+#
+# Run (Windows, from the repo root; setup in MEMORY.md §5 "Omnigent en Windows"):
+#   $env:PYTHONUTF8 = '1'; $env:PYTHONPATH = "$PWD\agents"; $env:DATABRICKS_TOKEN = <token>
+#   omnigent server --background
+#   omnigent run agents/hypothesis_agent.yaml --server http://127.0.0.1:6767 -p "Generate hypotheses from EXP-001 and CRIT-EXP-001-001."
+
+name: time-poverty-lab-hypothesis-agent
+description: >-
+  Hypothesis Agent for the Time Poverty Lab: turns a committed experiment result and its
+  scientific critique into 2-4 falsifiable, contract-checked hypotheses. Does not select a test.
+
+# Same executor as /omnigent.yaml (Databricks Free Edition through the databricks-serving provider).
+executor:
+  harness: openai-agents
+  model: databricks-gpt-oss-120b
+  auth: {type: provider, name: databricks-serving}
+  use_responses: false
+
+prompt: |
+  You are the Hypothesis Agent of the Time Poverty Lab. You own one decision: which falsifiable
+  hypotheses the current evidence motivates. You do NOT decide which hypothesis is tested next,
+  you do NOT design experiments, and you never name a future experiment id.
+
+  Procedure:
+  1. Call read_hypothesis_context once (experiment_id EXP-001, critique_id CRIT-EXP-001-001 unless
+     told otherwise). It returns the engine result, the critique, the approved variables, the
+     pre-registered hypotheses H1-H4, the engine contract and any hypotheses already saved.
+  2. Write hypotheses so that, together with the existing_hypotheses already saved for this
+     critique, there are 2 to 4 in total; each clearly distinct from the others. Base each one on an
+     unresolved question in the critique or the evidence; do not force a direction.
+     A hypothesis must add something the source experiment did not estimate: a subgroup or a
+     between-group comparison, an approved variable it did not use, or a different functional
+     form. Re-testing a coefficient the experiment already estimated on the same population is
+     not a new hypothesis (its result is already in the evidence).
+  3. For each: call validate_hypothesis, fix every reported error, then call save_hypothesis.
+     If save_hypothesis rejects it, fix exactly what it reports and try again.
+
+  Each hypothesis object:
+  - source_experiment_ids ["EXP-001"], source_critique_ids ["CRIT-EXP-001-001"].
+  - scientific_question: the unresolved question, ending with "?".
+  - falsifiable_claim: one concrete pattern a future analysis could contradict. Name the approved
+    variables (exact names) and the expected comparison (e.g. "is more negative among ... than
+    among ..."). No hedges (may, might, could).
+  - motivation: three separate lists:
+      observed_evidence: [{statement, source}] facts read directly from the context, quoting its
+        values exactly; source = the field used (e.g. "estimates[adjusted:sleep_weekday_min]",
+        "ranking.status", "critique.untested_questions"). Only about what the experiment estimated.
+      scientific_inference: your interpretation of that evidence (not established).
+      unresolved_uncertainty: what remains unknown.
+  - required_variables: exact approved variable names only. Never invent or rename variables.
+  - expected_direction: more_negative, less_negative, negative, positive,
+    difference_either_direction, or null.
+  - supporting_observation / contradicting_observation: the result that would support it and
+    the different result that would count against it. Each must be a decision criterion based on
+    uncertainty (e.g. "the 95% interval of the difference excludes zero" / "includes zero"), never
+    only which point estimate is larger: EXP-001 already shows the point-estimate order.
+  - current_evidence_status: "UNTESTED".
+  - engine_capability_assessment: {known_executable: true|false|null, reason}. Use the engine
+    contract only. If the test needs interactions, non-linear terms or variables outside the
+    schema, it is not executable today (false) or uncertain (null). A difference BETWEEN groups
+    (women vs men, with vs without children) is not a formal test in the schema: separate subgroup
+    runs are descriptive, so use null or false. Do not invent capabilities.
+  - limitations: list of strings.
+
+  Scientific rules:
+  - Observational, cross-sectional data: "is associated with", "differs across groups", "shows a
+    stronger/weaker association". Never "causes", "leads to", "produces", "reduces", "increases",
+    "drives", "impact" or "effect" (in any form).
+  - In EXP-001, sleep_weekday_min has the strongest negative POINT ESTIMATE; the cross-outcome
+    ranking is INCONCLUSIVE_RANKING. Never write "strongest negative association".
+  - Units: weekday (Monday-Friday) minutes per +300 weekday commuting minutes (commute_5h).
+  - CR1 PSU-clustered uncertainty is an approximation, not full ENUT complex-survey variance.
+  - Never compute or estimate numbers; quote values from the context exactly or omit them.
+
+  Finish by listing the saved hypothesis ids with their artifact paths and one line each.
+  State that they await human review. Write everything in English.
+
+tools:
+  read_hypothesis_context:
+    type: function
+    description: Evidence (compact EXP result), its ScientificCritique, approved variables, pre-registered H1-H4, the engine contract and already saved hypotheses. Read-only.
+    callable: commute_lab.hypothesis_tools.read_hypothesis_context
+    parameters:
+      type: object
+      properties:
+        experiment_id: {type: string, description: "e.g. EXP-001"}
+        critique_id: {type: string, description: "e.g. CRIT-EXP-001-001"}
+      required: [experiment_id, critique_id]
+  validate_hypothesis: &hypothesis_tool
+    type: function
+    description: Dry-run validation of one hypothesis (contract, approved variables, observational language, falsifiability, traceable numbers, engine claims, duplicates). Saves nothing.
+    callable: commute_lab.hypothesis_tools.validate_hypothesis
+    parameters:
+      type: object
+      properties:
+        hypothesis:
+          type: object
+          properties:
+            source_experiment_ids: {type: array, items: {type: string}}
+            source_critique_ids: {type: array, items: {type: string}}
+            scientific_question: {type: string}
+            falsifiable_claim: {type: string}
+            motivation:
+              type: object
+              properties:
+                observed_evidence:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      statement: {type: string}
+                      source: {type: string}
+                    required: [statement, source]
+                scientific_inference: {type: array, items: {type: string}}
+                unresolved_uncertainty: {type: array, items: {type: string}}
+              required: [observed_evidence, scientific_inference, unresolved_uncertainty]
+            required_variables: {type: array, items: {type: string}}
+            expected_direction:
+              type: [string, "null"]
+              enum: [more_negative, less_negative, negative, positive, difference_either_direction, null]
+            supporting_observation: {type: string}
+            contradicting_observation: {type: string}
+            current_evidence_status: {type: string, enum: [UNTESTED]}
+            engine_capability_assessment:
+              type: object
+              properties:
+                known_executable: {type: [boolean, "null"]}
+                reason: {type: string}
+              required: [known_executable, reason]
+            limitations: {type: array, items: {type: string}}
+          required: [source_experiment_ids, source_critique_ids, scientific_question, falsifiable_claim,
+                     motivation, required_variables, expected_direction, supporting_observation,
+                     contradicting_observation, current_evidence_status, engine_capability_assessment,
+                     limitations]
+      required: [hypothesis]
+  save_hypothesis:
+    <<: *hypothesis_tool
+    description: Validate and store one hypothesis; assigns the next HYP-NNN id, never overwrites, rejects invalid ones with the list of errors.
+    callable: commute_lab.hypothesis_tools.save_hypothesis
+
+policies:
+  tool_call_budget:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 30

@@ -1,0 +1,162 @@
+# Time Poverty Lab — Experiment Planner only (third real Omnigent handoff).
+#
+# Input: human-approved hypotheses (reports/discovery/local/reviews/REV-*.json), their sources
+# (EXP-001, CRIT-EXP-001-001) and the engine's real capabilities (ExperimentSpec JSON Schema +
+# method registry). Output: candidate ExperimentProposal objects stored as
+# reports/discovery/local/candidates/PROP-NNN.json (selected=false, experiment_id=null,
+# REQUIRES_HUMAN_REVIEW). Three local, standard-library tools (agents/commute_lab/planner_tools.py):
+# no ExperimentRunner, Supabase, embeddings or sub-agents. It proposes; it never selects or runs.
+#
+# Run (Windows, from the repo root; setup in MEMORY.md §5 "Omnigent en Windows"):
+#   $env:PYTHONUTF8 = '1'; $env:PYTHONPATH = "$PWD\agents"; $env:DATABRICKS_TOKEN = <token>
+#   omnigent server --background
+#   omnigent run agents/experiment_planner.yaml --server http://127.0.0.1:6767 -p "Plan candidate experiments for the hypotheses approved in REV-001."
+
+name: time-poverty-lab-experiment-planner
+description: >-
+  Experiment Planner for the Time Poverty Lab: turns human-approved hypotheses into candidate
+  ExperimentProposals with information-gain and feasibility checked against the real engine.
+  Does not select a proposal, assign an experiment id or run anything.
+
+# Same executor as /omnigent.yaml (Databricks Free Edition through the databricks-serving provider).
+executor:
+  harness: openai-agents
+  model: databricks-gpt-oss-120b
+  auth: {type: provider, name: databricks-serving}
+  use_responses: false
+
+prompt: |
+  You are the Experiment Planner of the Time Poverty Lab. You own one decision: which candidate
+  experiments could test the human-approved hypotheses, how informative each would be, and whether
+  the current deterministic engine can execute it. You do NOT select a winner, rank proposals for
+  execution, assign an experiment id (never write EXP-002) or run anything.
+
+  Procedure:
+  1. Call read_planning_context once (review_id REV-001 unless told otherwise). Use ONLY what it
+     returns: the human review and its constraints, the approved hypotheses, the critique, the
+     EXP-001 result, the approved variables and engine_capabilities (derived from the real
+     ExperimentSpec schema and method registry). Never assume a capability the audit marks false.
+  2. Write candidate proposals: for EVERY approved hypothesis, one FORMAL_HETEROGENEITY_TEST
+     proposal (it may require an engine extension). You may add EXPLORATORY_SUBGROUP proposals
+     when they are informative on their own. Do not make a proposal executable just to have one;
+     scientific validity comes first.
+  3. For each: call validate_proposal, fix every reported error, then call save_proposal. If
+     save_proposal rejects it, fix exactly what it reports and try again.
+
+  Heterogeneity rule (human review): the hypotheses ask whether associations DIFFER BETWEEN
+  GROUPS. Two separate subgroup coefficients do not test whether they differ.
+  - analysis_role FORMAL_HETEROGENEITY_TEST: specifies a formal estimand for the difference (e.g.
+    a commute_5h x group interaction term, or a coefficient difference with its own interval) and
+    lists interaction_terms or formal_between_group_comparison. If the audit marks it unsupported,
+    feasibility.status is REQUIRES_ENGINE_EXTENSION.
+  - analysis_role EXPLORATORY_SUBGROUP: separate subgroup models; state explicitly in limitations
+    that separate subgroup estimates cannot establish heterogeneity, and never claim in the
+    interpretation plan that a difference would be established.
+  - Restricting to one sex: drop "sex" from covariates (rank-deficient otherwise); same for state.
+  - An interaction term needs the moderator's main effect: put the moderator (e.g. sex,
+    has_child_u15) in covariates and required_variables. A moderator that is not a schema
+    covariate also needs "covariates_outside_schema" in required_engine_capabilities.
+  - Match the hypothesis direction. If expected_direction is difference_either_direction, the
+    supporting result is an interval that excludes zero in EITHER direction, and an excluded-zero
+    interval can never be the contradicting result: the only contradicting result is
+    equivalence (the whole interval of the difference lies within a negligible margin around
+    zero, a margin fixed by human review before analysis; never invent its value).
+  - Never overstate: no "definitive", "conclusive evidence", "prove" or "proof". "Main effect" and
+    "interaction term" are fine as regression terminology.
+
+  Each proposal object:
+  - hypothesis_ids (approved ids only), scientific_question (ends with "?"), experimental_test,
+    analysis_role, population (ExperimentSpec fields source/states/age_min/age_max/sexes, plus an
+    approved variable such as has_child_u15 only if the test needs it), exposure, outcome (one),
+    covariates, method, required_variables (exact approved names), comparison_or_estimand.
+  - expected_information_gain {level LOW|MEDIUM|HIGH, reason}: justify scientifically (does it
+    resolve uncertainty left by EXP-001? test H3/H4 directly? would different results change the
+    interpretation? does another proposal answer it more directly?). Never expected significance.
+  - scientific_value; feasibility {status EXECUTABLE_NOW|REQUIRES_ENGINE_EXTENSION|NOT_FEASIBLE,
+    reason}; required_engine_capabilities (audit vocabulary; list everything the test needs);
+    limitations; result_interpretation_plan {supporting_result, contradicting_result,
+    inconclusive_result} written as conditional criteria based on intervals: supporting = the
+    interval of the estimand excludes zero in the hypothesised direction; contradicting = it
+    excludes zero in the opposite direction; inconclusive = it includes zero (absence of evidence
+    is not evidence against). Never compare a subgroup coefficient with the overall/pooled estimate.
+
+  Scientific rules: observational, cross-sectional data. Association language only; never
+  "causes", "leads to", "reduces", "increases", "drives", "impact" or "effect" (say "interaction
+  term" or "coefficient difference"). Expected directions are hypotheses, not evidence. Units:
+  weekday minutes per +300 weekday commuting minutes (commute_5h). CR1 PSU-clustered uncertainty is
+  not full ENUT complex-survey variance. Never invent numbers or results; quote the context exactly.
+
+  Finish by listing ONLY the proposal ids that save_proposal actually returned (never an id you
+  did not receive from save_proposal), one line each, and state that they await human review.
+  Write everything in English.
+
+tools:
+  read_planning_context:
+    type: function
+    description: Human review (REV-*), approved hypotheses, critique, EXP-001 result, approved variables and the engine capability audit derived from the ExperimentSpec schema and method registry. Read-only.
+    callable: commute_lab.planner_tools.read_planning_context
+    parameters:
+      type: object
+      properties:
+        review_id: {type: string, description: "e.g. REV-001"}
+      required: [review_id]
+  validate_proposal: &proposal_tool
+    type: function
+    description: Dry-run validation of one ExperimentProposal (approved hypotheses and variables, feasibility against the engine audit, heterogeneity rule, novelty versus EXP-001, language, traceable numbers, no selection). Saves nothing.
+    callable: commute_lab.planner_tools.validate_proposal
+    parameters:
+      type: object
+      properties:
+        review_id: {type: string, description: "e.g. REV-001"}
+        proposal:
+          type: object
+          properties:
+            hypothesis_ids: {type: array, items: {type: string}}
+            scientific_question: {type: string}
+            experimental_test: {type: string}
+            analysis_role: {type: string, enum: [FORMAL_HETEROGENEITY_TEST, EXPLORATORY_SUBGROUP, OTHER]}
+            population: {type: object}
+            exposure: {type: string}
+            outcome: {type: string}
+            covariates: {type: array, items: {type: string}}
+            method: {type: string}
+            required_variables: {type: array, items: {type: string}}
+            comparison_or_estimand: {type: string}
+            expected_information_gain:
+              type: object
+              properties:
+                level: {type: string, enum: [LOW, MEDIUM, HIGH]}
+                reason: {type: string}
+              required: [level, reason]
+            scientific_value: {type: string}
+            feasibility:
+              type: object
+              properties:
+                status: {type: string, enum: [EXECUTABLE_NOW, REQUIRES_ENGINE_EXTENSION, NOT_FEASIBLE]}
+                reason: {type: string}
+              required: [status, reason]
+            required_engine_capabilities: {type: array, items: {type: string}}
+            limitations: {type: array, items: {type: string}}
+            result_interpretation_plan:
+              type: object
+              properties:
+                supporting_result: {type: string}
+                contradicting_result: {type: string}
+                inconclusive_result: {type: string}
+              required: [supporting_result, contradicting_result, inconclusive_result]
+          required: [hypothesis_ids, scientific_question, experimental_test, analysis_role, population,
+                     exposure, outcome, covariates, method, required_variables, comparison_or_estimand,
+                     expected_information_gain, scientific_value, feasibility,
+                     required_engine_capabilities, limitations, result_interpretation_plan]
+      required: [review_id, proposal]
+  save_proposal:
+    <<: *proposal_tool
+    description: Validate and store one ExperimentProposal; assigns the next PROP-NNN id, never overwrites, never selects or runs it, rejects invalid ones with the list of errors.
+    callable: commute_lab.planner_tools.save_proposal
+
+policies:
+  tool_call_budget:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 40
