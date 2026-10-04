@@ -6,10 +6,17 @@ import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
-/** @typedef {"initial_state"|"spec"|"result"|"validation"|"critique"|"hypothesis"|"candidate"|"decision"} RawKind */
+/** @typedef {"initial_state"|"research_state"|"capabilities"|"spec"|"experiment_provenance"|"result"|"validation"|"critique"|"hypothesis"|"candidate"|"decision"|"review"} RawKind */
 /** @typedef {{kind: RawKind, path: string, sha256: string, modifiedAt: string|null, session: string|null, data: any}} RawArtifact */
 
-const DISCOVERY_KINDS = { critiques: "critique", hypotheses: "hypothesis", candidates: "candidate", decisions: "decision" };
+// Only the top level of each folder: superseded/ holds retired artifacts kept as a record, not part of the run.
+const DISCOVERY_KINDS = {
+  critiques: "critique",
+  hypotheses: "hypothesis",
+  candidates: "candidate",
+  decisions: "decision",
+  reviews: "review",
+};
 const EXPERIMENT_ID = /^EXP-\d{3,}$/;
 
 async function exists(p) {
@@ -61,6 +68,7 @@ export function compactResult(r) {
       rule: k.rule,
       limitation: k.limitation,
     };
+  const slope = (s) => s && { estimate: s.estimate, standard_error: s.standard_error, interval: interval(s.interval) };
   return {
     experiment_id: r.experiment_id,
     status: r.status,
@@ -98,6 +106,21 @@ export function compactResult(r) {
     supported_hypotheses: r.supported_hypotheses ?? [],
     unsupported_hypotheses: r.unsupported_hypotheses ?? [],
     inconclusive_hypotheses: r.inconclusive_hypotheses ?? [],
+    // Binary-moderator interactions: group slopes and the formal interaction term, without covariance matrices.
+    interactions: (r.interactions ?? []).map((i) => ({
+      model_id: i.model_id,
+      outcome: i.outcome,
+      exposure: i.exposure,
+      moderator: i.moderator,
+      reference_level: i.reference_level,
+      comparison_level: i.comparison_level,
+      coding: i.coding,
+      reference_group_slope: slope(i.reference_group_slope),
+      comparison_group_slope: slope(i.comparison_group_slope),
+      interaction: slope(i.interaction),
+      interpretation_status: i.interpretation_status,
+      interpretation: i.interpretation,
+    })),
     // Directions the engine lists for later work; shown verbatim as "not selected", never as a choice.
     candidate_next_experiments: (r.candidate_next_experiments ?? []).map((c) => ({
       question: c.question,
@@ -153,6 +176,7 @@ export async function collectArtifacts(repoRoot, options = {}) {
   }
 
   await add("initial_state", "initial_state.json", null, compactInitialState);
+  await add("capabilities", "metadata/experiment_engine_capabilities.json", null);
 
   const specIds = new Set((await dirs(path.join(repoRoot, "experiments"))).filter((d) => EXPERIMENT_ID.test(d)));
   const reportIds = new Set((await dirs(path.join(repoRoot, "reports/experiments"))).filter((d) => EXPERIMENT_ID.test(d)));
@@ -161,11 +185,13 @@ export async function collectArtifacts(repoRoot, options = {}) {
       ? `experiments/${id}/spec.json`
       : `reports/experiments/${id}/spec.json`;
     await add("spec", specRel, null);
+    await add("experiment_provenance", `experiments/${id}/provenance.json`, null);
     await add("result", `reports/experiments/${id}/result.json`, null, compactResult);
     await add("validation", `reports/experiments/${id}/validation.json`, null);
   }
 
   for (const session of await dirs(path.join(repoRoot, "reports/discovery"))) {
+    await add("research_state", `reports/discovery/${session}/research_state.json`, session);
     for (const [folder, kind] of Object.entries(DISCOVERY_KINDS)) {
       for (const file of await jsonFiles(path.join(repoRoot, "reports/discovery", session, folder))) {
         await add(kind, `reports/discovery/${session}/${folder}/${file}`, session);

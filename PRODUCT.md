@@ -25,9 +25,17 @@ Las cifras salen solo de un motor determinista (`src/experiments/`) que corre ca
 
 ## Operating Context
 
-- Artefactos reales hoy: pregunta y población (`experiments/EXP-001/spec.json`), dataset `analytic_v1` (SHA256 en `metadata/analytic_v1_manifest.json`), EXP-001 (`reports/experiments/EXP-001/result.json`, `summary.md`, `validation.json`) y la crítica `reports/discovery/local/critiques/CRIT-EXP-001-001.json`.
-- Artefactos que llegarán (formato definido en `agents/commute_lab/tools.py`): hipótesis, candidatos (≥2), selección del Director, nuevos experimentos EXP-NNN, críticas y decisiones actualizadas en `reports/discovery/<project_id>/{critiques,hypotheses,candidates,decisions}/`.
-- Dos modos de la misma interfaz: **REPLAY** (artefactos commiteados, funciona sin agentes y en Vercel) y **LIVE** (el servidor local lee los archivos del repo mientras Omnigent escribe; en Vercel no hay LIVE).
+- La cadena completa ya existe en el repo y su índice es `reports/discovery/local/research_state.json` (IDs, relaciones y hashes, sin cifras):
+  - EXP-001 y CRIT-EXP-001-001;
+  - hipótesis HYP-005/007/008, aprobadas en REV-001;
+  - propuestas PROP-003/005/008/009;
+  - decisiones DEC-001 (esperando capacidad del motor) a DEC-005 (`READY_TO_EXECUTE`);
+  - aprobación humana REV-DEC-005-001;
+  - EXP-002 (interacción traslado × sexo) y CRIT-EXP-002-002.
+- La UI lee todo a través de un adaptador (`web/lib/discovery/model.ts` → `DiscoveryRunViewModel`). Ningún componente lleva cifras, estados ni IDs escritos.
+- Dos modos de la misma interfaz, con el mismo view model:
+  - **REPLAY**: bundle `web/data/discovery-run.json`, generado en cada build a partir de los artefactos commiteados. Funciona sin agentes ni Databricks, y en Vercel.
+  - **LIVE**: el servidor local lee los archivos del repo mientras Omnigent escribe. En Vercel no hay LIVE.
 - La portada es la línea de tiempo de descubrimiento. El panel de Supabase (`/research/[id]`) se conserva como vista de auditoría enlazada.
 - Next.js 16 App Router + Tailwind 4 en `web/`, desplegado en Vercel subiendo solo `web/`.
 
@@ -50,7 +58,14 @@ Las cifras salen solo de un motor determinista (`src/experiments/`) que corre ca
 
 - EXP-001 (n = 2,563): sueño −48.711 min [−63.481, −33.940]; ocio −20.396; conversación en el hogar −3.816; higiene +3.094 (min de lunes a viernes por +300 min de traslado, modelo ajustado). Ranking `INCONCLUSIVE_RANKING`. Revisión `REQUIRES_HUMAN_REVIEW`.
 - CRIT-EXP-001-001: veredicto `UNCERTAIN`, generado por `databricks-gpt-oss-120b` vía Omnigent.
-- No existen todavía: hipótesis de agentes, candidatos, EXP-002, segunda crítica ni decisión actualizada. Tampoco la medición de aceleración (el 10× es una meta).
+- EXP-002 (sueño, interacción traslado × sexo, n = 2,563):
+  - pendiente de hombres −41.596 [−59.099, −24.094];
+  - pendiente de mujeres −59.312 [−83.836, −34.788];
+  - **interacción −17.715 [−47.532, 12.101]**, `INCONCLUSIVE_INTERVAL_INCLUDES_ZERO`;
+  - ranking `NOT_APPLICABLE_SINGLE_OUTCOME`.
+- CRIT-EXP-002-002 (`UNCERTAIN`): **H3 pasa de `UNTESTED` a `INCONCLUSIVE`**. Es el momento estrella del demo: el laboratorio actualiza su estado sin inventar certeza.
+- Cifras de referencia para revisar; la UI las lee de los artefactos.
+- Aún no existe la medición de aceleración (el 10× es una meta).
 
 ## Product Principles
 

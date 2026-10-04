@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "snapshot": "node scripts/snapshot-discovery.mjs"
+    "snapshot": "node --no-warnings scripts/snapshot-discovery.mjs",
+    "prebuild": "node --no-warnings scripts/snapshot-discovery.mjs",
+    "test:discovery": "node --no-warnings scripts/check-discovery.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

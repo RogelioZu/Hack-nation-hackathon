@@ -5,26 +5,39 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Hourglass, Pause, Play, TriangleAlert } from "lucide-react";
 import Wordmark from "../Wordmark";
-import type { Discovery, DiscoveryPayload, EvidenceView, Stage, StageKey } from "@/lib/discovery/types";
+import type { DiscoveryPayload, DiscoveryRunViewModel as Discovery, EvidenceView, Stage, StageKey } from "@/lib/discovery/types";
 import Inspector from "./Inspector";
 import { ArtifactChip, Awaiting, DiscoveryUiContext, StageMarker, TYPE, TypeBadge, VerbatimList } from "./primitives";
 import {
-  CandidatesBody,
+  ApprovalBody,
+  BaselineBody,
+  CapabilityBody,
   CritiqueBody,
   DecisionBody,
-  EvidenceBody,
-  ExperimentBody,
+  DecisionHistory,
+  FollowUpBody,
   HypothesesBody,
-  NewEvidenceBody,
+  ProposalsBody,
   QuestionBody,
-  SelectionBody,
+  ReviewPanel,
+  StagePartSection,
+  UpdateHero,
 } from "./stages";
+import type { StagePart } from "@/lib/discovery/types";
 
-// Replay clock (docs/DEMO_STORYBOARD.md): how long each recorded stage holds, in seconds. The recorded evidence and
-// critique hold longest. Stages still awaiting agents share one beat as the "Next in the loop" band; then the whole
-// chain is shown again before the clock stops. With all nine stages recorded this gives 0,4,8,16,22,25,28,31,34 · 37 · 40.
-const HOLD: Partial<Record<StageKey, number>> = { question: 4, experiment: 4, evidence: 8, critique: 6 };
-const LATER_HOLD = 3;
+// Replay clock (docs/DEMO_STORYBOARD.md): how long each recorded stage holds, in seconds. Evidence, the new experiment
+// and the scientific update hold longest. Stages still awaiting agents share one beat as the "Next in the loop" band;
+// then the whole chain is shown again before the clock stops. Play is optional: ← → step through the same stages.
+const HOLD: Record<StageKey, number> = {
+  question: 4,
+  baseline: 8,
+  critique: 6,
+  planning: 8,
+  decision: 10,
+  followup: 8,
+  update: 8,
+};
+const LATER_HOLD = 4;
 const BAND_HOLD = 8;
 const OVERVIEW_HOLD = 3;
 const LIVE_REFRESH_MS = 3000;
@@ -58,6 +71,16 @@ function latestEvidence(d: Discovery): EvidenceView | null {
   return [...d.followUps].reverse().find((f) => f.evidence)?.evidence ?? d.baselineEvidence;
 }
 
+/** The headline: the latest scientific update in the critic's words, else the latest evidence, else the question. */
+function headlineOf(d: Discovery): { text: string; keys: string[] } | null {
+  const u = d.updates.at(-1);
+  if (u?.changed) return { text: u.changed, keys: [u.critiqueKey, u.experimentKey].filter((k): k is string => Boolean(k)) };
+  const ev = latestEvidence(d);
+  const sentence = ev ? [ev.sentences[0], ev.rankingSentence].filter(Boolean).join(" ") : "";
+  if (ev && sentence) return { text: sentence, keys: [ev.artifact.key] };
+  return d.question.text ? { text: d.question.text, keys: d.question.artifactKey ? [d.question.artifactKey] : [] } : null;
+}
+
 function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -83,40 +106,69 @@ function defaultSelection(d: Discovery): string | null {
 
 // --- Stage body routing ------------------------------------------------------
 
-function StageBody({ stage, d }: { stage: Stage; d: Discovery }) {
-  const experimentKeys = Object.fromEntries(
-    [d.baseline, ...d.followUps.map((f) => f.experiment)].filter(Boolean).map((e) => [e!.experimentId, e!.spec.key]),
-  );
+/** The body of one section of a grouped stage. */
+function PartBody({ part, d }: { part: StagePart; d: Discovery }) {
+  const reviews = d.reviews.filter((r) => part.artifactKeys.includes(r.artifact.key));
+  switch (part.key) {
+    case "hypotheses":
+      return <HypothesesBody hs={d.hypotheses} reviews={[]} />;
+    case "review":
+      return (
+        <>
+          {reviews.map((rv) => (
+            <ReviewPanel key={rv.artifact.key} rv={rv} labelled={false} />
+          ))}
+        </>
+      );
+    case "proposals":
+      return <ProposalsBody ps={d.proposals} />;
+    case "decision":
+      return d.decisions[0] ? <DecisionBody d={d.decisions[0]} /> : null;
+    case "capability":
+      return <CapabilityBody changes={d.capabilityChanges} />;
+    case "history":
+      return <DecisionHistory ds={d.decisions} changes={d.capabilityChanges} />;
+    case "approval":
+      return <ApprovalBody rvs={reviews} />;
+    case "experiment":
+      return <FollowUpBody fus={d.followUps} />;
+    case "critique": {
+      const cs = d.followUps.flatMap((f) => f.critiques);
+      return cs[0] ? <CritiqueBody c={cs[0]} earlier={cs.slice(1)} handedOn={false} /> : null;
+    }
+  }
+}
+
+function StageBody({ stage, d, listening }: { stage: Stage; d: Discovery; listening: boolean }) {
+  if (stage.parts.length) {
+    return (
+      <>
+        {stage.parts.map((p, i) => (
+          <StagePartSection key={p.key} part={p} first={i === 0} listening={listening}>
+            <PartBody part={p} d={d} />
+          </StagePartSection>
+        ))}
+      </>
+    );
+  }
   switch (stage.key) {
     case "question":
-      return (
-        <QuestionBody
-          q={d.question}
-          assessments={d.baselineEvidence?.assessments ?? []}
-          assessedIn={d.baselineEvidence?.experimentId ?? null}
-        />
-      );
-    case "experiment":
-      return d.baseline ? <ExperimentBody exp={d.baseline} /> : null;
-    case "evidence":
-      return d.baselineEvidence ? <EvidenceBody ev={d.baselineEvidence} /> : null;
+      return <QuestionBody q={d.question} />;
+    case "baseline":
+      return d.baseline ? <BaselineBody exp={d.baseline} ev={d.baselineEvidence} /> : null;
     case "critique":
-      return d.baselineCritiques[0] ? <CritiqueBody c={d.baselineCritiques[0]} earlier={d.baselineCritiques.slice(1)} /> : null;
-    case "hypotheses":
-      return <HypothesesBody hs={d.hypotheses} />;
-    case "candidates":
-      return <CandidatesBody cs={d.candidates} experimentKeys={experimentKeys} />;
-    case "selection":
-      return <SelectionBody sels={d.selections} />;
-    case "new_evidence":
-      return <NewEvidenceBody followUps={d.followUps} />;
-    case "decision":
-      return <DecisionBody ds={d.decisions} />;
+      return d.baselineCritiques[0] ? (
+        <CritiqueBody c={d.baselineCritiques[0]} earlier={d.baselineCritiques.slice(1)} handedOn={d.hypotheses.length > 0} />
+      ) : null;
+    case "update":
+      return <UpdateHero us={d.updates} />;
+    default:
+      return null;
   }
 }
 
 // Stages whose few artifacts read best as header chips; the rest carry chips per item in the body.
-const HEADER_CHIPS: Stage["key"][] = ["question", "experiment", "evidence", "critique"];
+const HEADER_CHIPS: Stage["key"][] = ["question", "baseline", "critique", "followup", "update"];
 
 function StageItem({
   stage,
@@ -139,7 +191,9 @@ function StageItem({
   last: boolean;
   listening: boolean;
 }) {
-  const headerKeys = HEADER_CHIPS.includes(stage.key) ? stage.artifactKeys.slice(0, stage.key === "critique" ? 1 : 2) : [];
+  const headerKeys = HEADER_CHIPS.includes(stage.key) ? stage.artifactKeys.slice(0, /critique|update|followup/.test(stage.key) ? 1 : 2) : [];
+  // The scientific update is the closing moment of the run: it sits on the update role's ink, not on white.
+  const dark = stage.key === "update" && stage.recorded;
   return (
     <li className="relative grid grid-cols-[32px_minmax(0,1fr)] gap-x-3 pb-5 sm:gap-x-5">
       {!last && (
@@ -160,16 +214,20 @@ function StageItem({
           id={`stage-${stage.key}`}
           aria-labelledby={`stage-${stage.key}-title`}
           className={`scroll-mt-28 rounded-lg p-5 sm:p-7 ${
-            stage.recorded ? "bg-white" : "bg-gray-50 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-300"
+            dark ? "bg-blue-900 text-white" : stage.recorded ? "bg-white" : "bg-gray-50 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-300"
           } ${animate ? "stage-enter" : ""} ${fresh ? "fresh" : ""} ${active ? "ring-2 ring-blue-300" : ""}`}
         >
           <header className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-3">
             <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-              <h2 id={`stage-${stage.key}-title`} className="text-h4 text-gray-900 sm:text-h3">
+              <h2 id={`stage-${stage.key}-title`} className={`text-h4 sm:text-h3 ${dark ? "text-white" : "text-gray-900"}`}>
                 {stage.title}
               </h2>
-              {/* A title that already names its role ("Evidence", "First experiment") keeps only the swatch. */}
-              <TypeBadge type={stage.type} compact={stage.title.toLowerCase().includes(TYPE[stage.type].label.toLowerCase().slice(0, -2))} />
+              {/* A title that already names its role ("Initial evidence", "Scientific update") keeps only the swatch. */}
+              <TypeBadge
+                type={stage.type}
+                className={dark ? "text-blue-100" : ""}
+                compact={stage.title.toLowerCase().includes(TYPE[stage.type].label.toLowerCase().slice(0, -2))}
+              />
             </span>
             {fresh && <span className="rounded-sm bg-blue-500 px-2 py-0.5 text-micro text-white uppercase">New</span>}
             {stage.recorded && (
@@ -178,14 +236,14 @@ function StageItem({
                   <ArtifactChip key={k} artifactKey={k} />
                 ))}
                 {!headerKeys.length && (
-                  <span className="text-caption font-medium text-gray-700 tabular">
+                  <span className={`text-caption font-medium tabular ${dark ? "text-blue-100" : "text-gray-700"}`}>
                     {stage.artifactKeys.length} artifact{stage.artifactKeys.length === 1 ? "" : "s"}
                   </span>
                 )}
               </span>
             )}
           </header>
-          {stage.recorded ? <StageBody stage={stage} d={d} /> : <Awaiting {...stage.awaiting} listening={listening} />}
+          {stage.recorded ? <StageBody stage={stage} d={d} listening={listening} /> : <Awaiting {...stage.awaiting} listening={listening} />}
         </article>
       ) : (
         <div id={`stage-${stage.key}`} className="flex min-h-[68px] items-center gap-3 rounded-lg px-1 sm:min-h-[84px]">
@@ -292,7 +350,8 @@ function NextInLoop({
                 <div className="min-w-0">
                   <h3 className="text-body font-semibold text-gray-900">{s.title}</h3>
                   <p className="mt-0.5 text-body-sm text-gray-700">
-                    Awaiting {s.awaiting.what} · <span className="font-semibold">{s.awaiting.producer}</span>
+                    <span className="font-semibold text-gray-900">{s.awaiting.state}</span> · awaiting {s.awaiting.what} ·{" "}
+                    <span className="font-semibold">{s.awaiting.producer}</span>
                   </p>
                   <p className="mt-0.5 font-mono text-caption break-all text-gray-700">{s.awaiting.path}</p>
                 </div>
@@ -337,7 +396,7 @@ export default function DiscoveryView({
   session?: string;
   initialStage?: number; // 0-based; opens the replay paused at that stage (?stage=N)
 }) {
-  const { discovery: d, mode, liveUnavailable } = payload;
+  const { run: d, mode, liveUnavailable } = payload;
   const router = useRouter();
   const live = mode === "live" && !liveUnavailable;
   const total = d.stages.length;
@@ -492,7 +551,8 @@ export default function DiscoveryView({
   const recorded = d.stages.filter((s) => s.recorded).length;
   const ago = Math.max(0, Math.round((now - Date.parse(payload.loadedAt)) / 1000));
   const evidence = latestEvidence(d);
-  const headline = evidence ? [evidence.sentences[0], evidence.rankingSentence].filter(Boolean).join(" ") : "";
+  const headline = headlineOf(d);
+  const errors = d.issues.filter((i) => i.level === "error");
   const position = cursor == null ? "Overview" : cursor >= tail ? "Next in the loop" : `Stage ${cursor + 1} of ${total}`;
 
   const ui = useMemo(
@@ -567,23 +627,32 @@ export default function DiscoveryView({
         >
           <div>
             {/* The headline is the latest evidence in the engine's own words, so it updates when a new result lands. */}
+            {/* The headline is the latest scientific update in the artifact's own words, so it changes when a new result lands. */}
             <h1 id="thesis" className="text-[26px] leading-[32px] font-extrabold sm:text-[30px] sm:leading-[36px] tracking-[-0.02em] text-balance text-gray-900">
-              {headline || d.question.text || "A discovery loop that turns uncertainty into the next experiment."}
+              {headline?.text ?? "No research question has been recorded yet."}
             </h1>
-            {evidence && (
+            {headline && (
               <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-gray-700">
-                <ArtifactChip artifactKey={evidence.artifact.key} />
-                {evidence.sampleSize != null && <span className="tabular">n = {evidence.sampleSize.toLocaleString("en-US")}</span>}
+                {headline.keys.map((k) => (
+                  <ArtifactChip key={k} artifactKey={k} />
+                ))}
+                {evidence?.sampleSize != null && <span className="tabular">n = {evidence.sampleSize.toLocaleString("en-US")}</span>}
                 <span aria-hidden className="text-gray-300">
                   ·
                 </span>
                 <span>{payload.source}</span>
               </p>
             )}
+            {errors.length > 0 && (
+              <p role="alert" className="mt-3 flex items-start gap-2 text-body-sm font-semibold text-gray-900">
+                <TriangleAlert aria-hidden size={16} className="mt-0.5 shrink-0 text-yellow-700" />
+                {errors.length} artifact problem{errors.length === 1 ? "" : "s"}: {errors[0].message}
+              </p>
+            )}
             <p className="mt-4 max-w-[64ch] text-[17px] leading-7 text-gray-700">
-              Agents examine the evidence, name what is uncertain, decide what is worth testing next, run a reproducible experiment and
-              update the scientific decision. Every recorded stage is read from a real artifact; the rest wait, named, for the agent that
-              produces them.
+              Agents examine the evidence, name what is uncertain, decide what is worth testing next; a deterministic engine runs the
+              experiment and humans approve each consequential step. Every stage below is read from a real artifact; any stage still
+              missing waits, named, for the agent that produces it.
             </p>
           </div>
 
@@ -594,7 +663,7 @@ export default function DiscoveryView({
                 {recorded} of {total} recorded
               </p>
             </div>
-            <ol aria-label="Stages" className="mt-3 grid grid-cols-9 gap-1">
+            <ol aria-label="Stages" className="mt-3 grid grid-cols-7 gap-1">
               {d.stages.map((s, i) => (
                 <li key={s.key}>
                   <button

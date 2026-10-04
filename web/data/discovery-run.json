@@ -1,0 +1,3796 @@
+{
+  "note": "Derived UI bundle for REPLAY mode. Not a scientific source: the canonical artifacts are the files listed in sources.",
+  "commit": "43dcb395004d53d3dc21532fbe4d5b9536c5d40e",
+  "sources": [
+    {
+      "kind": "initial_state",
+      "path": "initial_state.json",
+      "sha256": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755"
+    },
+    {
+      "kind": "capabilities",
+      "path": "metadata/experiment_engine_capabilities.json",
+      "sha256": "30dc82dadab903502c52a9f69473f140e71a3b2a4acb11755cca181860e6d5c2"
+    },
+    {
+      "kind": "spec",
+      "path": "experiments/EXP-001/spec.json",
+      "sha256": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2"
+    },
+    {
+      "kind": "result",
+      "path": "reports/experiments/EXP-001/result.json",
+      "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28"
+    },
+    {
+      "kind": "validation",
+      "path": "reports/experiments/EXP-001/validation.json",
+      "sha256": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d"
+    },
+    {
+      "kind": "spec",
+      "path": "experiments/EXP-002/spec.json",
+      "sha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7"
+    },
+    {
+      "kind": "experiment_provenance",
+      "path": "experiments/EXP-002/provenance.json",
+      "sha256": "ff36db5964d00c75079bb15c2e6c1fff1b52cae16c38a6ba05e577ab11a4f903"
+    },
+    {
+      "kind": "result",
+      "path": "reports/experiments/EXP-002/result.json",
+      "sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e"
+    },
+    {
+      "kind": "validation",
+      "path": "reports/experiments/EXP-002/validation.json",
+      "sha256": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee"
+    },
+    {
+      "kind": "research_state",
+      "path": "reports/discovery/local/research_state.json",
+      "sha256": "e5c783e41811f21a135411d452bac909b14510047442836d7df45d96feade4a7"
+    },
+    {
+      "kind": "critique",
+      "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+    },
+    {
+      "kind": "critique",
+      "path": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "sha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76"
+    },
+    {
+      "kind": "hypothesis",
+      "path": "reports/discovery/local/hypotheses/HYP-005.json",
+      "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f"
+    },
+    {
+      "kind": "hypothesis",
+      "path": "reports/discovery/local/hypotheses/HYP-007.json",
+      "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc"
+    },
+    {
+      "kind": "hypothesis",
+      "path": "reports/discovery/local/hypotheses/HYP-008.json",
+      "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2"
+    },
+    {
+      "kind": "candidate",
+      "path": "reports/discovery/local/candidates/PROP-003.json",
+      "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb"
+    },
+    {
+      "kind": "candidate",
+      "path": "reports/discovery/local/candidates/PROP-005.json",
+      "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb"
+    },
+    {
+      "kind": "candidate",
+      "path": "reports/discovery/local/candidates/PROP-008.json",
+      "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4"
+    },
+    {
+      "kind": "candidate",
+      "path": "reports/discovery/local/candidates/PROP-009.json",
+      "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca"
+    },
+    {
+      "kind": "decision",
+      "path": "reports/discovery/local/decisions/DEC-001.json",
+      "sha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766"
+    },
+    {
+      "kind": "decision",
+      "path": "reports/discovery/local/decisions/DEC-002.json",
+      "sha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481"
+    },
+    {
+      "kind": "decision",
+      "path": "reports/discovery/local/decisions/DEC-003.json",
+      "sha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60"
+    },
+    {
+      "kind": "decision",
+      "path": "reports/discovery/local/decisions/DEC-004.json",
+      "sha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450"
+    },
+    {
+      "kind": "decision",
+      "path": "reports/discovery/local/decisions/DEC-005.json",
+      "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d"
+    },
+    {
+      "kind": "review",
+      "path": "reports/discovery/local/reviews/REV-001.json",
+      "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560"
+    },
+    {
+      "kind": "review",
+      "path": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+      "sha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445"
+    }
+  ],
+  "run": {
+    "schemaVersion": 1,
+    "question": {
+      "text": "Among workers aged 18-65 living in Mexico City and Estado de Mexico, which dimension of personal time (sleep, exclusive personal hygiene, exclusive household conversation, leisure) shows the strongest negative association with 5 additional hours of weekday commuting (commute_5h: +300 minutes Monday-Friday)? Does the association differ by sex or by the presence of minors in the household?",
+      "population": [
+        "Workers aged 18–65",
+        "CDMX + Edomex",
+        "Women and men",
+        "n = 2,563"
+      ],
+      "datasetVersion": "analytic_v1",
+      "hypotheses": [
+        {
+          "code": "H1",
+          "title": "Time Displacement",
+          "claim": "Higher weekday commuting is associated with less time in at least one personal-time dimension",
+          "status": {
+            "code": "SUPPORTED",
+            "tone": "good"
+          },
+          "statusSource": "EXP-001",
+          "assessment": "Evidence consistent with a negative association under the specified model"
+        },
+        {
+          "code": "H2",
+          "title": "Unequal Displacement",
+          "claim": "The magnitude of the association differs across sleep, hygiene, household conversation and leisure",
+          "status": {
+            "code": "SUPPORTED",
+            "tone": "good"
+          },
+          "statusSource": "EXP-001",
+          "assessment": "Evidence of at least one difference"
+        },
+        {
+          "code": "H3",
+          "title": "Sex Heterogeneity",
+          "claim": "The association differs between men and women",
+          "status": {
+            "code": "INCONCLUSIVE",
+            "tone": "uncertain"
+          },
+          "statusSource": "CRIT-EXP-002-002",
+          "assessment": "Interaction interval includes zero, so evidence is inconclusive about sex heterogeneity."
+        },
+        {
+          "code": "H4",
+          "title": "Household Constraint",
+          "claim": "The association differs by presence of children or minors in the household",
+          "status": {
+            "code": "UNTESTED",
+            "tone": "neutral"
+          },
+          "statusSource": null,
+          "assessment": null
+        }
+      ],
+      "artifactKey": "initial_state.json"
+    },
+    "dataset": {
+      "version": "analytic_v1",
+      "populationN": 2563,
+      "sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+      "approval": "APPROVED_FOR_EXPERIMENTS"
+    },
+    "baseline": {
+      "experimentId": "EXP-001",
+      "spec": {
+        "key": "experiments/EXP-001/spec.json",
+        "id": "EXP-001 spec",
+        "fullId": null,
+        "type": "EXPERIMENT",
+        "label": "Experiment spec",
+        "path": "experiments/EXP-001/spec.json",
+        "sha256": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+        "expectedSha256": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "ExperimentSpec (agents propose, engine validates)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Method",
+            "value": "weighted_linear_regression",
+            "mono": true
+          },
+          {
+            "label": "Exposure",
+            "value": "commute_5h",
+            "mono": true
+          },
+          {
+            "label": "Hypotheses",
+            "value": "H1, H2"
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-001/result.json",
+          "initial_state.json"
+        ]
+      },
+      "result": {
+        "key": "reports/experiments/EXP-001/result.json",
+        "id": "EXP-001 result",
+        "fullId": null,
+        "type": "EVIDENCE",
+        "label": "Experiment result",
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+        "expectedSha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "Deterministic engine (src/experiments)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "EXPERIMENT_COMPLETED",
+            "mono": true
+          },
+          {
+            "label": "Review",
+            "value": "REQUIRES_HUMAN_REVIEW",
+            "mono": true
+          },
+          {
+            "label": "Ranking",
+            "value": "INCONCLUSIVE_RANKING",
+            "mono": true
+          },
+          {
+            "label": "Sample",
+            "value": "n = 2,563"
+          }
+        ],
+        "links": [
+          "experiments/EXP-001/spec.json",
+          "reports/experiments/EXP-001/validation.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+        ]
+      },
+      "validation": {
+        "key": "reports/experiments/EXP-001/validation.json",
+        "id": "EXP-001 validation",
+        "fullId": null,
+        "type": "EVIDENCE",
+        "label": "Reproducibility check",
+        "path": "reports/experiments/EXP-001/validation.json",
+        "sha256": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+        "expectedSha256": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "scripts/run_experiment.py (two runs)",
+        "codeVersion": null,
+        "datasetVersion": null,
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "PASS",
+            "mono": true
+          },
+          {
+            "label": "Identical runs",
+            "value": "yes"
+          },
+          {
+            "label": "Dataset hash",
+            "value": "unchanged"
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-001/result.json"
+        ]
+      },
+      "question": "Which dimension of personal time shows the strongest negative association with an additional five hours of weekday commuting among workers aged 18–65 living in Mexico City and the State of Mexico?",
+      "population": [
+        "Workers aged 18–65",
+        "CDMX + Edomex",
+        "Women and men",
+        "n = 2,563"
+      ],
+      "exposure": "+5 h weekday commuting (300 min Mon–Fri)",
+      "outcomes": [
+        "sleep_weekday_min",
+        "personal_hygiene_weekday_min",
+        "household_conversation_weekday_min",
+        "leisure_weekday_min"
+      ],
+      "covariates": [
+        "work time",
+        "age",
+        "sex",
+        "state"
+      ],
+      "method": "Weighted linear regression",
+      "uncertainty": "PSU-cluster CR1, t (approximation)",
+      "hypothesisIds": [
+        "H1",
+        "H2"
+      ],
+      "status": {
+        "code": "EXPERIMENT_COMPLETED",
+        "tone": "good"
+      },
+      "reviewStatus": {
+        "code": "REQUIRES_HUMAN_REVIEW",
+        "tone": "warn"
+      },
+      "reproduced": true,
+      "datasetUnchanged": true,
+      "sampleSize": 2563,
+      "datasetVersion": "analytic_v1"
+    },
+    "baselineEvidence": {
+      "experimentId": "EXP-001",
+      "artifact": {
+        "key": "reports/experiments/EXP-001/result.json",
+        "id": "EXP-001 result",
+        "fullId": null,
+        "type": "EVIDENCE",
+        "label": "Experiment result",
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+        "expectedSha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "Deterministic engine (src/experiments)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "EXPERIMENT_COMPLETED",
+            "mono": true
+          },
+          {
+            "label": "Review",
+            "value": "REQUIRES_HUMAN_REVIEW",
+            "mono": true
+          },
+          {
+            "label": "Ranking",
+            "value": "INCONCLUSIVE_RANKING",
+            "mono": true
+          },
+          {
+            "label": "Sample",
+            "value": "n = 2,563"
+          }
+        ],
+        "links": [
+          "experiments/EXP-001/spec.json",
+          "reports/experiments/EXP-001/validation.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+        ]
+      },
+      "rows": [
+        {
+          "outcome": "sleep_weekday_min",
+          "label": "Sleep",
+          "coefficient": -48.71059252182508,
+          "standardError": 7.509857390060727,
+          "ci": {
+            "lower": -63.48071721309243,
+            "upper": -33.94046783055772,
+            "level": 0.95,
+            "adjustment": "none"
+          },
+          "simultaneous": {
+            "lower": -67.56546355289333,
+            "upper": -29.85572149075682,
+            "level": 0.9875,
+            "adjustment": "Bonferroni family of 4"
+          },
+          "n": 2563
+        },
+        {
+          "outcome": "leisure_weekday_min",
+          "label": "Leisure",
+          "coefficient": -20.396420184108077,
+          "standardError": 11.714640688780262,
+          "ci": {
+            "lower": -43.436365511922006,
+            "upper": 2.6435251437058547,
+            "level": 0.95,
+            "adjustment": "none"
+          },
+          "simultaneous": {
+            "lower": -49.808169021654294,
+            "upper": 9.015328653438143,
+            "level": 0.9875,
+            "adjustment": "Bonferroni family of 4"
+          },
+          "n": 2563
+        },
+        {
+          "outcome": "household_conversation_weekday_min",
+          "label": "Household conversation",
+          "coefficient": -3.816105261856255,
+          "standardError": 3.319096705627132,
+          "ci": {
+            "lower": -10.343988503603276,
+            "upper": 2.7117779798907655,
+            "level": 0.95,
+            "adjustment": "none"
+          },
+          "simultaneous": {
+            "lower": -12.149304825281927,
+            "upper": 4.517094301569416,
+            "level": 0.9875,
+            "adjustment": "Bonferroni family of 4"
+          },
+          "n": 2563
+        },
+        {
+          "outcome": "personal_hygiene_weekday_min",
+          "label": "Personal hygiene",
+          "coefficient": 3.093668266778693,
+          "standardError": 1.9596104704016915,
+          "ci": {
+            "lower": -0.7604250256522587,
+            "upper": 6.947761559209645,
+            "level": 0.95,
+            "adjustment": "none"
+          },
+          "simultaneous": {
+            "lower": -1.826292362494471,
+            "upper": 8.013628896051857,
+            "level": 0.9875,
+            "adjustment": "Bonferroni family of 4"
+          },
+          "n": 2563
+        }
+      ],
+      "strongestNegative": {
+        "outcome": "sleep_weekday_min",
+        "label": "Sleep",
+        "coefficient": -48.71059252182508,
+        "standardError": 7.509857390060727,
+        "ci": {
+          "lower": -63.48071721309243,
+          "upper": -33.94046783055772,
+          "level": 0.95,
+          "adjustment": "none"
+        },
+        "simultaneous": {
+          "lower": -67.56546355289333,
+          "upper": -29.85572149075682,
+          "level": 0.9875,
+          "adjustment": "Bonferroni family of 4"
+        },
+        "n": 2563
+      },
+      "sentences": [
+        "Sleep had the strongest negative point estimate.",
+        "Five additional weekday commuting hours were associated with about 49 fewer weekday sleep minutes in the adjusted model."
+      ],
+      "rankingStatus": {
+        "code": "INCONCLUSIVE_RANKING",
+        "tone": "uncertain"
+      },
+      "rankingSentence": "The ranking across all four outcomes remained inconclusive.",
+      "rankingRule": "All ordered pairs must have negative Bonferroni simultaneous intervals; point ordering alone is descriptive",
+      "pairs": {
+        "resolved": 2,
+        "total": 6,
+        "adjustment": "Bonferroni family of 6",
+        "items": [
+          {
+            "a": "Sleep",
+            "b": "Leisure",
+            "difference": -28.314172337717,
+            "interval": {
+              "lower": -66.16959283436285,
+              "upper": 9.541248158928841,
+              "level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "resolved": false
+          },
+          {
+            "a": "Leisure",
+            "b": "Household conversation",
+            "difference": -16.580314922251823,
+            "interval": {
+              "lower": -46.95468479509036,
+              "upper": 13.794054950586709,
+              "level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "resolved": false
+          },
+          {
+            "a": "Leisure",
+            "b": "Personal hygiene",
+            "difference": -23.49008845088677,
+            "interval": {
+              "lower": -54.507181639607296,
+              "upper": 7.52700473783376,
+              "level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "resolved": false
+          },
+          {
+            "a": "Household conversation",
+            "b": "Personal hygiene",
+            "difference": -6.909773528634949,
+            "interval": {
+              "lower": -17.641599207323154,
+              "upper": 3.8220521500532563,
+              "level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "resolved": false
+          },
+          {
+            "a": "Sleep",
+            "b": "Household conversation",
+            "difference": -44.89448725996882,
+            "interval": {
+              "lower": -66.8874287294832,
+              "upper": -22.90154579045443,
+              "level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "resolved": true
+          },
+          {
+            "a": "Sleep",
+            "b": "Personal hygiene",
+            "difference": -51.80426078860377,
+            "interval": {
+              "lower": -72.05498590722091,
+              "upper": -31.55353566998663,
+              "level": 0.9916666666666667,
+              "adjustment": "Bonferroni family of 6"
+            },
+            "resolved": true
+          }
+        ]
+      },
+      "assessments": [
+        {
+          "id": "H1",
+          "assessment": "Evidence consistent with a negative association under the specified model",
+          "evidence": "sleep_weekday_min; Bonferroni outcome intervals below zero; provisional survey approximation",
+          "status": {
+            "code": "SUPPORTED",
+            "tone": "good"
+          }
+        },
+        {
+          "id": "H2",
+          "assessment": "Evidence of at least one difference",
+          "evidence": "2 of 6 paired simultaneous intervals exclude zero; this does not establish a full ranking",
+          "status": {
+            "code": "SUPPORTED",
+            "tone": "good"
+          }
+        }
+      ],
+      "nextDirections": [
+        "Is the commuting association nonlinear?",
+        "Does the association differ by sex?"
+      ],
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "sampleSize": 2563,
+      "covariates": [
+        "work time",
+        "age",
+        "sex",
+        "state"
+      ],
+      "covarianceMethod": "PSU cluster CR1, t(G-1), no stratum centering",
+      "sensitivity": [
+        {
+          "name": "exclude_zero_weekday_work",
+          "nAfter": 2529,
+          "nExcluded": 34,
+          "rankingStatus": "INCONCLUSIVE_RANKING"
+        }
+      ],
+      "qualityFlags": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED",
+        "INCONCLUSIVE_RANKING",
+        "MULTIPLE_COMPARISON_FAMILIES",
+        "REQUIRES_HUMAN_REVIEW"
+      ]
+    },
+    "baselineCritiques": [
+      {
+        "artifact": {
+          "key": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "id": "CRIT-EXP-001-001",
+          "fullId": null,
+          "type": "UNCERTAINTY",
+          "label": "Scientific critique",
+          "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+          "expectedSha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T02:12:58.284106+00:00",
+          "session": "local",
+          "producer": "scientific_critic · databricks-gpt-oss-120b",
+          "codeVersion": "aa1120e08edfaa7f7aeb0502b99c5498068d8b64",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Verdict",
+              "value": "UNCERTAIN",
+              "mono": true
+            },
+            {
+              "label": "Numbers",
+              "value": "decimal numbers checked against the source artifact before saving"
+            },
+            {
+              "label": "Source sha256",
+              "value": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/experiments/EXP-001/result.json",
+            "reports/discovery/local/hypotheses/HYP-005.json",
+            "reports/discovery/local/hypotheses/HYP-007.json",
+            "reports/discovery/local/hypotheses/HYP-008.json",
+            "reports/discovery/local/decisions/DEC-001.json",
+            "reports/discovery/local/decisions/DEC-002.json",
+            "reports/discovery/local/decisions/DEC-003.json",
+            "reports/discovery/local/decisions/DEC-004.json",
+            "reports/discovery/local/decisions/DEC-005.json"
+          ]
+        },
+        "experimentId": "EXP-001",
+        "verdict": {
+          "code": "UNCERTAIN",
+          "tone": "uncertain"
+        },
+        "rationale": "The experiment yields a negative association for sleep time, but the ranking of personal-time dimensions is inconclusive; variance estimates are approximated (CR1 PSU-clustered) and multiple comparison adjustments limit confidence.",
+        "evidence": [
+          {
+            "kind": "OBSERVED_EVIDENCE",
+            "label": "Observed evidence",
+            "statement": "Adjusted sleep_weekday_min coefficient = -48.711 (95% pointwise CI [-63.481, -33.94]; Bonferroni outcome interval [-67.565, -29.856])",
+            "source": "estimates[adjusted:sleep_weekday_min].coefficient"
+          },
+          {
+            "kind": "OBSERVED_EVIDENCE",
+            "label": "Observed evidence",
+            "statement": "Adjusted personal_hygiene_weekday_min coefficient = 3.094 (95% pointwise CI [-0.76, 6.948]; Bonferroni outcome interval [-1.826, 8.014])",
+            "source": "estimates[adjusted:personal_hygiene_weekday_min].coefficient"
+          },
+          {
+            "kind": "OBSERVED_EVIDENCE",
+            "label": "Observed evidence",
+            "statement": "Adjusted household_conversation_weekday_min coefficient = -3.816 (95% pointwise CI [-10.344, 2.712]; Bonferroni outcome interval [-12.149, 4.517])",
+            "source": "estimates[adjusted:household_conversation_weekday_min].coefficient"
+          },
+          {
+            "kind": "OBSERVED_EVIDENCE",
+            "label": "Observed evidence",
+            "statement": "Adjusted leisure_weekday_min coefficient = -20.396 (95% pointwise CI [-43.436, 2.644]; Bonferroni outcome interval [-49.808, 9.015])",
+            "source": "estimates[adjusted:leisure_weekday_min].coefficient"
+          },
+          {
+            "kind": "INFERENCE",
+            "label": "Scientific inference",
+            "statement": "Sleep time shows the strongest negative association with an additional 300 minutes of weekday commuting among the four outcomes.",
+            "source": "ranking.point_estimate_order"
+          },
+          {
+            "kind": "INFERENCE",
+            "label": "Scientific inference",
+            "statement": "Paired comparisons sleep vs household_conversation and sleep vs personal_hygiene exclude zero after Bonferroni adjustment, indicating statistically distinguishable differences for those pairs.",
+            "source": "ranking.paired_comparisons"
+          }
+        ],
+        "uncertainties": [
+          "Cluster approximation (CR1 PSU‑clustered sandwich) is an approximation, not full ENUT complex‑survey variance.",
+          "High‑leverage observations retained (168 above 2p/n) may affect standard errors.",
+          "Pointwise 95% intervals are descriptive; Bonferroni families are separate for outcomes and pairwise differences.",
+          "No finite‑population correction, replicate weights, or calibration uncertainty adjustment.",
+          "Linear specification assumes a constant slope across the commuting exposure range."
+        ],
+        "limitations": [
+          "Observational, cross‑sectional design; associations cannot be interpreted as causal.",
+          "Units are minutes of outcome per additional 300 weekday commuting minutes; not daily or weekly units.",
+          "Weighted R² values are low (e.g., 0.058 for sleep), indicating limited explanatory power.",
+          "Sensitivity analysis (exclude_zero_weekday_work) reproduces the same inconclusive ranking."
+        ],
+        "unsupported": [
+          "The evidence does not support that additional commuting *causes* reduced sleep or other personal‑time dimensions.",
+          "The evidence does not provide a definitive ranking of all four dimensions; ranking status is INCONCLUSIVE_RANKING.",
+          "The evidence does not allow conversion of the association to per‑day time units."
+        ],
+        "openQuestions": [
+          "Does the association between commuting burden and personal‑time allocation differ by sex (H3)?",
+          "Does household composition (e.g., presence of children) modify the association (H4)?",
+          "Is the relationship between commuting time and personal‑time outcomes nonlinear?",
+          "What mechanisms drive the observed negative association with sleep time?"
+        ],
+        "pointEstimateObservations": [],
+        "formalInference": [],
+        "agent": "scientific_critic",
+        "model": "databricks-gpt-oss-120b"
+      }
+    ],
+    "hypotheses": [
+      {
+        "artifact": {
+          "key": "reports/discovery/local/hypotheses/HYP-005.json",
+          "id": "HYP-005",
+          "fullId": null,
+          "type": "HYPOTHESIS",
+          "label": "Hypothesis",
+          "path": "reports/discovery/local/hypotheses/HYP-005.json",
+          "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+          "expectedSha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:03:38.221506+00:00",
+          "session": "local",
+          "producer": "hypothesis_agent · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Status",
+              "value": "UNTESTED",
+              "mono": true
+            },
+            {
+              "label": "Kind",
+              "value": "NEW_HYPOTHESIS",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+            "reports/discovery/local/candidates/PROP-003.json",
+            "reports/discovery/local/candidates/PROP-005.json",
+            "reports/discovery/local/reviews/REV-001.json",
+            "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+          ]
+        },
+        "id": "HYP-005",
+        "question": "Does the association between commuting and sleep time differ between men and women?",
+        "claim": "The coefficient for sleep_weekday_min on commute_5h is more negative among females than among males.",
+        "observed": [
+          "Adjusted sleep_weekday_min coefficient = -48.711 (95% pointwise CI [-63.481, -33.94]; Bonferroni outcome interval [-67.565, -29.856])"
+        ],
+        "inference": [
+          "Overall the association is negative, suggesting possible variation across subgroups such as sex."
+        ],
+        "unresolved": [
+          "Whether the negative association is stronger for females than for males is unknown."
+        ],
+        "expectedDirection": "more_negative",
+        "supportIf": "the 95% interval of the difference (female minus male coefficient) excludes zero on the negative side",
+        "contradictIf": "the 95% interval of the difference includes zero",
+        "requiredVariables": [
+          "commute_5h",
+          "sleep_weekday_min",
+          "sex"
+        ],
+        "status": {
+          "code": "UNTESTED",
+          "tone": "neutral"
+        },
+        "assessedLater": {
+          "status": {
+            "code": "INCONCLUSIVE",
+            "tone": "uncertain"
+          },
+          "critiqueKey": "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+        },
+        "approvedIn": [
+          "reports/discovery/local/reviews/REV-001.json"
+        ],
+        "limitations": [
+          "Observational, cross‑sectional design; cannot infer causality.",
+          "Interaction test not pre‑specified; requires additional modeling not currently approved."
+        ]
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/hypotheses/HYP-007.json",
+          "id": "HYP-007",
+          "fullId": null,
+          "type": "HYPOTHESIS",
+          "label": "Hypothesis",
+          "path": "reports/discovery/local/hypotheses/HYP-007.json",
+          "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+          "expectedSha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:06:47.945836+00:00",
+          "session": "local",
+          "producer": "hypothesis_agent · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Status",
+              "value": "UNTESTED",
+              "mono": true
+            },
+            {
+              "label": "Kind",
+              "value": "NEW_HYPOTHESIS",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+            "reports/discovery/local/candidates/PROP-008.json",
+            "reports/discovery/local/reviews/REV-001.json"
+          ]
+        },
+        "id": "HYP-007",
+        "question": "Does the association between commuting burden and sleep time differ for respondents with a child under 15 in the household compared to those without?",
+        "claim": "The coefficient for sleep_weekday_min on commute_5h is more negative among respondents with has_child_u15 = true than among respondents with has_child_u15 = false.",
+        "observed": [
+          "Adjusted sleep_weekday_min coefficient = -48.711 (95% pointwise CI [-63.481, -33.94]; Bonferroni outcome interval [-67.565, -29.856])"
+        ],
+        "inference": [
+          "Sleep time shows a negative association with additional commuting minutes."
+        ],
+        "unresolved": [
+          "It is unknown whether this association varies by household composition such as presence of young children."
+        ],
+        "expectedDirection": "more_negative",
+        "supportIf": "The 95% confidence interval for the difference in coefficients between the two subgroups excludes zero in the direction of more negative for the child‑presence group.",
+        "contradictIf": "The 95% confidence interval for the difference includes zero, indicating no clear difference.",
+        "requiredVariables": [
+          "commute_5h",
+          "sleep_weekday_min",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "has_child_u15"
+        ],
+        "status": {
+          "code": "UNTESTED",
+          "tone": "neutral"
+        },
+        "assessedLater": null,
+        "approvedIn": [
+          "reports/discovery/local/reviews/REV-001.json"
+        ],
+        "limitations": [
+          "Observational design, cannot infer causality.",
+          "Subgroup sample sizes may be limited, increasing uncertainty.",
+          "Engine does not implement formal interaction tests."
+        ]
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/hypotheses/HYP-008.json",
+          "id": "HYP-008",
+          "fullId": null,
+          "type": "HYPOTHESIS",
+          "label": "Hypothesis",
+          "path": "reports/discovery/local/hypotheses/HYP-008.json",
+          "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+          "expectedSha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:07:00.528020+00:00",
+          "session": "local",
+          "producer": "hypothesis_agent · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Status",
+              "value": "UNTESTED",
+              "mono": true
+            },
+            {
+              "label": "Kind",
+              "value": "NEW_HYPOTHESIS",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+            "reports/discovery/local/candidates/PROP-009.json",
+            "reports/discovery/local/reviews/REV-001.json"
+          ]
+        },
+        "id": "HYP-008",
+        "question": "Does the association between commuting burden and leisure_weekday_min differ between men and women?",
+        "claim": "The coefficient for leisure_weekday_min on commute_5h differs between respondents with sex = female and respondents with sex = male.",
+        "observed": [
+          "Adjusted leisure_weekday_min coefficient = -20.396 (95% pointwise CI [-43.436, 2.644]; Bonferroni outcome interval [-49.808, 9.015])"
+        ],
+        "inference": [
+          "Leisure time shows a negative association with additional commuting minutes, though the interval includes zero."
+        ],
+        "unresolved": [
+          "It is unknown whether this association differs by sex."
+        ],
+        "expectedDirection": "difference_either_direction",
+        "supportIf": "The 95% confidence interval for the difference between the two sex‑specific coefficients excludes zero, indicating a statistically distinguishable difference.",
+        "contradictIf": "The 95% confidence interval for the difference includes zero, indicating no clear difference.",
+        "requiredVariables": [
+          "commute_5h",
+          "leisure_weekday_min",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state"
+        ],
+        "status": {
+          "code": "UNTESTED",
+          "tone": "neutral"
+        },
+        "assessedLater": null,
+        "approvedIn": [
+          "reports/discovery/local/reviews/REV-001.json"
+        ],
+        "limitations": [
+          "Observational design, cannot infer causality.",
+          "Subgroup sample sizes may be limited, increasing uncertainty.",
+          "Engine does not implement formal interaction tests."
+        ]
+      }
+    ],
+    "reviews": [
+      {
+        "artifact": {
+          "key": "reports/discovery/local/reviews/REV-001.json",
+          "id": "REV-001",
+          "fullId": null,
+          "type": "REVIEW",
+          "label": "Human review",
+          "path": "reports/discovery/local/reviews/REV-001.json",
+          "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+          "expectedSha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:24:02.123491+00:00",
+          "session": "local",
+          "producer": "human project lead (the user of the Claude Code session)",
+          "codeVersion": null,
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Type",
+              "value": "HYPOTHESIS_REVIEW",
+              "mono": true
+            },
+            {
+              "label": "Decision",
+              "value": "APPROVED_FOR_PLANNING",
+              "mono": true
+            },
+            {
+              "label": "Recorded by",
+              "value": "Claude Code, verbatim transcription of the user's review message"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/hypotheses/HYP-005.json",
+            "reports/discovery/local/hypotheses/HYP-007.json",
+            "reports/discovery/local/hypotheses/HYP-008.json"
+          ]
+        },
+        "id": "REV-001",
+        "type": "HYPOTHESIS_REVIEW",
+        "decision": {
+          "code": "APPROVED_FOR_PLANNING",
+          "tone": "good"
+        },
+        "scope": "Approves these hypotheses as inputs to the Experiment Planner only. Does not choose EXP-002, authorize running an experiment, or modify analytic_v1, EXP-001 or the experiment engine.",
+        "constraints": [
+          "Expected directions are hypotheses, NOT established evidence.",
+          "Formal claims of heterogeneity require inference on the difference between groups.",
+          "Running separate subgroup regressions and visually comparing point estimates is NOT sufficient to establish heterogeneity.",
+          "The analysis remains observational.",
+          "No causal language is permitted."
+        ],
+        "notEndorsed": [],
+        "approves": [
+          "HYP-005",
+          "HYP-007",
+          "HYP-008"
+        ],
+        "authorizes": [],
+        "approvedHypotheses": [
+          {
+            "id": "HYP-005",
+            "question": "Does the commute–sleep association differ between women and men?",
+            "expectedDirection": "More negative among women."
+          },
+          {
+            "id": "HYP-007",
+            "question": "Does the commute–sleep association differ according to whether the household contains a child under age 15?",
+            "expectedDirection": "More negative among workers living with children under 15."
+          },
+          {
+            "id": "HYP-008",
+            "question": "Does the commute–leisure association differ between women and men?",
+            "expectedDirection": "Difference in either direction."
+          }
+        ],
+        "approvedExperiment": null,
+        "reviewer": "human project lead (the user of the Claude Code session)",
+        "recordedBy": "Claude Code, verbatim transcription of the user's review message",
+        "recordedAt": "2026-10-04T03:24:02.123491+00:00"
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+          "id": "REV-DEC-005-001",
+          "fullId": null,
+          "type": "REVIEW",
+          "label": "Human review",
+          "path": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+          "sha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+          "expectedSha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T05:27:53.139674+00:00",
+          "session": "local",
+          "producer": "human project lead (the user of the Claude Code session)",
+          "codeVersion": null,
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Type",
+              "value": "DECISION_APPROVAL",
+              "mono": true
+            },
+            {
+              "label": "Decision",
+              "value": "APPROVED_FOR_EXECUTION",
+              "mono": true
+            },
+            {
+              "label": "Recorded by",
+              "value": "Claude Code, transcription of the user's approval message"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/decisions/DEC-005.json",
+            "experiments/EXP-002/spec.json"
+          ]
+        },
+        "id": "REV-DEC-005-001",
+        "type": "DECISION_APPROVAL",
+        "decision": {
+          "code": "APPROVED_FOR_EXECUTION",
+          "tone": "good"
+        },
+        "scope": "Approves the scientific question and the experiment (PROP-003 as EXP-002), not any result. DEC-005 is kept unchanged; this review records the human interpretation constraints.",
+        "constraints": [
+          "PROP-003 tests H3: heterogeneity by sex in the commute_5h-sleep_weekday_min association.",
+          "This experiment does NOT resolve the inconclusive ranking across personal-time outcomes.",
+          "The sentence suggesting it could explain the overall ranking uncertainty is not endorsed by the human review.",
+          "The stated reason for deprioritizing PROP-008 is considered weak and is not necessary for approving PROP-003.",
+          "An interaction interval containing zero must be interpreted as INCONCLUSIVE, not as evidence of no difference.",
+          "All interpretations remain observational and non-causal."
+        ],
+        "notEndorsed": [
+          {
+            "text": "It has the highest expected information gain (HIGH) and can discriminate whether the observed strongest negative point estimate for sleep varies by sex, which could explain the inconclusive ranking of personal‑time dimensions",
+            "reason": "An interaction test on sleep does not explain or resolve the cross-outcome ranking uncertainty."
+          },
+          {
+            "text": "Tests child‑presence moderation, which is relevant but secondary to the primary sex‑difference question and adds a covariate not central to the ranking uncertainty.",
+            "reason": "Weak reason; not necessary for approving PROP-003."
+          }
+        ],
+        "approves": [
+          "DEC-005"
+        ],
+        "authorizes": [
+          "EXP-002"
+        ],
+        "approvedHypotheses": [],
+        "approvedExperiment": {
+          "experimentId": "EXP-002",
+          "model": "sleep_weekday_min ~ commute_5h + sex + commute_5h x sex + approved covariates",
+          "engine": "deterministic ExperimentRunner, weighted_linear_regression with binary moderator interaction"
+        },
+        "reviewer": "human project lead (the user of the Claude Code session)",
+        "recordedBy": "Claude Code, transcription of the user's approval message",
+        "recordedAt": "2026-10-04T05:27:53.139674+00:00"
+      }
+    ],
+    "proposals": [
+      {
+        "artifact": {
+          "key": "reports/discovery/local/candidates/PROP-003.json",
+          "id": "PROP-003",
+          "fullId": null,
+          "type": "PROPOSAL",
+          "label": "Candidate experiment",
+          "path": "reports/discovery/local/candidates/PROP-003.json",
+          "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+          "expectedSha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:33:26.721739+00:00",
+          "session": "local",
+          "producer": "experiment_planner · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Analysis role",
+              "value": "FORMAL_HETEROGENEITY_TEST",
+              "mono": true
+            },
+            {
+              "label": "Feasibility at planning",
+              "value": "REQUIRES_ENGINE_EXTENSION",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/hypotheses/HYP-005.json",
+            "reports/discovery/local/decisions/DEC-001.json",
+            "reports/discovery/local/decisions/DEC-002.json",
+            "reports/discovery/local/decisions/DEC-003.json",
+            "reports/discovery/local/decisions/DEC-004.json",
+            "reports/discovery/local/decisions/DEC-005.json",
+            "experiments/EXP-002/spec.json"
+          ]
+        },
+        "id": "PROP-003",
+        "hypothesisIds": [
+          "HYP-005"
+        ],
+        "question": "Does the association between commuting time and sleep time differ between women and men?",
+        "test": "Weighted linear regression with interaction term between commute_5h and sex (female) to test coefficient difference.",
+        "estimand": "Interaction coefficient for commute_5h:sex_female (difference in exposure association between females and males)",
+        "role": {
+          "code": "FORMAL_HETEROGENEITY_TEST",
+          "tone": "neutral"
+        },
+        "formal": true,
+        "infoGain": {
+          "level": "HIGH",
+          "reason": "Directly tests the heterogeneity hypothesis left unresolved by EXP-001, establishing whether the negative association varies by sex."
+        },
+        "scientificValue": "Clarifies ...",
+        "feasibilityAtPlanning": {
+          "code": "REQUIRES_ENGINE_EXTENSION",
+          "tone": "warn"
+        },
+        "feasibilityReason": "Engine does not currently support interaction terms needed for formal heterogeneity testing.",
+        "requiredCapabilities": [
+          "interaction_terms"
+        ],
+        "current": {
+          "executable": true,
+          "missing": [],
+          "asOf": "DEC-005"
+        },
+        "limitations": [
+          "Observational, cross‑sectional design; cannot infer causality.",
+          "Requires engine extension to compute interaction term and its uncertainty.",
+          "Potential limited power for detecting interaction."
+        ],
+        "ranAs": "EXP-002"
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/candidates/PROP-005.json",
+          "id": "PROP-005",
+          "fullId": null,
+          "type": "PROPOSAL",
+          "label": "Candidate experiment",
+          "path": "reports/discovery/local/candidates/PROP-005.json",
+          "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+          "expectedSha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:34:04.919272+00:00",
+          "session": "local",
+          "producer": "experiment_planner · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Analysis role",
+              "value": "EXPLORATORY_SUBGROUP",
+              "mono": true
+            },
+            {
+              "label": "Feasibility at planning",
+              "value": "EXECUTABLE_NOW",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/hypotheses/HYP-005.json",
+            "reports/discovery/local/decisions/DEC-001.json"
+          ]
+        },
+        "id": "PROP-005",
+        "hypothesisIds": [
+          "HYP-005"
+        ],
+        "question": "What is the association between commuting time and sleep time among women workers?",
+        "test": "Weighted linear regression of sleep_weekday_min on commute_5h with covariates work_weekday_min, age, state, filtered to female respondents.",
+        "estimand": "Coefficient for commute_5h in the female‑only model.",
+        "role": {
+          "code": "EXPLORATORY_SUBGROUP",
+          "tone": "neutral"
+        },
+        "formal": false,
+        "infoGain": {
+          "level": "MEDIUM",
+          "reason": "Provides a sex‑specific estimate that informs interpretation of HYP‑005, though it does not formally test heterogeneity."
+        },
+        "scientificValue": "Shows the magnitude of the commute–sleep association for women, helping to contextualise any potential difference with men.",
+        "feasibilityAtPlanning": {
+          "code": "EXECUTABLE_NOW",
+          "tone": "good"
+        },
+        "feasibilityReason": "Engine supports population filter by sex and stratified subgroup models; no interaction term required.",
+        "requiredCapabilities": [
+          "population_filter_sex",
+          "stratified_subgroup_models"
+        ],
+        "current": {
+          "executable": true,
+          "missing": [],
+          "asOf": "DEC-005"
+        },
+        "limitations": [
+          "Observational, cross‑sectional design; cannot infer causality.",
+          "Separate subgroup estimate does not establish heterogeneity between sexes."
+        ],
+        "ranAs": null
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/candidates/PROP-008.json",
+          "id": "PROP-008",
+          "fullId": null,
+          "type": "PROPOSAL",
+          "label": "Candidate experiment",
+          "path": "reports/discovery/local/candidates/PROP-008.json",
+          "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+          "expectedSha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:45:40.539851+00:00",
+          "session": "local",
+          "producer": "experiment_planner · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Analysis role",
+              "value": "FORMAL_HETEROGENEITY_TEST",
+              "mono": true
+            },
+            {
+              "label": "Feasibility at planning",
+              "value": "REQUIRES_ENGINE_EXTENSION",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/hypotheses/HYP-007.json"
+          ]
+        },
+        "id": "PROP-008",
+        "hypothesisIds": [
+          "HYP-007"
+        ],
+        "question": "Does the association between commuting burden and sleep time differ between respondents with and without a child under age 15 in the household?",
+        "test": "Weighted linear regression with an interaction term between commute_5h and has_child_u15 (child) to test the coefficient difference.",
+        "estimand": "Difference in the coefficient of commute_5h between respondents with a child under 15 (has_child_u15 = true) and those without (has_child_u15 = false).",
+        "role": {
+          "code": "FORMAL_HETEROGENEITY_TEST",
+          "tone": "neutral"
+        },
+        "formal": true,
+        "infoGain": {
+          "level": "HIGH",
+          "reason": "Directly tests the hypothesized moderation by child presence, resolving uncertainty from EXP-001."
+        },
+        "scientificValue": "Identifies whether household composition modifies the commuting–sleep association, informing targeted interventions.",
+        "feasibilityAtPlanning": {
+          "code": "REQUIRES_ENGINE_EXTENSION",
+          "tone": "warn"
+        },
+        "feasibilityReason": "Interaction terms and covariates outside schema are not supported in the current engine.",
+        "requiredCapabilities": [
+          "interaction_terms",
+          "formal_between_group_comparison",
+          "covariates_outside_schema"
+        ],
+        "current": {
+          "executable": true,
+          "missing": [],
+          "asOf": "DEC-005"
+        },
+        "limitations": [
+          "Observational cross‑sectional data; cannot infer causality.",
+          "Engine extension needed for interaction modeling and outside‑schema covariate.",
+          "Potential limited sample size for the child‑presence subgroup."
+        ],
+        "ranAs": null
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/candidates/PROP-009.json",
+          "id": "PROP-009",
+          "fullId": null,
+          "type": "PROPOSAL",
+          "label": "Candidate experiment",
+          "path": "reports/discovery/local/candidates/PROP-009.json",
+          "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+          "expectedSha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T03:46:01.796366+00:00",
+          "session": "local",
+          "producer": "experiment_planner · databricks-gpt-oss-120b",
+          "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+          "datasetVersion": "analytic_v1",
+          "sourceExperiment": "EXP-001",
+          "facts": [
+            {
+              "label": "Analysis role",
+              "value": "FORMAL_HETEROGENEITY_TEST",
+              "mono": true
+            },
+            {
+              "label": "Feasibility at planning",
+              "value": "REQUIRES_ENGINE_EXTENSION",
+              "mono": true
+            }
+          ],
+          "links": [
+            "reports/discovery/local/hypotheses/HYP-008.json"
+          ]
+        },
+        "id": "PROP-009",
+        "hypothesisIds": [
+          "HYP-008"
+        ],
+        "question": "Does the association between commuting burden and leisure time differ between women and men?",
+        "test": "Weighted linear regression with an interaction term between commute_5h and sex (female) to test the coefficient difference for leisure_weekday_min.",
+        "estimand": "Difference in the coefficient of commute_5h between female and male respondents (female - male).",
+        "role": {
+          "code": "FORMAL_HETEROGENEITY_TEST",
+          "tone": "neutral"
+        },
+        "formal": true,
+        "infoGain": {
+          "level": "HIGH",
+          "reason": "Directly tests the hypothesized sex difference for the leisure outcome, which remains unresolved after EXP-001."
+        },
+        "scientificValue": "Clarifies whether the commuting–leisure association varies by sex, influencing gender‑specific recommendations.",
+        "feasibilityAtPlanning": {
+          "code": "REQUIRES_ENGINE_EXTENSION",
+          "tone": "warn"
+        },
+        "feasibilityReason": "Interaction terms are not currently supported by the engine.",
+        "requiredCapabilities": [
+          "interaction_terms"
+        ],
+        "current": {
+          "executable": true,
+          "missing": [],
+          "asOf": "DEC-005"
+        },
+        "limitations": [
+          "Observational cross‑sectional data; cannot infer causality.",
+          "Engine extension needed for interaction modeling.",
+          "Potential multicollinearity with the sex main effect."
+        ],
+        "ranAs": null
+      }
+    ],
+    "decisions": [
+      {
+        "artifact": {
+          "key": "reports/discovery/local/decisions/DEC-001.json",
+          "id": "DEC-001",
+          "fullId": null,
+          "type": "DECISION",
+          "label": "Director decision",
+          "path": "reports/discovery/local/decisions/DEC-001.json",
+          "sha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+          "expectedSha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T04:45:35.980598+00:00",
+          "session": "local",
+          "producer": "discovery_director · databricks-gpt-oss-120b",
+          "codeVersion": "645007482e3f6ef7946b81e8c02805841a098a7d",
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Status",
+              "value": "WAITING_FOR_ENGINE_CAPABILITY",
+              "mono": true
+            },
+            {
+              "label": "Preferred",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Best executable",
+              "value": "PROP-005",
+              "mono": true
+            },
+            {
+              "label": "Policy",
+              "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/candidates/PROP-003.json",
+            "reports/discovery/local/candidates/PROP-005.json",
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+          ]
+        },
+        "id": "DEC-001",
+        "status": {
+          "code": "WAITING_FOR_ENGINE_CAPABILITY",
+          "tone": "warn"
+        },
+        "createdAt": "2026-10-04T04:45:35.980598+00:00",
+        "codeVersion": "645007482e3f6ef7946b81e8c02805841a098a7d",
+        "model": "databricks-gpt-oss-120b",
+        "preferred": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "bestExecutable": {
+          "id": "PROP-005",
+          "key": "reports/discovery/local/candidates/PROP-005.json"
+        },
+        "rationale": "Proposal PROP-003 tests whether the association between commuting time and sleep time varies by sex via an interaction term. This directly addresses the untested question H3 and the remaining uncertainty from EXP-001 about possible sex‑specific patterns. It has the highest expected information gain (HIGH), can discriminate if the association is stronger in one sex, and provides a formal inference on the interaction coefficient. The engine currently lacks interaction term support, so the proposal cannot be executed now.",
+        "expectedLearning": "If the interaction coefficient (commute_5h × sex_female) confidence interval excludes zero on the negative side, the association between commuting time and sleep time is more negative for women than for men. If it excludes zero on the positive side, the association is more negative for men. If the interval includes zero, the data do not show a clear sex‑specific difference in the association.",
+        "alternatives": [
+          {
+            "id": "PROP-005",
+            "key": "reports/discovery/local/candidates/PROP-005.json",
+            "reason": "Exploratory subgroup estimate for women only does not provide formal evidence of heterogeneity; it offers medium information gain and serves as supplementary context."
+          },
+          {
+            "id": "PROP-008",
+            "key": "reports/discovery/local/candidates/PROP-008.json",
+            "reason": "Tests moderation by child presence, a secondary untested question, and requires multiple missing capabilities beyond interaction_terms."
+          },
+          {
+            "id": "PROP-009",
+            "key": "reports/discovery/local/candidates/PROP-009.json",
+            "reason": "Tests sex heterogeneity for leisure time, which is less central than the sleep outcome and also lacks engine support for interaction terms."
+          }
+        ],
+        "executable": false,
+        "missing": [
+          "interaction_terms"
+        ],
+        "uncertainties": [
+          "Engine does not currently support interaction terms, preventing execution of PROP-003.",
+          "Observational, cross‑sectional design limits causal interpretation.",
+          "Potential limited power to detect a sex interaction given the sample size.",
+          "Cluster‑approximation (CR1 PSU‑clustered) provides only an approximate variance estimate."
+        ],
+        "nextAction": "Add the interaction_terms capability to the experiment engine to enable formal heterogeneity testing.",
+        "approvedBy": []
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/decisions/DEC-002.json",
+          "id": "DEC-002",
+          "fullId": null,
+          "type": "DECISION",
+          "label": "Director decision",
+          "path": "reports/discovery/local/decisions/DEC-002.json",
+          "sha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+          "expectedSha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T04:59:57.138994+00:00",
+          "session": "local",
+          "producer": "discovery_director · databricks-gpt-oss-120b",
+          "codeVersion": "d8e2bafc87a8b8563a6abe6da4d07ec703b7b057",
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Status",
+              "value": "READY_TO_EXECUTE",
+              "mono": true
+            },
+            {
+              "label": "Preferred",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Best executable",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Policy",
+              "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/candidates/PROP-003.json",
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+            "metadata/experiment_engine_capabilities.json"
+          ]
+        },
+        "id": "DEC-002",
+        "status": {
+          "code": "READY_TO_EXECUTE",
+          "tone": "good"
+        },
+        "createdAt": "2026-10-04T04:59:57.138994+00:00",
+        "codeVersion": "d8e2bafc87a8b8563a6abe6da4d07ec703b7b057",
+        "model": "databricks-gpt-oss-120b",
+        "preferred": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "bestExecutable": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "rationale": "PROP-003 tests the heterogeneity hypothesis (H3) that the association between commuting time and sleep time differs between women and men. Sleep showed the strongest negative point estimate in EXP-001, so assessing whether the association varies by sex addresses the key uncertainty. The proposal uses a formal interaction term, yielding an interval for the difference between groups, and the engine currently supports the required interaction capability, so it can be executed now.",
+        "expectedLearning": "If the interaction coefficient confidence interval excludes zero on the negative side, it indicates a more negative commuting–sleep association among women than men. If it excludes zero on the positive side, it indicates a more negative association among men than women. If the interval includes zero, the result is inconclusive, suggesting no clear difference in the association between sexes.",
+        "alternatives": [
+          {
+            "id": "PROP-005",
+            "key": "reports/discovery/local/candidates/PROP-005.json",
+            "reason": "Provides only a sex‑specific coefficient without formally testing the difference, so it cannot establish heterogeneity and offers lower scientific rigor."
+          },
+          {
+            "id": "PROP-008",
+            "key": "reports/discovery/local/candidates/PROP-008.json",
+            "reason": "Tests child‑presence moderation, which is valuable but secondary to the primary unresolved question about sex differences for the strongest outcome (sleep)."
+          },
+          {
+            "id": "PROP-009",
+            "key": "reports/discovery/local/candidates/PROP-009.json",
+            "reason": "Examines sex heterogeneity for leisure, an outcome with a weaker negative point association than sleep, making it less informative for the key unresolved finding."
+          }
+        ],
+        "executable": true,
+        "missing": [],
+        "uncertainties": [
+          "CR1 PSU‑clustered sandwich variance is an approximation, not full ENUT complex‑survey variance.",
+          "High‑leverage observations (168) may affect standard errors.",
+          "Observational, cross‑sectional design limits causal interpretation.",
+          "Interaction tests may have limited statistical power given sample size."
+        ],
+        "nextAction": "Human approval of this decision is required before executing the experiment.",
+        "approvedBy": []
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/decisions/DEC-003.json",
+          "id": "DEC-003",
+          "fullId": null,
+          "type": "DECISION",
+          "label": "Director decision",
+          "path": "reports/discovery/local/decisions/DEC-003.json",
+          "sha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+          "expectedSha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T05:08:54.645569+00:00",
+          "session": "local",
+          "producer": "discovery_director · databricks-gpt-oss-120b",
+          "codeVersion": "fba0c4cc8ee433833cdeb97628568b0c5cb42b42",
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Status",
+              "value": "READY_TO_EXECUTE",
+              "mono": true
+            },
+            {
+              "label": "Preferred",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Best executable",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Policy",
+              "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/candidates/PROP-003.json",
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+            "metadata/experiment_engine_capabilities.json"
+          ]
+        },
+        "id": "DEC-003",
+        "status": {
+          "code": "READY_TO_EXECUTE",
+          "tone": "good"
+        },
+        "createdAt": "2026-10-04T05:08:54.645569+00:00",
+        "codeVersion": "fba0c4cc8ee433833cdeb97628568b0c5cb42b42",
+        "model": "databricks-gpt-oss-120b",
+        "preferred": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "bestExecutable": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "rationale": "PROP-003 conducts a formal weighted linear regression interaction test between commute_5h and sex for the sleep_weekday_min outcome, which showed the strongest negative point association in EXP-001. This directly addresses the untested heterogeneity question (H3) left uncertain by EXP-001, provides the highest expected information gain (HIGH), and uses an approved hypothesis (HYP-005). It discriminates between plausible interpretations of whether the negative association differs by sex, offering greater scientific rigor than exploratory subgroup estimates.",
+        "expectedLearning": "If the 95% confidence interval for the interaction coefficient excludes zero on the negative side, we learn that the commuting‑sleep association is more negative for women than for men. If it excludes zero on the positive side, we learn the association is more negative for men. If the interval includes zero, we learn there is no clear sex difference in the association.",
+        "alternatives": [
+          {
+            "id": "PROP-005",
+            "key": "reports/discovery/local/candidates/PROP-005.json",
+            "reason": "Exploratory subgroup analysis provides a sex‑specific estimate but cannot establish heterogeneity; it has lower scientific rigor and only medium information gain."
+          },
+          {
+            "id": "PROP-008",
+            "key": "reports/discovery/local/candidates/PROP-008.json",
+            "reason": "Tests moderation by child presence, which is valuable but secondary to the primary sex‑heterogeneity question and adds complexity with a moderator not used elsewhere."
+          },
+          {
+            "id": "PROP-009",
+            "key": "reports/discovery/local/candidates/PROP-009.json",
+            "reason": "Assesses sex heterogeneity for leisure, an outcome with a weaker and less certain association than sleep, yielding lower priority."
+          }
+        ],
+        "executable": true,
+        "missing": [],
+        "uncertainties": [
+          "CR1 PSU‑clustered sandwich variance is an approximation, not full ENUT complex‑survey variance.",
+          "High‑leverage observations (168 above 2p/n) may affect standard errors.",
+          "Interaction tests may have limited statistical power given sample size and subgroup distribution."
+        ],
+        "nextAction": "READY_TO_EXECUTE: human approval of this decision is required before any execution.",
+        "approvedBy": []
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/decisions/DEC-004.json",
+          "id": "DEC-004",
+          "fullId": null,
+          "type": "DECISION",
+          "label": "Director decision",
+          "path": "reports/discovery/local/decisions/DEC-004.json",
+          "sha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+          "expectedSha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T05:18:49.612367+00:00",
+          "session": "local",
+          "producer": "discovery_director · databricks-gpt-oss-120b",
+          "codeVersion": "2c8643cabd3117aca9aa7b5fd9134c1e859fc840",
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Status",
+              "value": "READY_TO_EXECUTE",
+              "mono": true
+            },
+            {
+              "label": "Preferred",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Best executable",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Policy",
+              "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/candidates/PROP-003.json",
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+          ]
+        },
+        "id": "DEC-004",
+        "status": {
+          "code": "READY_TO_EXECUTE",
+          "tone": "good"
+        },
+        "createdAt": "2026-10-04T05:18:49.612367+00:00",
+        "codeVersion": "2c8643cabd3117aca9aa7b5fd9134c1e859fc840",
+        "model": "databricks-gpt-oss-120b",
+        "preferred": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "bestExecutable": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "rationale": "PROP-003 performs a formal heterogeneity test of the commuting‑sleep coefficient by sex, directly addressing the key uncertainty left by EXP‑001 that the strongest negative point estimate for sleep may differ between men and women. It uses an interaction term, which provides a rigorous, formally inferable coefficient difference, and has the highest expected information gain among all proposals. The test clarifies whether the observed negative coefficient for sleep is uniform or moderated by sex, a question highlighted in the critique and approved hypothesis HYP‑005, and thus is the most informative next step.",
+        "expectedLearning": "If the 95% confidence interval for the interaction coefficient excludes zero on the negative side, the data support a more negative commuting‑sleep coefficient among women than men. If it excludes zero on the positive side, the coefficient is more negative among men. If the interval includes zero, the evidence is inconclusive about any sex difference, indicating the pooled coefficient applies to both sexes.",
+        "alternatives": [
+          {
+            "id": "PROP-005",
+            "key": "reports/discovery/local/candidates/PROP-005.json",
+            "reason": "Provides a sex‑specific estimate but does not formally test heterogeneity; its information gain is medium and the result cannot establish a difference between sexes."
+          },
+          {
+            "id": "PROP-008",
+            "key": "reports/discovery/local/candidates/PROP-008.json",
+            "reason": "Tests moderation by child presence, which is a secondary untested question; while scientifically valuable, it addresses a different dimension than the primary unresolved issue (sleep) and has comparable information gain but lower priority."
+          },
+          {
+            "id": "PROP-009",
+            "key": "reports/discovery/local/candidates/PROP-009.json",
+            "reason": "Assesses sex differences for leisure time, a dimension with a weaker association and higher uncertainty; thus it is less directly relevant to the primary unresolved issue from EXP‑001."
+          }
+        ],
+        "executable": true,
+        "missing": [],
+        "uncertainties": [
+          "CR1 PSU‑clustered sandwich approximation rather than full ENUT complex‑survey variance",
+          "Retention of high‑leverage observations may affect standard errors",
+          "Observational cross‑sectional design limits causal interpretation",
+          "Potential limited statistical power for detecting interaction effects"
+        ],
+        "nextAction": "Proceed to execute PROP-003 after human approval of this decision.",
+        "approvedBy": []
+      },
+      {
+        "artifact": {
+          "key": "reports/discovery/local/decisions/DEC-005.json",
+          "id": "DEC-005",
+          "fullId": null,
+          "type": "DECISION",
+          "label": "Director decision",
+          "path": "reports/discovery/local/decisions/DEC-005.json",
+          "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+          "expectedSha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+          "modifiedAt": null,
+          "createdAt": "2026-10-04T05:24:23.705027+00:00",
+          "session": "local",
+          "producer": "discovery_director · databricks-gpt-oss-120b",
+          "codeVersion": "383eea2e9be65b9763a1e62c04e7300f3b109097",
+          "datasetVersion": null,
+          "sourceExperiment": null,
+          "facts": [
+            {
+              "label": "Status",
+              "value": "READY_TO_EXECUTE",
+              "mono": true
+            },
+            {
+              "label": "Preferred",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Best executable",
+              "value": "PROP-003",
+              "mono": true
+            },
+            {
+              "label": "Policy",
+              "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+            }
+          ],
+          "links": [
+            "reports/discovery/local/candidates/PROP-003.json",
+            "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+            "reports/discovery/local/reviews/REV-DEC-005-001.json",
+            "experiments/EXP-002/spec.json"
+          ]
+        },
+        "id": "DEC-005",
+        "status": {
+          "code": "READY_TO_EXECUTE",
+          "tone": "good"
+        },
+        "createdAt": "2026-10-04T05:24:23.705027+00:00",
+        "codeVersion": "383eea2e9be65b9763a1e62c04e7300f3b109097",
+        "model": "databricks-gpt-oss-120b",
+        "preferred": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "bestExecutable": {
+          "id": "PROP-003",
+          "key": "reports/discovery/local/candidates/PROP-003.json"
+        },
+        "rationale": "PROP-003 conducts a formal interaction test between commute_5h and sex for the sleep outcome, directly addressing the untested hypothesis H3 left by EXP-001. It has the highest expected information gain (HIGH) and can discriminate whether the observed strongest negative point estimate for sleep varies by sex, which could explain the inconclusive ranking of personal‑time dimensions. The engine supports interaction terms, making this a rigorous, formally inferable heterogeneity test.",
+        "expectedLearning": "If the interaction coefficient confidence interval excludes zero on the negative side, it indicates a more negative commute‑sleep association among women; if it excludes zero on the positive side, it indicates a more negative association among men; if the interval includes zero, the result is inconclusive and leaves the question of a sex difference open.",
+        "alternatives": [
+          {
+            "id": "PROP-005",
+            "key": "reports/discovery/local/candidates/PROP-005.json",
+            "reason": "Provides a sex‑specific estimate but does not formally test heterogeneity, offering lower scientific value (MEDIUM information gain) compared to a formal interaction test."
+          },
+          {
+            "id": "PROP-008",
+            "key": "reports/discovery/local/candidates/PROP-008.json",
+            "reason": "Tests child‑presence moderation, which is relevant but secondary to the primary sex‑difference question and adds a covariate not central to the ranking uncertainty."
+          },
+          {
+            "id": "PROP-009",
+            "key": "reports/discovery/local/candidates/PROP-009.json",
+            "reason": "Tests sex heterogeneity for leisure, which is informative, yet sleep is the outcome with the strongest negative point estimate, making PROP-003 more directly tied to the core uncertainty."
+          }
+        ],
+        "executable": true,
+        "missing": [],
+        "uncertainties": [
+          "Cluster approximation (CR1 PSU‑clustered sandwich) is an approximation, not full ENUT complex‑survey variance.",
+          "High‑leverage observations (168 above 2p/n) may affect standard errors.",
+          "Pointwise 95% intervals are descriptive; Bonferroni families are separate for outcomes and pairwise differences.",
+          "Linear specification assumes a constant slope across the commuting exposure range."
+        ],
+        "nextAction": "Human approval of this decision is required before any experiment can be executed.",
+        "approvedBy": [
+          "reports/discovery/local/reviews/REV-DEC-005-001.json"
+        ]
+      }
+    ],
+    "capabilityChanges": [
+      {
+        "from": {
+          "id": "DEC-001",
+          "key": "reports/discovery/local/decisions/DEC-001.json"
+        },
+        "to": {
+          "id": "DEC-002",
+          "key": "reports/discovery/local/decisions/DEC-002.json"
+        },
+        "gained": [
+          "interaction_terms"
+        ],
+        "lost": [],
+        "schemaBefore": "7e3e6ce0a513b902335017f7651842440552bdf4ae0596fce04f7a01c9789dd0",
+        "schemaAfter": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+        "capabilitiesKey": "metadata/experiment_engine_capabilities.json",
+        "supported": [
+          {
+            "name": "weighted_linear_regression",
+            "supported": true
+          },
+          {
+            "name": "population_filter_stratification",
+            "supported": true
+          },
+          {
+            "name": "binary_moderator_main_effect",
+            "supported": true
+          },
+          {
+            "name": "exposure_x_binary_moderator_interaction",
+            "supported": true
+          },
+          {
+            "name": "formal_interaction_coefficient_inference",
+            "supported": true
+          },
+          {
+            "name": "derived_group_slopes_from_full_covariance",
+            "supported": true
+          },
+          {
+            "name": "nonlinear_terms",
+            "supported": false
+          },
+          {
+            "name": "multi_category_interactions",
+            "supported": false
+          },
+          {
+            "name": "multiple_moderators",
+            "supported": false
+          },
+          {
+            "name": "equivalence_testing",
+            "supported": false
+          },
+          {
+            "name": "p_values",
+            "supported": false
+          },
+          {
+            "name": "full_complex_survey_variance",
+            "supported": false
+          }
+        ],
+        "humanReview": null
+      },
+      {
+        "from": {
+          "id": "DEC-002",
+          "key": "reports/discovery/local/decisions/DEC-002.json"
+        },
+        "to": {
+          "id": "DEC-003",
+          "key": "reports/discovery/local/decisions/DEC-003.json"
+        },
+        "gained": [
+          "formal_between_group_comparison"
+        ],
+        "lost": [],
+        "schemaBefore": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+        "schemaAfter": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+        "capabilitiesKey": "metadata/experiment_engine_capabilities.json",
+        "supported": [
+          {
+            "name": "weighted_linear_regression",
+            "supported": true
+          },
+          {
+            "name": "population_filter_stratification",
+            "supported": true
+          },
+          {
+            "name": "binary_moderator_main_effect",
+            "supported": true
+          },
+          {
+            "name": "exposure_x_binary_moderator_interaction",
+            "supported": true
+          },
+          {
+            "name": "formal_interaction_coefficient_inference",
+            "supported": true
+          },
+          {
+            "name": "derived_group_slopes_from_full_covariance",
+            "supported": true
+          },
+          {
+            "name": "nonlinear_terms",
+            "supported": false
+          },
+          {
+            "name": "multi_category_interactions",
+            "supported": false
+          },
+          {
+            "name": "multiple_moderators",
+            "supported": false
+          },
+          {
+            "name": "equivalence_testing",
+            "supported": false
+          },
+          {
+            "name": "p_values",
+            "supported": false
+          },
+          {
+            "name": "full_complex_survey_variance",
+            "supported": false
+          }
+        ],
+        "humanReview": null
+      }
+    ],
+    "followUps": [
+      {
+        "experiment": {
+          "experimentId": "EXP-002",
+          "spec": {
+            "key": "experiments/EXP-002/spec.json",
+            "id": "EXP-002 spec",
+            "fullId": null,
+            "type": "EXPERIMENT",
+            "label": "Experiment spec",
+            "path": "experiments/EXP-002/spec.json",
+            "sha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+            "expectedSha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+            "modifiedAt": null,
+            "createdAt": "2026-10-04T05:36:51.615039+00:00",
+            "session": null,
+            "producer": "ExperimentSpec from PROP-003 (engine validates)",
+            "codeVersion": "a812598efa1dcd5fc0fa45636e0b98b86ec31cfb",
+            "datasetVersion": "analytic_v1",
+            "sourceExperiment": null,
+            "facts": [
+              {
+                "label": "Method",
+                "value": "weighted_linear_regression",
+                "mono": true
+              },
+              {
+                "label": "Exposure",
+                "value": "commute_5h",
+                "mono": true
+              },
+              {
+                "label": "Hypotheses",
+                "value": "H3"
+              },
+              {
+                "label": "Moderator",
+                "value": "sex",
+                "mono": true
+              }
+            ],
+            "links": [
+              "reports/experiments/EXP-002/result.json",
+              "experiments/EXP-002/provenance.json",
+              "reports/discovery/local/candidates/PROP-003.json",
+              "reports/discovery/local/reviews/REV-DEC-005-001.json",
+              "reports/discovery/local/decisions/DEC-005.json"
+            ]
+          },
+          "result": {
+            "key": "reports/experiments/EXP-002/result.json",
+            "id": "EXP-002 result",
+            "fullId": null,
+            "type": "EXPERIMENT",
+            "label": "Experiment result",
+            "path": "reports/experiments/EXP-002/result.json",
+            "sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+            "expectedSha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+            "modifiedAt": null,
+            "createdAt": null,
+            "session": null,
+            "producer": "Deterministic engine (src/experiments)",
+            "codeVersion": null,
+            "datasetVersion": "analytic_v1",
+            "sourceExperiment": "EXP-002",
+            "facts": [
+              {
+                "label": "Status",
+                "value": "EXPERIMENT_COMPLETED",
+                "mono": true
+              },
+              {
+                "label": "Review",
+                "value": "REQUIRES_HUMAN_REVIEW",
+                "mono": true
+              },
+              {
+                "label": "Ranking",
+                "value": "NOT_APPLICABLE_SINGLE_OUTCOME",
+                "mono": true
+              },
+              {
+                "label": "Sample",
+                "value": "n = 2,563"
+              }
+            ],
+            "links": [
+              "experiments/EXP-002/spec.json",
+              "reports/experiments/EXP-002/validation.json",
+              "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+            ]
+          },
+          "validation": {
+            "key": "reports/experiments/EXP-002/validation.json",
+            "id": "EXP-002 validation",
+            "fullId": null,
+            "type": "EVIDENCE",
+            "label": "Reproducibility check",
+            "path": "reports/experiments/EXP-002/validation.json",
+            "sha256": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee",
+            "expectedSha256": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee",
+            "modifiedAt": null,
+            "createdAt": null,
+            "session": null,
+            "producer": "scripts/run_experiment.py (two runs)",
+            "codeVersion": null,
+            "datasetVersion": null,
+            "sourceExperiment": "EXP-002",
+            "facts": [
+              {
+                "label": "Status",
+                "value": "PASS",
+                "mono": true
+              },
+              {
+                "label": "Identical runs",
+                "value": "yes"
+              },
+              {
+                "label": "Dataset hash",
+                "value": "unchanged"
+              }
+            ],
+            "links": [
+              "reports/experiments/EXP-002/result.json"
+            ]
+          },
+          "question": "Does the association between commuting time and sleep time differ between women and men?",
+          "population": [
+            "Workers aged 18–65",
+            "CDMX + Edomex",
+            "Women and men",
+            "n = 2,563"
+          ],
+          "exposure": "+5 h weekday commuting (300 min Mon–Fri)",
+          "outcomes": [
+            "sleep_weekday_min"
+          ],
+          "covariates": [
+            "work time",
+            "age",
+            "sex",
+            "state"
+          ],
+          "method": "Weighted linear regression",
+          "uncertainty": "PSU-cluster CR1, t (approximation)",
+          "hypothesisIds": [
+            "H3"
+          ],
+          "status": {
+            "code": "EXPERIMENT_COMPLETED",
+            "tone": "good"
+          },
+          "reviewStatus": {
+            "code": "REQUIRES_HUMAN_REVIEW",
+            "tone": "warn"
+          },
+          "reproduced": true,
+          "datasetUnchanged": true,
+          "sampleSize": 2563,
+          "datasetVersion": "analytic_v1"
+        },
+        "evidence": {
+          "experimentId": "EXP-002",
+          "artifact": {
+            "key": "reports/experiments/EXP-002/result.json",
+            "id": "EXP-002 result",
+            "fullId": null,
+            "type": "EXPERIMENT",
+            "label": "Experiment result",
+            "path": "reports/experiments/EXP-002/result.json",
+            "sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+            "expectedSha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+            "modifiedAt": null,
+            "createdAt": null,
+            "session": null,
+            "producer": "Deterministic engine (src/experiments)",
+            "codeVersion": null,
+            "datasetVersion": "analytic_v1",
+            "sourceExperiment": "EXP-002",
+            "facts": [
+              {
+                "label": "Status",
+                "value": "EXPERIMENT_COMPLETED",
+                "mono": true
+              },
+              {
+                "label": "Review",
+                "value": "REQUIRES_HUMAN_REVIEW",
+                "mono": true
+              },
+              {
+                "label": "Ranking",
+                "value": "NOT_APPLICABLE_SINGLE_OUTCOME",
+                "mono": true
+              },
+              {
+                "label": "Sample",
+                "value": "n = 2,563"
+              }
+            ],
+            "links": [
+              "experiments/EXP-002/spec.json",
+              "reports/experiments/EXP-002/validation.json",
+              "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+            ]
+          },
+          "rows": [
+            {
+              "outcome": "sleep_weekday_min",
+              "label": "Sleep",
+              "coefficient": -41.596257972823324,
+              "standardError": 8.899047790455166,
+              "ci": {
+                "lower": -59.098593725900415,
+                "upper": -24.093922219746236,
+                "level": 0.95,
+                "adjustment": "none"
+              },
+              "simultaneous": {
+                "lower": -59.098593725900415,
+                "upper": -24.093922219746236,
+                "level": 0.95,
+                "adjustment": "none"
+              },
+              "n": 2563
+            }
+          ],
+          "strongestNegative": null,
+          "sentences": [],
+          "rankingStatus": {
+            "code": "NOT_APPLICABLE_SINGLE_OUTCOME",
+            "tone": "neutral"
+          },
+          "rankingSentence": null,
+          "rankingRule": "A cross-outcome ranking requires at least two primary outcomes; not evaluated",
+          "pairs": null,
+          "assessments": [
+            {
+              "id": "H3",
+              "assessment": "Interaction interval includes zero: inconclusive about heterogeneity; not evidence of no difference",
+              "evidence": "sleep_weekday_min: commute_5h x sex (female vs reference male) INCONCLUSIVE_INTERVAL_INCLUDES_ZERO",
+              "status": {
+                "code": "INCONCLUSIVE",
+                "tone": "uncertain"
+              }
+            }
+          ],
+          "nextDirections": [
+            "Is the commuting association nonlinear?"
+          ],
+          "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+          "sampleSize": 2563,
+          "covariates": [
+            "work time",
+            "age",
+            "sex",
+            "state"
+          ],
+          "covarianceMethod": "PSU cluster CR1, t(G-1), no stratum centering",
+          "sensitivity": [],
+          "qualityFlags": [
+            "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+            "HIGH_LEVERAGE_RETAINED",
+            "REQUIRES_HUMAN_REVIEW"
+          ]
+        },
+        "interactions": [
+          {
+            "outcome": "sleep_weekday_min",
+            "outcomeLabel": "Sleep",
+            "exposure": "commute_5h",
+            "moderator": "sex",
+            "referenceLevel": "male",
+            "comparisonLevel": "female",
+            "coding": "sex[female] = 1 if sex == female, 0 if male (reference)",
+            "referenceSlope": {
+              "estimate": -41.596257972823324,
+              "standardError": 8.899047790455166,
+              "ci": {
+                "lower": -59.098593725900415,
+                "upper": -24.093922219746236,
+                "level": 0.95,
+                "adjustment": "none"
+              }
+            },
+            "comparisonSlope": {
+              "estimate": -59.311695606001706,
+              "standardError": 12.469257120344656,
+              "ci": {
+                "lower": -83.83579412200223,
+                "upper": -34.78759709000118,
+                "level": 0.95,
+                "adjustment": "none"
+              }
+            },
+            "interaction": {
+              "estimate": -17.715437633178386,
+              "standardError": 15.160238054100674,
+              "ci": {
+                "lower": -47.53206327306323,
+                "upper": 12.101188006706455,
+                "level": 0.95,
+                "adjustment": "none"
+              }
+            },
+            "status": {
+              "code": "INCONCLUSIVE_INTERVAL_INCLUDES_ZERO",
+              "tone": "uncertain"
+            },
+            "interpretation": "The 95% interval of the interaction includes zero: inconclusive about a difference in the exposure association between the moderator groups; not evidence of no difference.",
+            "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting"
+          }
+        ],
+        "critiques": [
+          {
+            "artifact": {
+              "key": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+              "id": "CRIT-EXP-002-002",
+              "fullId": null,
+              "type": "UNCERTAINTY",
+              "label": "Scientific critique",
+              "path": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+              "sha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+              "expectedSha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+              "modifiedAt": null,
+              "createdAt": "2026-10-04T06:16:22.975368+00:00",
+              "session": "local",
+              "producer": "scientific_critic · databricks-gpt-oss-120b",
+              "codeVersion": "affccdfb97693c3501fdd55983f6c3ebbb495699",
+              "datasetVersion": "analytic_v1",
+              "sourceExperiment": "EXP-002",
+              "facts": [
+                {
+                  "label": "Verdict",
+                  "value": "UNCERTAIN",
+                  "mono": true
+                },
+                {
+                  "label": "Numbers",
+                  "value": "decimal numbers checked against the source artifact before saving"
+                },
+                {
+                  "label": "Source sha256",
+                  "value": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+                  "mono": true
+                }
+              ],
+              "links": [
+                "reports/experiments/EXP-002/result.json",
+                "reports/discovery/local/hypotheses/HYP-005.json"
+              ]
+            },
+            "experimentId": "EXP-002",
+            "verdict": {
+              "code": "UNCERTAIN",
+              "tone": "uncertain"
+            },
+            "rationale": "The interaction test for sex heterogeneity is inconclusive (interval includes zero) and the overall ranking of personal‑time outcomes remains inconclusive; variance estimation uses an approximation and the design is observational, limiting confidence.",
+            "evidence": [
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Male reference group slope estimate = -41.596 (95% CI [-59.099, -24.094]), direction negative.",
+                "source": "interactions.reference_group_slope"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Female comparison group slope estimate = -59.312 (95% CI [-83.836, -34.788]), direction negative.",
+                "source": "interactions.comparison_group_slope"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Pointwise 95% CI for adjusted model = [-59.099, -24.094]; Bonferroni outcome interval identical = [-59.099, -24.094].",
+                "source": "estimates[0].ci95_pointwise, estimates[0].bonferroni_outcome_interval"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Ranking status = NOT_APPLICABLE_SINGLE_OUTCOME; no paired comparisons exclude zero.",
+                "source": "ranking.status"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Sensitivity analysis is empty; no sensitivity models reported.",
+                "source": "sensitivity"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Sample size = 2563; weighted population = 12737236.0 minutes.",
+                "source": "sample_size, weighted_population"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Diagnostics: clusters = 351, strata = 19, high leverage count = 183, weighted R2 = 0.058928761063717694.",
+                "source": "diagnostics_adjusted.adjusted:sleep_weekday_min"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Multiple comparisons: none (single outcome).",
+                "source": "ranking.paired_comparisons"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Variance method: CR1 PSU-cluster sandwich approximation, not full ENUT complex-survey variance.",
+                "source": "limitations[0]"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Engine evaluated hypothesis H3; did not evaluate H1, H2, H4.",
+                "source": "hypotheses_evaluated_by_engine"
+              },
+              {
+                "kind": "OBSERVED_EVIDENCE",
+                "label": "Observed evidence",
+                "statement": "Prior experiment EXP-001 ranking status = INCONCLUSIVE_RANKING.",
+                "source": "prior_scientific_state.experiments[0].ranking_status"
+              },
+              {
+                "kind": "INFERENCE",
+                "label": "Scientific inference",
+                "statement": "The interaction estimate = -17.715 (95% CI [-47.532, 12.101]) is INCONCLUSIVE regarding sex heterogeneity.",
+                "source": "interactions.interaction_comparison_minus_reference"
+              }
+            ],
+            "uncertainties": [
+              "CR1 PSU-cluster sandwich approximation, not full ENUT complex-survey variance",
+              "High leverage observations retained (183), possibly influencing estimates",
+              "Limited power to detect interaction effects with sample size 2563"
+            ],
+            "limitations": [
+              "Observational cross‑sectional design; associations do not imply causation",
+              "FAC_PER‑weighted point estimates; variance method is an approximation",
+              "Linear specification of commute exposure may miss non‑linear patterns",
+              "Intervals that include zero are inconclusive and do not establish equivalence (no equivalence margin exists)",
+              "CR1 PSU-cluster sandwich approximation, not full ENUT complex-survey variance"
+            ],
+            "unsupported": [
+              "Any claim that the interaction proves a causal effect of sex on the commute–sleep relationship",
+              "Statement that the ranking of personal‑time outcomes is resolved by this experiment",
+              "Assertion that the association differs per day rather than per 300 weekday commuting minutes"
+            ],
+            "openQuestions": [
+              "Does the association between commuting time and sleep vary non‑linearly?",
+              "Do children or minors in the household moderate the commute‑sleep association?",
+              "How does commuting time relate to other personal‑time outcomes (leisure, household conversation, personal hygiene)?"
+            ],
+            "pointEstimateObservations": [
+              "Male reference group slope = -41.596 (95% CI [-59.099, -24.094])",
+              "Female comparison group slope = -59.312 (95% CI [-83.836, -34.788])"
+            ],
+            "formalInference": [
+              "Interaction estimate = -17.715, 95% CI [-47.532, 12.101]; interpretation_status = INCONCLUSIVE_INTERVAL_INCLUDES_ZERO"
+            ],
+            "agent": "scientific_critic",
+            "model": "databricks-gpt-oss-120b"
+          }
+        ],
+        "authorizedBy": [
+          "reports/discovery/local/reviews/REV-DEC-005-001.json"
+        ],
+        "decisionKey": "reports/discovery/local/decisions/DEC-005.json",
+        "proposalKey": "reports/discovery/local/candidates/PROP-003.json"
+      }
+    ],
+    "updates": [
+      {
+        "hypothesisId": "HYP-005",
+        "hypothesisKey": "reports/discovery/local/hypotheses/HYP-005.json",
+        "protocolId": "H3",
+        "title": "Sex Heterogeneity",
+        "question": "Does the association between commuting and sleep time differ between men and women?",
+        "previous": {
+          "code": "UNTESTED",
+          "tone": "neutral"
+        },
+        "next": {
+          "code": "INCONCLUSIVE",
+          "tone": "uncertain"
+        },
+        "reason": "Interaction interval includes zero, so evidence is inconclusive about sex heterogeneity.",
+        "statusSource": "engine hypothesis assessment in result.json",
+        "explainer": "The experiment formally tested the hypothesis, but its uncertainty interval did not allow the lab to resolve it. The state now records an open, tested question instead of a certainty it does not have.",
+        "experimentId": "EXP-002",
+        "experimentKey": "reports/experiments/EXP-002/result.json",
+        "critiqueKey": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+        "before": "Prior experiments left the ranking of personal‑time outcomes inconclusive and had not evaluated sex heterogeneity (H3 was UNTESTED).",
+        "tested": "Interaction between commuting time and sex on sleep_weekday_min (hypothesis H3).",
+        "changed": "H3 status changed from UNTESTED to INCONCLUSIVE.",
+        "unresolved": "The cross‑outcome ranking remains inconclusive and sex heterogeneity remains unresolved."
+      }
+    ],
+    "stages": [
+      {
+        "key": "question",
+        "number": 1,
+        "title": "Research question",
+        "type": "QUESTION",
+        "recorded": true,
+        "artifactKeys": [
+          "initial_state.json",
+          "reports/discovery/local/research_state.json"
+        ],
+        "awaiting": {
+          "state": "Not generated yet",
+          "what": "the research question",
+          "producer": "initial_state.json",
+          "path": "initial_state.json"
+        },
+        "parts": []
+      },
+      {
+        "key": "baseline",
+        "number": 2,
+        "title": "EXP-001 evidence",
+        "type": "EVIDENCE",
+        "recorded": true,
+        "artifactKeys": [
+          "reports/experiments/EXP-001/result.json",
+          "experiments/EXP-001/spec.json",
+          "reports/experiments/EXP-001/validation.json"
+        ],
+        "awaiting": {
+          "state": "Experiment not executed",
+          "what": "the first experiment's result",
+          "producer": "experiment_runner · deterministic engine",
+          "path": "reports/experiments/EXP-NNN/"
+        },
+        "parts": []
+      },
+      {
+        "key": "critique",
+        "number": 3,
+        "title": "Scientific critic",
+        "type": "UNCERTAINTY",
+        "recorded": true,
+        "artifactKeys": [
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+        ],
+        "awaiting": {
+          "state": "Not generated yet",
+          "what": "a critique of the first result",
+          "producer": "scientific_critic",
+          "path": "reports/discovery/local/critiques/"
+        },
+        "parts": []
+      },
+      {
+        "key": "planning",
+        "number": 4,
+        "title": "Hypotheses and experiment planning",
+        "type": "HYPOTHESIS",
+        "recorded": true,
+        "artifactKeys": [
+          "reports/discovery/local/hypotheses/HYP-005.json",
+          "reports/discovery/local/hypotheses/HYP-007.json",
+          "reports/discovery/local/hypotheses/HYP-008.json",
+          "reports/discovery/local/reviews/REV-001.json",
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/candidates/PROP-005.json",
+          "reports/discovery/local/candidates/PROP-008.json",
+          "reports/discovery/local/candidates/PROP-009.json"
+        ],
+        "awaiting": {
+          "state": "Not generated yet",
+          "what": "hypotheses and candidate experiments",
+          "producer": "hypothesis_agent · experiment_planner",
+          "path": "reports/discovery/local/"
+        },
+        "parts": [
+          {
+            "key": "hypotheses",
+            "title": "Hypotheses",
+            "type": "HYPOTHESIS",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/hypotheses/HYP-005.json",
+              "reports/discovery/local/hypotheses/HYP-007.json",
+              "reports/discovery/local/hypotheses/HYP-008.json"
+            ],
+            "awaiting": {
+              "state": "Not generated yet",
+              "what": "hypotheses motivated by the critique",
+              "producer": "hypothesis_agent · save_hypothesis",
+              "path": "reports/discovery/local/hypotheses/"
+            }
+          },
+          {
+            "key": "review",
+            "title": "Human review",
+            "type": "REVIEW",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/reviews/REV-001.json"
+            ],
+            "awaiting": {
+              "state": "Awaiting human review",
+              "what": "a human review of the hypotheses",
+              "producer": "human project lead",
+              "path": "reports/discovery/local/reviews/"
+            }
+          },
+          {
+            "key": "proposals",
+            "title": "Experiment planning",
+            "type": "PROPOSAL",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/candidates/PROP-003.json",
+              "reports/discovery/local/candidates/PROP-005.json",
+              "reports/discovery/local/candidates/PROP-008.json",
+              "reports/discovery/local/candidates/PROP-009.json"
+            ],
+            "awaiting": {
+              "state": "Not generated yet",
+              "what": "competing candidate experiments",
+              "producer": "experiment_planner · save_proposal",
+              "path": "reports/discovery/local/candidates/"
+            }
+          }
+        ]
+      },
+      {
+        "key": "decision",
+        "number": 5,
+        "title": "Discovery decision",
+        "type": "DECISION",
+        "recorded": true,
+        "artifactKeys": [
+          "reports/discovery/local/decisions/DEC-001.json",
+          "metadata/experiment_engine_capabilities.json",
+          "reports/discovery/local/decisions/DEC-002.json",
+          "reports/discovery/local/decisions/DEC-003.json",
+          "reports/discovery/local/decisions/DEC-004.json",
+          "reports/discovery/local/decisions/DEC-005.json",
+          "reports/discovery/local/reviews/REV-DEC-005-001.json"
+        ],
+        "awaiting": {
+          "state": "Not generated yet",
+          "what": "the Director's decision",
+          "producer": "discovery_director",
+          "path": "reports/discovery/local/decisions/"
+        },
+        "parts": [
+          {
+            "key": "decision",
+            "title": "Director decision",
+            "type": "DECISION",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/decisions/DEC-001.json"
+            ],
+            "awaiting": {
+              "state": "Not generated yet",
+              "what": "the Director's decision",
+              "producer": "discovery_director",
+              "path": "reports/discovery/local/decisions/"
+            }
+          },
+          {
+            "key": "capability",
+            "title": "Engine capability",
+            "type": "CAPABILITY",
+            "recorded": true,
+            "artifactKeys": [
+              "metadata/experiment_engine_capabilities.json"
+            ],
+            "awaiting": {
+              "state": "Not generated yet",
+              "what": "the engine capability the decision is waiting for",
+              "producer": "engine extension (code change) · recorded in the decision audits",
+              "path": "metadata/experiment_engine_capabilities.json"
+            }
+          },
+          {
+            "key": "history",
+            "title": "Decision history",
+            "type": "DECISION",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/decisions/DEC-002.json",
+              "reports/discovery/local/decisions/DEC-003.json",
+              "reports/discovery/local/decisions/DEC-004.json",
+              "reports/discovery/local/decisions/DEC-005.json"
+            ],
+            "awaiting": {
+              "state": "Not generated yet",
+              "what": "the Director's reassessment",
+              "producer": "discovery_director",
+              "path": "reports/discovery/local/decisions/"
+            }
+          },
+          {
+            "key": "approval",
+            "title": "Human approval",
+            "type": "REVIEW",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/reviews/REV-DEC-005-001.json"
+            ],
+            "awaiting": {
+              "state": "Awaiting human review",
+              "what": "a human approval of the decision",
+              "producer": "human project lead",
+              "path": "reports/discovery/local/reviews/"
+            }
+          }
+        ]
+      },
+      {
+        "key": "followup",
+        "number": 6,
+        "title": "EXP-002",
+        "type": "EXPERIMENT",
+        "recorded": true,
+        "artifactKeys": [
+          "reports/experiments/EXP-002/result.json",
+          "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+        ],
+        "awaiting": {
+          "state": "Experiment not executed",
+          "what": "the approved experiment's result",
+          "producer": "experiment_runner · deterministic engine",
+          "path": "reports/experiments/EXP-NNN/"
+        },
+        "parts": [
+          {
+            "key": "experiment",
+            "title": "Formal test",
+            "type": "EXPERIMENT",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/experiments/EXP-002/result.json"
+            ],
+            "awaiting": {
+              "state": "Experiment not executed",
+              "what": "the approved experiment's result",
+              "producer": "experiment_runner · deterministic engine",
+              "path": "reports/experiments/EXP-NNN/"
+            }
+          },
+          {
+            "key": "critique",
+            "title": "Scientific critic",
+            "type": "UNCERTAINTY",
+            "recorded": true,
+            "artifactKeys": [
+              "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+            ],
+            "awaiting": {
+              "state": "Not generated yet",
+              "what": "a critique of the new result",
+              "producer": "scientific_critic",
+              "path": "reports/discovery/local/critiques/"
+            }
+          }
+        ]
+      },
+      {
+        "key": "update",
+        "number": 7,
+        "title": "Updated scientific state",
+        "type": "UPDATE",
+        "recorded": true,
+        "artifactKeys": [
+          "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+        ],
+        "awaiting": {
+          "state": "Not generated yet",
+          "what": "the updated hypothesis status",
+          "producer": "scientific_critic · hypothesis_assessments",
+          "path": "reports/discovery/local/critiques/"
+        },
+        "parts": []
+      }
+    ],
+    "artifacts": {
+      "initial_state.json": {
+        "key": "initial_state.json",
+        "id": "initial_state",
+        "fullId": null,
+        "type": "QUESTION",
+        "label": "Research question",
+        "path": "initial_state.json",
+        "sha256": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755",
+        "expectedSha256": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "Shared Research State (Omnigent session input)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Dataset",
+            "value": "analytic_v1",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/research_state.json",
+          "experiments/EXP-001/spec.json"
+        ]
+      },
+      "reports/discovery/local/research_state.json": {
+        "key": "reports/discovery/local/research_state.json",
+        "id": "research_state",
+        "fullId": null,
+        "type": "QUESTION",
+        "label": "Research state index",
+        "path": "reports/discovery/local/research_state.json",
+        "sha256": "e5c783e41811f21a135411d452bac909b14510047442836d7df45d96feade4a7",
+        "expectedSha256": null,
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": "local",
+        "producer": "agents/commute_lab/research_state.py",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Validation",
+            "value": "valid"
+          },
+          {
+            "label": "Inputs sha256",
+            "value": "b640466410b4e0f3cc4c06a55287605f213cea66c5aa95c865b34168b22c8190",
+            "mono": true
+          }
+        ],
+        "links": [
+          "initial_state.json"
+        ]
+      },
+      "experiments/EXP-001/spec.json": {
+        "key": "experiments/EXP-001/spec.json",
+        "id": "EXP-001 spec",
+        "fullId": null,
+        "type": "EXPERIMENT",
+        "label": "Experiment spec",
+        "path": "experiments/EXP-001/spec.json",
+        "sha256": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+        "expectedSha256": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "ExperimentSpec (agents propose, engine validates)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Method",
+            "value": "weighted_linear_regression",
+            "mono": true
+          },
+          {
+            "label": "Exposure",
+            "value": "commute_5h",
+            "mono": true
+          },
+          {
+            "label": "Hypotheses",
+            "value": "H1, H2"
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-001/result.json",
+          "initial_state.json"
+        ]
+      },
+      "reports/experiments/EXP-001/result.json": {
+        "key": "reports/experiments/EXP-001/result.json",
+        "id": "EXP-001 result",
+        "fullId": null,
+        "type": "EVIDENCE",
+        "label": "Experiment result",
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+        "expectedSha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "Deterministic engine (src/experiments)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "EXPERIMENT_COMPLETED",
+            "mono": true
+          },
+          {
+            "label": "Review",
+            "value": "REQUIRES_HUMAN_REVIEW",
+            "mono": true
+          },
+          {
+            "label": "Ranking",
+            "value": "INCONCLUSIVE_RANKING",
+            "mono": true
+          },
+          {
+            "label": "Sample",
+            "value": "n = 2,563"
+          }
+        ],
+        "links": [
+          "experiments/EXP-001/spec.json",
+          "reports/experiments/EXP-001/validation.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+        ]
+      },
+      "reports/experiments/EXP-001/validation.json": {
+        "key": "reports/experiments/EXP-001/validation.json",
+        "id": "EXP-001 validation",
+        "fullId": null,
+        "type": "EVIDENCE",
+        "label": "Reproducibility check",
+        "path": "reports/experiments/EXP-001/validation.json",
+        "sha256": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+        "expectedSha256": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "scripts/run_experiment.py (two runs)",
+        "codeVersion": null,
+        "datasetVersion": null,
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "PASS",
+            "mono": true
+          },
+          {
+            "label": "Identical runs",
+            "value": "yes"
+          },
+          {
+            "label": "Dataset hash",
+            "value": "unchanged"
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-001/result.json"
+        ]
+      },
+      "experiments/EXP-002/spec.json": {
+        "key": "experiments/EXP-002/spec.json",
+        "id": "EXP-002 spec",
+        "fullId": null,
+        "type": "EXPERIMENT",
+        "label": "Experiment spec",
+        "path": "experiments/EXP-002/spec.json",
+        "sha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+        "expectedSha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T05:36:51.615039+00:00",
+        "session": null,
+        "producer": "ExperimentSpec from PROP-003 (engine validates)",
+        "codeVersion": "a812598efa1dcd5fc0fa45636e0b98b86ec31cfb",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Method",
+            "value": "weighted_linear_regression",
+            "mono": true
+          },
+          {
+            "label": "Exposure",
+            "value": "commute_5h",
+            "mono": true
+          },
+          {
+            "label": "Hypotheses",
+            "value": "H3"
+          },
+          {
+            "label": "Moderator",
+            "value": "sex",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-002/result.json",
+          "experiments/EXP-002/provenance.json",
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/reviews/REV-DEC-005-001.json",
+          "reports/discovery/local/decisions/DEC-005.json"
+        ]
+      },
+      "reports/experiments/EXP-002/result.json": {
+        "key": "reports/experiments/EXP-002/result.json",
+        "id": "EXP-002 result",
+        "fullId": null,
+        "type": "EXPERIMENT",
+        "label": "Experiment result",
+        "path": "reports/experiments/EXP-002/result.json",
+        "sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+        "expectedSha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "Deterministic engine (src/experiments)",
+        "codeVersion": null,
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-002",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "EXPERIMENT_COMPLETED",
+            "mono": true
+          },
+          {
+            "label": "Review",
+            "value": "REQUIRES_HUMAN_REVIEW",
+            "mono": true
+          },
+          {
+            "label": "Ranking",
+            "value": "NOT_APPLICABLE_SINGLE_OUTCOME",
+            "mono": true
+          },
+          {
+            "label": "Sample",
+            "value": "n = 2,563"
+          }
+        ],
+        "links": [
+          "experiments/EXP-002/spec.json",
+          "reports/experiments/EXP-002/validation.json",
+          "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+        ]
+      },
+      "reports/experiments/EXP-002/validation.json": {
+        "key": "reports/experiments/EXP-002/validation.json",
+        "id": "EXP-002 validation",
+        "fullId": null,
+        "type": "EVIDENCE",
+        "label": "Reproducibility check",
+        "path": "reports/experiments/EXP-002/validation.json",
+        "sha256": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee",
+        "expectedSha256": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee",
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "scripts/run_experiment.py (two runs)",
+        "codeVersion": null,
+        "datasetVersion": null,
+        "sourceExperiment": "EXP-002",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "PASS",
+            "mono": true
+          },
+          {
+            "label": "Identical runs",
+            "value": "yes"
+          },
+          {
+            "label": "Dataset hash",
+            "value": "unchanged"
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-002/result.json"
+        ]
+      },
+      "experiments/EXP-002/provenance.json": {
+        "key": "experiments/EXP-002/provenance.json",
+        "id": "EXP-002 provenance",
+        "fullId": null,
+        "type": "EXPERIMENT",
+        "label": "Experiment provenance",
+        "path": "experiments/EXP-002/provenance.json",
+        "sha256": "ff36db5964d00c75079bb15c2e6c1fff1b52cae16c38a6ba05e577ab11a4f903",
+        "expectedSha256": null,
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T05:36:51.615039+00:00",
+        "session": null,
+        "producer": "Claude Code, deterministic translation script (no LLM-generated statistics)",
+        "codeVersion": "e4dd8c4d7c91c00ee4e1fc49b7b09990b069a124",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Decision",
+            "value": "DEC-005",
+            "mono": true
+          },
+          {
+            "label": "Approval",
+            "value": "REV-DEC-005-001",
+            "mono": true
+          },
+          {
+            "label": "Proposal",
+            "value": "PROP-003",
+            "mono": true
+          }
+        ],
+        "links": [
+          "experiments/EXP-002/spec.json"
+        ]
+      },
+      "reports/discovery/local/critiques/CRIT-EXP-001-001.json": {
+        "key": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "id": "CRIT-EXP-001-001",
+        "fullId": null,
+        "type": "UNCERTAINTY",
+        "label": "Scientific critique",
+        "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+        "expectedSha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T02:12:58.284106+00:00",
+        "session": "local",
+        "producer": "scientific_critic · databricks-gpt-oss-120b",
+        "codeVersion": "aa1120e08edfaa7f7aeb0502b99c5498068d8b64",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Verdict",
+            "value": "UNCERTAIN",
+            "mono": true
+          },
+          {
+            "label": "Numbers",
+            "value": "decimal numbers checked against the source artifact before saving"
+          },
+          {
+            "label": "Source sha256",
+            "value": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-001/result.json",
+          "reports/discovery/local/hypotheses/HYP-005.json",
+          "reports/discovery/local/hypotheses/HYP-007.json",
+          "reports/discovery/local/hypotheses/HYP-008.json",
+          "reports/discovery/local/decisions/DEC-001.json",
+          "reports/discovery/local/decisions/DEC-002.json",
+          "reports/discovery/local/decisions/DEC-003.json",
+          "reports/discovery/local/decisions/DEC-004.json",
+          "reports/discovery/local/decisions/DEC-005.json"
+        ]
+      },
+      "reports/discovery/local/critiques/CRIT-EXP-002-002.json": {
+        "key": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+        "id": "CRIT-EXP-002-002",
+        "fullId": null,
+        "type": "UNCERTAINTY",
+        "label": "Scientific critique",
+        "path": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+        "sha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+        "expectedSha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T06:16:22.975368+00:00",
+        "session": "local",
+        "producer": "scientific_critic · databricks-gpt-oss-120b",
+        "codeVersion": "affccdfb97693c3501fdd55983f6c3ebbb495699",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-002",
+        "facts": [
+          {
+            "label": "Verdict",
+            "value": "UNCERTAIN",
+            "mono": true
+          },
+          {
+            "label": "Numbers",
+            "value": "decimal numbers checked against the source artifact before saving"
+          },
+          {
+            "label": "Source sha256",
+            "value": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/experiments/EXP-002/result.json",
+          "reports/discovery/local/hypotheses/HYP-005.json"
+        ]
+      },
+      "reports/discovery/local/reviews/REV-001.json": {
+        "key": "reports/discovery/local/reviews/REV-001.json",
+        "id": "REV-001",
+        "fullId": null,
+        "type": "REVIEW",
+        "label": "Human review",
+        "path": "reports/discovery/local/reviews/REV-001.json",
+        "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+        "expectedSha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:24:02.123491+00:00",
+        "session": "local",
+        "producer": "human project lead (the user of the Claude Code session)",
+        "codeVersion": null,
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Type",
+            "value": "HYPOTHESIS_REVIEW",
+            "mono": true
+          },
+          {
+            "label": "Decision",
+            "value": "APPROVED_FOR_PLANNING",
+            "mono": true
+          },
+          {
+            "label": "Recorded by",
+            "value": "Claude Code, verbatim transcription of the user's review message"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/hypotheses/HYP-005.json",
+          "reports/discovery/local/hypotheses/HYP-007.json",
+          "reports/discovery/local/hypotheses/HYP-008.json"
+        ]
+      },
+      "reports/discovery/local/reviews/REV-DEC-005-001.json": {
+        "key": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+        "id": "REV-DEC-005-001",
+        "fullId": null,
+        "type": "REVIEW",
+        "label": "Human review",
+        "path": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+        "sha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+        "expectedSha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T05:27:53.139674+00:00",
+        "session": "local",
+        "producer": "human project lead (the user of the Claude Code session)",
+        "codeVersion": null,
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Type",
+            "value": "DECISION_APPROVAL",
+            "mono": true
+          },
+          {
+            "label": "Decision",
+            "value": "APPROVED_FOR_EXECUTION",
+            "mono": true
+          },
+          {
+            "label": "Recorded by",
+            "value": "Claude Code, transcription of the user's approval message"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/decisions/DEC-005.json",
+          "experiments/EXP-002/spec.json"
+        ]
+      },
+      "reports/discovery/local/hypotheses/HYP-005.json": {
+        "key": "reports/discovery/local/hypotheses/HYP-005.json",
+        "id": "HYP-005",
+        "fullId": null,
+        "type": "HYPOTHESIS",
+        "label": "Hypothesis",
+        "path": "reports/discovery/local/hypotheses/HYP-005.json",
+        "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+        "expectedSha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:03:38.221506+00:00",
+        "session": "local",
+        "producer": "hypothesis_agent · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "UNTESTED",
+            "mono": true
+          },
+          {
+            "label": "Kind",
+            "value": "NEW_HYPOTHESIS",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/candidates/PROP-005.json",
+          "reports/discovery/local/reviews/REV-001.json",
+          "reports/discovery/local/critiques/CRIT-EXP-002-002.json"
+        ]
+      },
+      "reports/discovery/local/hypotheses/HYP-007.json": {
+        "key": "reports/discovery/local/hypotheses/HYP-007.json",
+        "id": "HYP-007",
+        "fullId": null,
+        "type": "HYPOTHESIS",
+        "label": "Hypothesis",
+        "path": "reports/discovery/local/hypotheses/HYP-007.json",
+        "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+        "expectedSha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:06:47.945836+00:00",
+        "session": "local",
+        "producer": "hypothesis_agent · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "UNTESTED",
+            "mono": true
+          },
+          {
+            "label": "Kind",
+            "value": "NEW_HYPOTHESIS",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "reports/discovery/local/candidates/PROP-008.json",
+          "reports/discovery/local/reviews/REV-001.json"
+        ]
+      },
+      "reports/discovery/local/hypotheses/HYP-008.json": {
+        "key": "reports/discovery/local/hypotheses/HYP-008.json",
+        "id": "HYP-008",
+        "fullId": null,
+        "type": "HYPOTHESIS",
+        "label": "Hypothesis",
+        "path": "reports/discovery/local/hypotheses/HYP-008.json",
+        "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+        "expectedSha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:07:00.528020+00:00",
+        "session": "local",
+        "producer": "hypothesis_agent · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Status",
+            "value": "UNTESTED",
+            "mono": true
+          },
+          {
+            "label": "Kind",
+            "value": "NEW_HYPOTHESIS",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "reports/discovery/local/candidates/PROP-009.json",
+          "reports/discovery/local/reviews/REV-001.json"
+        ]
+      },
+      "reports/discovery/local/candidates/PROP-003.json": {
+        "key": "reports/discovery/local/candidates/PROP-003.json",
+        "id": "PROP-003",
+        "fullId": null,
+        "type": "PROPOSAL",
+        "label": "Candidate experiment",
+        "path": "reports/discovery/local/candidates/PROP-003.json",
+        "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+        "expectedSha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:33:26.721739+00:00",
+        "session": "local",
+        "producer": "experiment_planner · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Analysis role",
+            "value": "FORMAL_HETEROGENEITY_TEST",
+            "mono": true
+          },
+          {
+            "label": "Feasibility at planning",
+            "value": "REQUIRES_ENGINE_EXTENSION",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/hypotheses/HYP-005.json",
+          "reports/discovery/local/decisions/DEC-001.json",
+          "reports/discovery/local/decisions/DEC-002.json",
+          "reports/discovery/local/decisions/DEC-003.json",
+          "reports/discovery/local/decisions/DEC-004.json",
+          "reports/discovery/local/decisions/DEC-005.json",
+          "experiments/EXP-002/spec.json"
+        ]
+      },
+      "reports/discovery/local/candidates/PROP-005.json": {
+        "key": "reports/discovery/local/candidates/PROP-005.json",
+        "id": "PROP-005",
+        "fullId": null,
+        "type": "PROPOSAL",
+        "label": "Candidate experiment",
+        "path": "reports/discovery/local/candidates/PROP-005.json",
+        "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+        "expectedSha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:34:04.919272+00:00",
+        "session": "local",
+        "producer": "experiment_planner · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Analysis role",
+            "value": "EXPLORATORY_SUBGROUP",
+            "mono": true
+          },
+          {
+            "label": "Feasibility at planning",
+            "value": "EXECUTABLE_NOW",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/hypotheses/HYP-005.json",
+          "reports/discovery/local/decisions/DEC-001.json"
+        ]
+      },
+      "reports/discovery/local/candidates/PROP-008.json": {
+        "key": "reports/discovery/local/candidates/PROP-008.json",
+        "id": "PROP-008",
+        "fullId": null,
+        "type": "PROPOSAL",
+        "label": "Candidate experiment",
+        "path": "reports/discovery/local/candidates/PROP-008.json",
+        "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+        "expectedSha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:45:40.539851+00:00",
+        "session": "local",
+        "producer": "experiment_planner · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Analysis role",
+            "value": "FORMAL_HETEROGENEITY_TEST",
+            "mono": true
+          },
+          {
+            "label": "Feasibility at planning",
+            "value": "REQUIRES_ENGINE_EXTENSION",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/hypotheses/HYP-007.json"
+        ]
+      },
+      "reports/discovery/local/candidates/PROP-009.json": {
+        "key": "reports/discovery/local/candidates/PROP-009.json",
+        "id": "PROP-009",
+        "fullId": null,
+        "type": "PROPOSAL",
+        "label": "Candidate experiment",
+        "path": "reports/discovery/local/candidates/PROP-009.json",
+        "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+        "expectedSha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T03:46:01.796366+00:00",
+        "session": "local",
+        "producer": "experiment_planner · databricks-gpt-oss-120b",
+        "codeVersion": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+        "datasetVersion": "analytic_v1",
+        "sourceExperiment": "EXP-001",
+        "facts": [
+          {
+            "label": "Analysis role",
+            "value": "FORMAL_HETEROGENEITY_TEST",
+            "mono": true
+          },
+          {
+            "label": "Feasibility at planning",
+            "value": "REQUIRES_ENGINE_EXTENSION",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/hypotheses/HYP-008.json"
+        ]
+      },
+      "reports/discovery/local/decisions/DEC-001.json": {
+        "key": "reports/discovery/local/decisions/DEC-001.json",
+        "id": "DEC-001",
+        "fullId": null,
+        "type": "DECISION",
+        "label": "Director decision",
+        "path": "reports/discovery/local/decisions/DEC-001.json",
+        "sha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+        "expectedSha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T04:45:35.980598+00:00",
+        "session": "local",
+        "producer": "discovery_director · databricks-gpt-oss-120b",
+        "codeVersion": "645007482e3f6ef7946b81e8c02805841a098a7d",
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Status",
+            "value": "WAITING_FOR_ENGINE_CAPABILITY",
+            "mono": true
+          },
+          {
+            "label": "Preferred",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Best executable",
+            "value": "PROP-005",
+            "mono": true
+          },
+          {
+            "label": "Policy",
+            "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/candidates/PROP-005.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+        ]
+      },
+      "reports/discovery/local/decisions/DEC-002.json": {
+        "key": "reports/discovery/local/decisions/DEC-002.json",
+        "id": "DEC-002",
+        "fullId": null,
+        "type": "DECISION",
+        "label": "Director decision",
+        "path": "reports/discovery/local/decisions/DEC-002.json",
+        "sha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+        "expectedSha256": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T04:59:57.138994+00:00",
+        "session": "local",
+        "producer": "discovery_director · databricks-gpt-oss-120b",
+        "codeVersion": "d8e2bafc87a8b8563a6abe6da4d07ec703b7b057",
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Status",
+            "value": "READY_TO_EXECUTE",
+            "mono": true
+          },
+          {
+            "label": "Preferred",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Best executable",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Policy",
+            "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "metadata/experiment_engine_capabilities.json"
+        ]
+      },
+      "reports/discovery/local/decisions/DEC-003.json": {
+        "key": "reports/discovery/local/decisions/DEC-003.json",
+        "id": "DEC-003",
+        "fullId": null,
+        "type": "DECISION",
+        "label": "Director decision",
+        "path": "reports/discovery/local/decisions/DEC-003.json",
+        "sha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+        "expectedSha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T05:08:54.645569+00:00",
+        "session": "local",
+        "producer": "discovery_director · databricks-gpt-oss-120b",
+        "codeVersion": "fba0c4cc8ee433833cdeb97628568b0c5cb42b42",
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Status",
+            "value": "READY_TO_EXECUTE",
+            "mono": true
+          },
+          {
+            "label": "Preferred",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Best executable",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Policy",
+            "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "metadata/experiment_engine_capabilities.json"
+        ]
+      },
+      "reports/discovery/local/decisions/DEC-004.json": {
+        "key": "reports/discovery/local/decisions/DEC-004.json",
+        "id": "DEC-004",
+        "fullId": null,
+        "type": "DECISION",
+        "label": "Director decision",
+        "path": "reports/discovery/local/decisions/DEC-004.json",
+        "sha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+        "expectedSha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T05:18:49.612367+00:00",
+        "session": "local",
+        "producer": "discovery_director · databricks-gpt-oss-120b",
+        "codeVersion": "2c8643cabd3117aca9aa7b5fd9134c1e859fc840",
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Status",
+            "value": "READY_TO_EXECUTE",
+            "mono": true
+          },
+          {
+            "label": "Preferred",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Best executable",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Policy",
+            "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json"
+        ]
+      },
+      "reports/discovery/local/decisions/DEC-005.json": {
+        "key": "reports/discovery/local/decisions/DEC-005.json",
+        "id": "DEC-005",
+        "fullId": null,
+        "type": "DECISION",
+        "label": "Director decision",
+        "path": "reports/discovery/local/decisions/DEC-005.json",
+        "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+        "expectedSha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+        "modifiedAt": null,
+        "createdAt": "2026-10-04T05:24:23.705027+00:00",
+        "session": "local",
+        "producer": "discovery_director · databricks-gpt-oss-120b",
+        "codeVersion": "383eea2e9be65b9763a1e62c04e7300f3b109097",
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Status",
+            "value": "READY_TO_EXECUTE",
+            "mono": true
+          },
+          {
+            "label": "Preferred",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Best executable",
+            "value": "PROP-003",
+            "mono": true
+          },
+          {
+            "label": "Policy",
+            "value": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+          }
+        ],
+        "links": [
+          "reports/discovery/local/candidates/PROP-003.json",
+          "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+          "reports/discovery/local/reviews/REV-DEC-005-001.json",
+          "experiments/EXP-002/spec.json"
+        ]
+      },
+      "metadata/experiment_engine_capabilities.json": {
+        "key": "metadata/experiment_engine_capabilities.json",
+        "id": "engine capabilities",
+        "fullId": null,
+        "type": "CAPABILITY",
+        "label": "Engine capabilities",
+        "path": "metadata/experiment_engine_capabilities.json",
+        "sha256": "30dc82dadab903502c52a9f69473f140e71a3b2a4acb11755cca181860e6d5c2",
+        "expectedSha256": null,
+        "modifiedAt": null,
+        "createdAt": null,
+        "session": null,
+        "producer": "src/experiments/capabilities.py (exported, validated against the schema)",
+        "codeVersion": null,
+        "datasetVersion": null,
+        "sourceExperiment": null,
+        "facts": [
+          {
+            "label": "Methods",
+            "value": "weighted_linear_regression",
+            "mono": true
+          }
+        ],
+        "links": [
+          "reports/discovery/local/decisions/DEC-002.json",
+          "reports/discovery/local/decisions/DEC-003.json"
+        ]
+      }
+    },
+    "sessions": [
+      "local"
+    ],
+    "researchState": {
+      "key": "reports/discovery/local/research_state.json",
+      "valid": true,
+      "note": "GENERATED SNAPSHOT - do not edit. Rebuild with: python scripts/build_research_state.py. Sources of truth are the artifacts in provenance.inputs.",
+      "numbersPolicy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
+    },
+    "issues": []
+  }
+}

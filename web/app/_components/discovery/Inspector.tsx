@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Check, CircleCheck, Copy, ExternalLink, TriangleAlert } from "lucide-react";
 import { ArtifactChip, TypeMark, useDiscoveryUi } from "./primitives";
 
 function CopyButton({ value, label }: { value: string; label: string }) {
@@ -77,7 +77,7 @@ export default function Inspector() {
   const reproduce = specPath ? `python scripts/run_experiment.py ${specPath}` : null;
 
   return (
-    <aside aria-label="Artifact inspector" className="space-y-4">
+    <aside aria-label="Scientific provenance" className="space-y-4">
       <section className="rounded-lg bg-white p-5">
         {a ? (
           <>
@@ -117,8 +117,35 @@ export default function Inspector() {
                   </span>
                   <CopyButton value={a.sha256} label="SHA-256" />
                 </span>
+                {a.expectedSha256 && (
+                  <span className="mt-1 flex items-center gap-1.5 text-caption text-gray-700">
+                    {a.expectedSha256 === a.sha256 ? (
+                      <CircleCheck aria-hidden size={13} className="text-green-600" />
+                    ) : (
+                      <TriangleAlert aria-hidden size={13} className="text-yellow-700" />
+                    )}
+                    {a.expectedSha256 === a.sha256 ? "matches research_state.json" : "differs from research_state.json"}
+                  </span>
+                )}
               </Row>
               {a.producer && <Row label="Produced by">{a.producer}</Row>}
+              {a.sourceExperiment && (
+                <Row label="Source experiment">
+                  <span className="font-mono text-caption">{a.sourceExperiment}</span>
+                </Row>
+              )}
+              {a.datasetVersion && (
+                <Row label="Dataset">
+                  <span className="font-mono text-caption">{a.datasetVersion}</span>
+                </Row>
+              )}
+              {a.codeVersion && (
+                <Row label="Code version">
+                  <span className="font-mono text-caption" title={a.codeVersion}>
+                    {a.codeVersion.slice(0, 12)}
+                  </span>
+                </Row>
+              )}
               {when(a.createdAt) && <Row label="Created">{when(a.createdAt)}</Row>}
               {!a.createdAt && when(a.modifiedAt) && <Row label="Written">{when(a.modifiedAt)}</Row>}
               {a.session && (
@@ -155,7 +182,7 @@ export default function Inspector() {
             )}
           </>
         ) : (
-          <p className="text-body-sm text-gray-700">Select an artifact id on the spine to see where it lives and what produced it.</p>
+          <p className="text-body-sm text-gray-700">Select an artifact id to see its scientific provenance: where it lives, its hash, and what produced it.</p>
         )}
       </section>
 

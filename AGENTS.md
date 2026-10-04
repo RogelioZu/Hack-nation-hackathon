@@ -146,11 +146,12 @@ web/
   lib/supabase.ts          cliente de solo lectura (clave publishable, solo servidor)
   lib/data.ts              getProjects(), getResearch(id)
   lib/types.ts             tipos de filas + contrato de resultados
-  lib/discovery/           collect.mjs (lee artefactos del repo) → model.ts (9 etapas) → load.ts (REPLAY/LIVE)
-  data/discovery-snapshot.json  bundle de REPLAY: solo artefactos versionados en git (`npm run snapshot`)
-  scripts/snapshot-discovery.mjs  regenera el bundle de REPLAY
+  lib/discovery/           collect.mjs (lee artefactos) → model.ts normalizeDiscoveryRun (research_state como índice, 7 etapas con secciones) → DiscoveryRunViewModel → load.ts (REPLAY/LIVE)
+  data/discovery-run.json  bundle de REPLAY ya normalizado; vista derivada, no fuente científica (`npm run snapshot`, también en prebuild)
+  scripts/snapshot-discovery.mjs  regenera el bundle; falla si un artefacto requerido falta o está malformado
+  scripts/check-discovery.mjs  pruebas de aceptación A–L (`npm run test:discovery`; `CHECK_URL=…` revisa la página)
   app/page.tsx             espina de descubrimiento (REPLAY por defecto, `?mode=live`, `?stage=N`)
-  app/_components/discovery/  espina, forest plot, inspector de artefactos, controles de replay
+  app/_components/discovery/  espina de 7 etapas, forest plot, gráfico de interacción, inspector de procedencia, controles de replay
   app/guide/               "Reading guide": cómo leer la espina (los cinco roles de artefacto)
   app/audit/               lista de casos en Supabase (antes la portada; fuera de la navegación, solo por URL)
   app/research/[id]/       panel de auditoría del ciclo en Supabase (consulta cada 5 s)

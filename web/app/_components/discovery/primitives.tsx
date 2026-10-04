@@ -3,15 +3,20 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import {
   ChartScatter,
+  CircleCheck,
   CircleDashed,
   CircleHelp,
+  ClipboardList,
+  Cpu,
   FlaskConical,
+  GitCompareArrows,
   Hourglass,
   Signpost,
   TriangleAlert,
+  UserCheck,
   type LucideIcon,
 } from "lucide-react";
-import type { ArtifactRef, ArtifactType } from "@/lib/discovery/types";
+import type { ArtifactRef, ArtifactType, StatusView } from "@/lib/discovery/types";
 
 // --- Selection context: which artifact the inspector shows, and which ones just arrived (LIVE). ---
 
@@ -46,7 +51,7 @@ export const TYPE: Record<ArtifactType, { label: string; icon: LucideIcon; solid
     label: "Evidence",
     icon: ChartScatter,
     solid: "bg-blue-500 text-white",
-    meaning: "Figures computed by the deterministic engine.",
+    meaning: "Figures computed by the deterministic engine that the loop starts from.",
   },
   UNCERTAINTY: {
     label: "Uncertainty",
@@ -58,19 +63,43 @@ export const TYPE: Record<ArtifactType, { label: string; icon: LucideIcon; solid
     label: "Hypothesis",
     icon: CircleDashed,
     solid: "bg-white text-blue-600 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-blue-500",
-    meaning: "A falsifiable explanation, proposed and not yet tested.",
+    meaning: "A falsifiable explanation to be tested; never a finding.",
   },
-  EXPERIMENT: {
-    label: "Experiment",
-    icon: FlaskConical,
-    solid: "bg-blue-800 text-white",
-    meaning: "An ExperimentSpec, proposed or run on analytic_v1.",
+  REVIEW: {
+    label: "Human review",
+    icon: UserCheck,
+    solid: "bg-white text-gray-900 ring-[1.5px] ring-inset ring-gray-900",
+    meaning: "A human approval that gates a consequential scientific step.",
+  },
+  PROPOSAL: {
+    label: "Experiment proposal",
+    icon: ClipboardList,
+    solid: "bg-white text-blue-800 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-blue-800",
+    meaning: "A candidate experiment the planner proposed; not run.",
   },
   DECISION: {
     label: "Decision",
     icon: Signpost,
     solid: "bg-gray-900 text-white",
-    meaning: "A recorded choice of what to investigate next.",
+    meaning: "A recorded choice by the Discovery Director.",
+  },
+  CAPABILITY: {
+    label: "Engine capability",
+    icon: Cpu,
+    solid: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-300",
+    meaning: "What the deterministic engine can compute, and when that changed.",
+  },
+  EXPERIMENT: {
+    label: "Experiment result",
+    icon: FlaskConical,
+    solid: "bg-blue-800 text-white",
+    meaning: "A new run of the deterministic engine, approved before it ran.",
+  },
+  UPDATE: {
+    label: "Scientific update",
+    icon: GitCompareArrows,
+    solid: "bg-blue-900 text-white",
+    meaning: "A hypothesis status the lab changed because of a result.",
   },
 };
 
@@ -119,6 +148,32 @@ export function StageMarker({
       }`}
     >
       {number}
+    </span>
+  );
+}
+
+const TONE: Record<StatusView["tone"], { box: string; icon: LucideIcon | null; iconClass: string }> = {
+  good: { box: "bg-gray-50 text-gray-900", icon: CircleCheck, iconClass: "text-green-600" },
+  warn: { box: "bg-gray-50 text-gray-900", icon: TriangleAlert, iconClass: "text-yellow-700" },
+  uncertain: { box: "bg-yellow-400 text-gray-900", icon: TriangleAlert, iconClass: "text-gray-900" },
+  neutral: { box: "bg-gray-50 text-gray-700", icon: null, iconClass: "" },
+};
+
+/** A status exactly as the artifact writes it. The tone (set by the adapter) adds an icon; the words carry the meaning. */
+export function StatusTag({ status, large = false, className = "" }: { status: StatusView | null; large?: boolean; className?: string }) {
+  if (!status) return null;
+  const t = TONE[status.tone];
+  const Icon = t.icon;
+  return (
+    <span
+      title={status.code}
+      className={`inline-flex max-w-full shrink-0 items-center gap-1.5 rounded-sm font-mono ${
+        large ? "min-h-10 px-3.5 py-1 text-body font-semibold" : "min-h-7 px-2 py-0.5 text-caption"
+      } ${t.box} ${className}`}
+    >
+      {Icon && <Icon aria-hidden size={large ? 17 : 13} strokeWidth={2.25} className={`shrink-0 ${t.iconClass}`} />}
+      {/* Long codes wrap rather than widen their container; the full code is never cut. */}
+      <span className="min-w-0 [overflow-wrap:anywhere]">{status.code}</span>
     </span>
   );
 }
@@ -208,7 +263,7 @@ export function VerbatimList({
     <div>
       <ul className="space-y-2">
         {shown.map((t, i) => (
-          <li key={i} className={`text-body-sm text-gray-700 ${clamp && !open ? "line-clamp-3" : ""}`}>
+          <li key={i} className={`text-body-sm [overflow-wrap:anywhere] text-gray-700 ${clamp && !open ? "line-clamp-3" : ""}`}>
             <Inline text={t} />
           </li>
         ))}
@@ -227,12 +282,25 @@ export function VerbatimList({
   );
 }
 
-export function Awaiting({ what, producer, path, listening }: { what: string; producer: string; path: string; listening: boolean }) {
+export function Awaiting({
+  state,
+  what,
+  producer,
+  path,
+  listening,
+}: {
+  state: string;
+  what: string;
+  producer: string;
+  path: string;
+  listening: boolean;
+}) {
   return (
     <div className="flex items-start gap-3">
       <Hourglass aria-hidden size={18} strokeWidth={1.75} className="mt-0.5 shrink-0 text-gray-500" />
       <div className="min-w-0">
-        <p className="text-h4 text-gray-700">Awaiting {what}</p>
+        <p className="text-h4 text-gray-700">{state}</p>
+        <p className="mt-1 text-body-sm text-gray-700">Awaiting {what}</p>
         <p className="mt-1 text-body-sm text-gray-700">
           Produced by <span className="font-semibold">{producer}</span>
         </p>

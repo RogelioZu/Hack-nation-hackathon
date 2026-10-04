@@ -1,6 +1,6 @@
 ---
 name: tiemPO
-description: Agentic discovery lab on ENUT 2024, read as a nine-stage spine of real artifacts inside the Education2025 shell.
+description: Agentic discovery lab on ENUT 2024, read as a seven-stage spine of real artifacts inside the Education2025 shell.
 colors:
   electric-blue: "#0055ff"
   electric-blue-hover: "#0047d6"
@@ -306,14 +306,26 @@ Una paleta de un solo acento: azul eléctrico saturado, usado con moderación so
 
 **The Scarce Blue Rule.** El azul sólido es para navegación, la acción principal, la evidencia y lo seleccionado. Las superficies de lectura, incluida la tesis, son blancas.
 
-**The Five Roles Rule.** Cada artefacto lleva uno de cinco roles con relleno fijo:
+**The Roles Rule.** Cada artefacto lleva un rol con relleno, palabra e icono fijos. El significado nunca depende solo del color:
 - EVIDENCE: azul eléctrico;
-- EXPERIMENT: navy;
+- EXPERIMENT ("Experiment result"): navy;
 - UNCERTAINTY: amarillo con texto en tinta;
 - HYPOTHESIS: blanco con contorno azul discontinuo;
-- DECISION: tinta.
+- EXPERIMENT PROPOSAL: blanco con contorno navy discontinuo (propuesto, sin correr);
+- DECISION: tinta;
+- HUMAN REVIEW: blanco con anillo tinta de 1.5 px e icono de persona con check;
+- ENGINE CAPABILITY: `blue-wash` con anillo `blue-halo` e icono de chip;
+- SCIENTIFIC UPDATE: `selection-ink` (`#001d5c`) con texto blanco.
 
 QUESTION es blanco con anillo gris. Un color de rol no se usa como decoración fuera de su rol.
+
+**The Exact Status Rule.** Los estados se muestran tal como los escribe el artefacto (`READY_TO_EXECUTE`, `INCONCLUSIVE_RANKING`…) en una etiqueta mono (`StatusTag`). El adaptador asigna el tono:
+- incierto: amarillo;
+- advertencia: icono `yellow-700`;
+- bien: icono `live-green-ink`;
+- neutro: gris.
+
+El componente nunca decide el tono, y los códigos largos se parten en vez de cortarse.
 
 **The Yellow Means Uncertain Rule.** El amarillo solo marca incertidumbre o datos de demostración que no son hallazgos. Nunca un estado de éxito ni un acento decorativo.
 
@@ -364,7 +376,7 @@ Comportamiento responsive:
 
 Pantalla de descubrimiento:
 - **Columnas:** el espinazo (`minmax(0,1fr)`) y el inspector (320 px; 380 px en ≥1536 px), separados 24 px. El inspector, una sola tarjeta de procedencia, es `sticky` bajo la topbar y hace scroll propio. Por debajo de 1024 px cae debajo del espinazo.
-- **Espinazo:** una lista de nueve etapas en una rejilla `32px | 1fr` (gap 12 px, 20 px en ≥640 px), con 20 px entre etapas. Cada marcador se alinea con el título de su tarjeta (offset de 26 px en ≥640 px).
+- **Espinazo:** una lista de siete etapas en una rejilla `32px | 1fr` (gap 12 px, 20 px en ≥640 px), con 20 px entre etapas. Cada marcador se alinea con el título de su tarjeta (offset de 26 px en ≥640 px).
 - **Tesis:** ocupa todo el ancho, con padding de 32 px. En ≥1280 px se parte en texto y una columna de 300 px con el rastreador de 9 celdas (`grid-cols-9`, gap 4 px). Las separa un borde izquierdo de 1 px en `hairline-gray` con 40 px a cada lado; apiladas, ese borde pasa arriba.
 
 El ritmo de espaciado es base 4. Dentro de los componentes dominan 8 y 12 px; entre bloques se usan de 20 a 32 px. Las tarjetas de etapa tienen 28 px de padding (20 px en móvil) y 20 px bajo su encabezado.
@@ -453,7 +465,8 @@ No hay selector de modo: replay es el modo por defecto. LIVE solo se abre por UR
 ### Thesis surface y rastreador
 Superficie blanca de 20 px de radio:
 - **Texto:** la tesis en Display tinta y el párrafo Lead en `body-gray`.
-- **Rastreador:** solo "Discovery loop", el conteo "N of 9 stages" y nueve celdas de 28 px de alto con radio 6 px. Una celda registrada lleva el relleno de su rol; una pendiente, `panel-gray` con contorno discontinuo. La celda activa lleva el halo de 3 px.
+- **Titular:** la última actualización científica en palabras del artefacto (`scientific_update.what_changed`). Si no hay, la evidencia más reciente; si tampoco, la pregunta. Debajo van sus etiquetas de artefacto, el n y la fuente del bundle.
+- **Rastreador:** solo "Discovery loop", el conteo "N of 7 recorded" y siete celdas de 28 px de alto con radio 6 px. Una celda registrada lleva el relleno de su rol; una pendiente, `panel-gray` con contorno discontinuo. La celda activa lleva el halo de 3 px.
 - **Sin pie:** el rastreador no lleva nota de fuente. El aviso de LIVE o de respaldo vive solo en la topbar.
 
 ### Stage marker
@@ -482,8 +495,42 @@ La asociación negativa más fuerte va en `electric-blue` y bold; el resto en `q
 - **Grupos de hallazgos:** secciones con línea superior y conteo en texto plano: limitaciones, incertidumbres, afirmaciones no sustentadas y preguntas abiertas.
 - **Aviso de ranking inconcluso:** queda en `panel-gray`, con una marca amarilla cuadrada de 24 px.
 
+### Interaction plot (experimento con moderador binario)
+Misma gramática que el forest plot, con dos secciones separadas sobre un eje compartido:
+- **"Group slopes · descriptive, not a test":** pendientes del grupo de referencia y de comparación, en punto `quiet-gray`.
+- **"Formal test · interaction":** la diferencia de pendientes en una fila `blue-wash` con rombo y barra navy más gruesos, junto al `StatusTag` de `interpretation_status`.
+
+La interpretación del motor va debajo, literal. En teléfonos se oculta el eje y quedan la etiqueta, la estimación y el intervalo.
+
+### Grouped stage sections
+Las etapas 4 (hipótesis y planeación), 5 (decisión, capacidad del motor, historial y aprobación humana) y 6 (experimento y su crítica) agrupan varias piezas dentro de una sola tarjeta. Cada pieza es una sección:
+- la primera sin línea superior;
+- las demás con una línea `hairline-gray` y 24 px de aire;
+- un encabezado title-sm con la marca de rol de 28 px.
+
+Una sección sin artefacto muestra el bloque Awaiting, nunca contenido de relleno.
+
+### Decision history
+Lista vertical de todas las decisiones en el orden en que se tomaron; ninguna se reemplaza. Cada fila lleva:
+- un punto (relleno en la última);
+- la etiqueta del ID, el `StatusTag`, la fecha UTC, la propuesta preferida, la mejor ejecutable y el `code_version`.
+
+Entre dos decisiones, una línea discontinua `blue-halo` marca el cambio de capacidad del motor, derivado de sus auditorías. "Approved by" enlaza el review humano.
+
+### Human review panel
+Panel con anillo tinta de 1.5 px (no es una tarjeta anidada) con:
+- el icono de persona, el `StatusTag` de la decisión y la etiqueta del review;
+- revisor, fecha y quién lo transcribió;
+- el alcance, las restricciones y, cuando existe, la lista "Not endorsed by the reviewer", con la cita y la razón en bold.
+
+### Scientific update (hero)
+La última etapa usa como superficie la tarjeta de etapa en `selection-ink`. Contiene:
+- el código y el título de la hipótesis y la pregunta en title-md blanco;
+- una transición "Before {EXP}" (contorno discontinuo `blue-halo`, código mono de 32 px) → flecha con el experimento → "After {EXP}" (bloque `uncertainty-yellow` si el estado nuevo es incierto);
+- la razón literal del crítico, la frase genérica según el estado nuevo y, bajo una línea, "What was tested" / "What remains unresolved".
+
 ### Inspector
-Una sola tarjeta blanca de procedencia (16 px de radio, 20 px de padding) que ocupa toda la columna derecha:
+Una sola tarjeta blanca de procedencia (16 px de radio, 20 px de padding) que ocupa toda la columna derecha. Su nombre accesible es "Scientific provenance". Muestra además el experimento fuente, el dataset, el `code_version` y si el SHA-256 coincide con `research_state.json`:
 - encabezado con la marca de rol cuadrada de 28 px y el título;
 - el ID en mono semibold;
 - una lista de definición: etiquetas caption semibold en una columna de 6.5 rem, filas separadas por `hairline-gray`. Muestra el archivo, el SHA-256 truncado a 16 caracteres, el productor, la fecha UTC y los hechos del artefacto. Los valores copiables llevan botón de copiar;
@@ -498,13 +545,13 @@ Cuadrado de 28 px con radio 6 px, relleno del rol e icono Lucide de 15 px. Es la
 Página con PageHeader "Reading guide" y una sola tarjeta blanca de lectura:
 - **Tarjeta:** máx. 720 px de ancho, 16 px de radio, padding de 24 px (32 px en ≥768 px).
 - **Título:** "Reading the spine" en Title-lg.
-- **Lista:** los cinco roles más QUESTION. Cada fila lleva la marca de rol de 28 px y, al lado, el nombre en bold tinta seguido de su significado en body 16/24 `body-gray`, con 16 px entre filas.
+- **Lista:** los nueve roles más QUESTION. Cada fila lleva la marca de rol de 28 px y, al lado, el nombre en bold tinta seguido de su significado en body 16/24 `body-gray`, con 16 px entre filas.
 - **Cierre:** bajo una línea fina, la frase de que ENUT 2024 es observacional y toda cifra es una asociación, nunca una causa.
 
 ### Awaiting
 Bloque de espera de una etapa sin artefacto:
 - icono de reloj de arena en un círculo blanco;
-- "Awaiting {what}" en title-sm;
+- el estado en title-sm ("Not generated yet", "Awaiting human review" o "Experiment not executed") y debajo "Awaiting {what}";
 - el agente productor y la ruta en mono.
 
 En LIVE añade "Listening for new files" con un punto azul pulsante.

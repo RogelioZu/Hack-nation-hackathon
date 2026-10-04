@@ -1,7 +1,7 @@
 import type { EstimateRow } from "@/lib/discovery/types";
 import { plain, signed } from "./primitives";
 
-function niceStep(span: number): number {
+export function niceStep(span: number): number {
   const raw = span / 5;
   const pow = 10 ** Math.floor(Math.log10(raw));
   return [1, 2, 2.5, 5, 10].map((m) => m * pow).find((s) => s >= raw) ?? 10 * pow;
@@ -52,7 +52,9 @@ export default function ForestPlot({ rows, highlight, caption }: { rows: Estimat
                   <span
                     key={t}
                     // Phones keep every other label (and zero) so the numbers do not collide.
-                    className={`absolute -translate-x-1/2 tabular ${t === 0 ? "font-semibold text-gray-900" : i % 2 ? "max-sm:hidden" : ""}`}
+                    className={`absolute tabular ${i === 0 ? "" : i === ticks.length - 1 ? "-translate-x-full" : "-translate-x-1/2"} ${
+                      t === 0 ? "font-semibold text-gray-900" : i % 2 ? "max-sm:hidden" : ""
+                    }`}
                     style={{ left: `${x(t)}%` }}
                   >
                     {plain(t, 0)}
