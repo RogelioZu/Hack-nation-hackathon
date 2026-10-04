@@ -355,3 +355,13 @@ export function plain(n: number, digits = 1): string {
 export function humanize(code: string): string {
   return code.replace(/_/g, " ").toLowerCase();
 }
+
+/** A short explanation for readers outside the project, shown before the technical detail it summarises. */
+export function PlainBox({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
+  return (
+    <div className={`mb-5 rounded-md p-4 ${dark ? "bg-blue-800" : "bg-blue-50"}`}>
+      <p className={`text-caption font-semibold tracking-[0.04em] uppercase ${dark ? "text-blue-100" : "text-blue-700"}`}>In plain words</p>
+      <div className={`mt-1 text-body ${dark ? "text-white" : "text-gray-900"}`}>{children}</div>
+    </div>
+  );
+}

@@ -44,6 +44,13 @@ const OUTCOMES: Record<string, { label: string; noun: string }> = {
 };
 const COVARIATES: Record<string, string> = { work_weekday_min: "work time", age: "age", sex: "sex", state: "state" };
 const EXPOSURES: Record<string, string> = { commute_5h: "+5 h weekday commuting (300 min Mon–Fri)" };
+const MODERATOR_GROUPS: Record<string, string> = {
+  sex: "women and men",
+  has_child_u15: "workers with and without a child under 15 at home",
+  has_minor_u18: "workers with and without a minor under 18 at home",
+  state: "Mexico City and the State of Mexico",
+};
+const listOf = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(", ")} and ${xs.at(-1)}` : (xs[0] ?? ""));
 const METHODS: Record<string, string> = { weighted_linear_regression: "Weighted linear regression" };
 const UNCERTAINTY: Record<string, string> = { psu_cluster_CR1_t: "PSU-cluster CR1, t (approximation)" };
 const STATES: Record<string, string> = { "09": "CDMX", "15": "Edomex" };
@@ -86,6 +93,7 @@ const STATUS_TEXT: Record<string, [string, string]> = {
   INCONCLUSIVE_RANKING: ["Ranking inconclusive", "Not every pair of outcomes can be told apart once uncertainty is accounted for."],
   NOT_APPLICABLE_SINGLE_OUTCOME: ["Ranking not applicable", "Only one outcome was modelled, so there is nothing to rank."],
   INCONCLUSIVE_INTERVAL_INCLUDES_ZERO: ["Inconclusive: interval includes zero", "The data are compatible with no difference and with a sizeable one. This is not evidence of no difference."],
+  INTERVAL_EXCLUDES_ZERO: ["Interval excludes zero", "The data are compatible with a difference between the groups; still an observational association."],
   UNCERTAIN: ["Uncertain", "The critic finds the evidence usable but limited by its uncertainty and design."],
   VALID: ["Valid", "The critic finds no problem that would change the interpretation."],
   REQUIRES_REVISION: ["Needs revision", "The critic found a problem that must be fixed before interpreting the result."],
@@ -413,8 +421,32 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
       datasetUnchanged: v ? Boolean(v.analytic_sha256_before) && v.analytic_sha256_before === v.analytic_sha256_after : null,
       sampleSize: num(r?.sample_size),
       datasetVersion: str(sp.dataset_version) ?? str(r?.dataset_version),
+      plain: plainExperiment(sp, num(r?.sample_size)),
     };
   };
+
+  // What an experiment did, in plain words, from its spec. Why it ran and what it found are filled in once the run is known.
+  function plainExperiment(sp: Record<string, unknown>, n: number | null): ExperimentView["plain"] {
+    const outs = arr(sp.outcomes).map((o) => (OUTCOMES[String(o)]?.label ?? String(o)).toLowerCase());
+    const moderator = str(obj(sp.interaction).moderator);
+    const groups = moderator ? (MODERATOR_GROUPS[moderator] ?? moderator) : null;
+    const across = n != null ? ` across ${n.toLocaleString("en-US")} workers` : "";
+    const covs = arr(sp.covariates).map((c) => COVARIATES[String(c)] ?? String(c));
+    if (groups) {
+      return {
+        title: `Does the commuting–${listOf(outs)} link differ between ${groups}?`,
+        what: `A formal test of whether the association between five extra hours of weekday commuting and ${listOf(outs)} is different for ${groups}${across}. It estimates the gap between the two groups with its own uncertainty interval.`,
+        why: null,
+        finding: null,
+      };
+    }
+    return {
+      title: outs.length > 1 ? "Which part of personal time is most associated with commuting?" : `How is ${listOf(outs)} associated with commuting?`,
+      what: `Estimated how ${listOf(outs)} change with five extra hours of weekday commuting${across}${outs.length > 1 ? ", and whether one of them stands out from the others" : ""}.${covs.length ? ` Adjusted for ${listOf(covs)}.` : ""}`,
+      why: null,
+      finding: null,
+    };
+  }
 
   const evidenceView = (exp: ExperimentView, result: RawArtifact): EvidenceView => {
     const r = obj(result.data);
@@ -549,6 +581,31 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
     return { id, exp, evidence: result && exp.result ? evidenceView(exp, result) : null, interactions: result ? interactionViews(result) : [], provenance };
   });
   const baselineEntry = views.find((v) => !followUpIds.has(v.id)) ?? views[0] ?? null;
+  const GROUP_LEVEL: Record<string, string> = { female: "women", male: "men", true: "with", false: "without" };
+  views.forEach((v) => {
+    const ev = v.evidence;
+    const i = v.interactions[0];
+    let finding: string | null = null;
+    if (i?.referenceSlope && i.comparisonSlope && i.status) {
+      const ref = GROUP_LEVEL[i.referenceLevel] ?? i.referenceLevel;
+      const cmp = GROUP_LEVEL[i.comparisonLevel] ?? i.comparisonLevel;
+      const order = i.comparisonSlope.estimate < i.referenceSlope.estimate ? "more negative" : "less negative";
+      const lead = `For ${cmp}, the point estimate of the ${i.outcomeLabel.toLowerCase()} association is ${order} than for ${ref}`;
+      finding = /INCLUDES_ZERO/i.test(i.status.code)
+        ? `${lead}, but the interval for the difference includes zero: the data cannot tell whether the two groups really differ. That is not evidence that they are the same.`
+        : /EXCLUDES_ZERO/i.test(i.status.code)
+          ? `${lead}, and the interval for the difference excludes zero: evidence that the association differs between the groups (observational, not causal).`
+          : (i.interpretation ?? null);
+    } else if (ev) {
+      finding = [ev.sentences[0], ev.sentences[1], ev.rankingSentence].filter(Boolean).join(" ") || null;
+    }
+    v.exp.plain.finding = finding;
+  });
+  if (baselineEntry) {
+    const hs = baselineEntry.exp.hypothesisIds;
+    const named = hs.map((h) => (protocolTitles.get(h) ? `${h}, ${protocolTitles.get(h)!.toLowerCase()}` : h));
+    baselineEntry.exp.plain.why = `The starting point of the run: the first, pre-registered experiment${named.length ? ` (testing ${named.join("; ")})` : ""}. Every later step builds on it.`;
+  }
 
   // --- Critiques
   const critiqueView = (a: RawArtifact): CritiqueView => {
@@ -592,6 +649,17 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
       formalInference: texts(d.formal_inference),
       agent,
       model,
+      plain: (() => {
+        const v = statusOf(verdict);
+        const qs = [...texts(d.untested_questions), ...texts(d.open_questions)].length;
+        return [
+          `The Scientific Critic, an AI reviewer, checked whether ${experimentId ?? "the experiment"}'s result can be trusted and what it leaves open.`,
+          v ? `Verdict: ${v.label.toLowerCase()}${v.meaning ? `. ${v.meaning}` : "."}` : null,
+          qs ? `It lists ${qs} open question${qs === 1 ? "" : "s"}; they feed the next step.` : null,
+        ]
+          .filter(Boolean)
+          .join(" ");
+      })(),
     };
   };
   const critiqueRaws = byKind("critique");
@@ -873,6 +941,16 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
       const authorizedBy = reviews.filter((rv) => rv.authorizes.includes(v.id) || rv.id === first(pv.decision_approval_id)).map((rv) => rv.artifact.key);
       authorizedBy.forEach((k) => link(artifacts[k], v.exp.spec));
       if (decisionKey) link(artifacts[decisionKey], v.exp.spec);
+      const decisionId = first(pv.decision_id);
+      const reviewIds = authorizedBy.map((k) => artifacts[k]?.id).filter(Boolean);
+      v.exp.plain.why = [
+        decisionId ? `Chosen by the Discovery Director (${decisionId})` : "Chosen by the Discovery Director",
+        v.exp.hypothesisIds.length
+          ? ` to test ${v.exp.hypothesisIds.map((h) => (protocolTitles.get(h) ? `${h} (${protocolTitles.get(h)!.toLowerCase()})` : h)).join(" and ")}`
+          : "",
+        baselineEntry ? ` after ${baselineEntry.id}` : "",
+        reviewIds.length ? `, and approved by a human (${reviewIds.join(", ")}) before it ran.` : ".",
+      ].join("");
       return {
         experiment: v.exp,
         evidence: v.evidence,

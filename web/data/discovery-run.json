@@ -535,7 +535,13 @@
       "reproduced": true,
       "datasetUnchanged": true,
       "sampleSize": 2563,
-      "datasetVersion": "analytic_v1"
+      "datasetVersion": "analytic_v1",
+      "plain": {
+        "title": "Which part of personal time is most associated with commuting?",
+        "what": "Estimated how sleep, personal hygiene, household conversation and leisure change with five extra hours of weekday commuting across 2,563 workers, and whether one of them stands out from the others. Adjusted for work time, age, sex and state.",
+        "why": "The starting point of the run: the first, pre-registered experiment (testing H1, time displacement; H2, unequal displacement). Every later step builds on it.",
+        "finding": "Sleep had the strongest negative point estimate. Five additional weekday commuting hours were associated with about 49 fewer weekday sleep minutes in the adjusted model. The ranking across all four outcomes remained inconclusive."
+      }
     },
     "baselineEvidence": {
       "experimentId": "EXP-001",
@@ -1119,7 +1125,8 @@
         "pointEstimateObservations": [],
         "formalInference": [],
         "agent": "scientific_critic",
-        "model": "databricks-gpt-oss-120b"
+        "model": "databricks-gpt-oss-120b",
+        "plain": "The Scientific Critic, an AI reviewer, checked whether EXP-001's result can be trusted and what it leaves open. Verdict: uncertain. The critic finds the evidence usable but limited by its uncertainty and design. It lists 4 open questions; they feed the next step."
       }
     ],
     "hypotheses": [
@@ -3635,7 +3642,13 @@
           "reproduced": true,
           "datasetUnchanged": true,
           "sampleSize": 2563,
-          "datasetVersion": "analytic_v1"
+          "datasetVersion": "analytic_v1",
+          "plain": {
+            "title": "Does the commuting–sleep link differ between women and men?",
+            "what": "A formal test of whether the association between five extra hours of weekday commuting and sleep is different for women and men across 2,563 workers. It estimates the gap between the two groups with its own uncertainty interval.",
+            "why": "Chosen by the Discovery Director (DEC-005) to test H3 (sex heterogeneity) after EXP-001, and approved by a human (REV-DEC-005-001) before it ran.",
+            "finding": "For women, the point estimate of the sleep association is more negative than for men, but the interval for the difference includes zero: the data cannot tell whether the two groups really differ. That is not evidence that they are the same."
+          }
         },
         "evidence": {
           "experimentId": "EXP-002",
@@ -4128,7 +4141,8 @@
               "Interaction estimate = -17.715, 95% CI [-47.532, 12.101]; interpretation_status = INCONCLUSIVE_INTERVAL_INCLUDES_ZERO"
             ],
             "agent": "scientific_critic",
-            "model": "databricks-gpt-oss-120b"
+            "model": "databricks-gpt-oss-120b",
+            "plain": "The Scientific Critic, an AI reviewer, checked whether EXP-002's result can be trusted and what it leaves open. Verdict: uncertain. The critic finds the evidence usable but limited by its uncertainty and design. It lists 3 open questions; they feed the next step."
           }
         ],
         "authorizedBy": [

@@ -29,7 +29,8 @@ import Wordmark from "../Wordmark";
 import type { DiscoveryPayload, DiscoveryRunViewModel as Discovery, EvidenceView, Stage } from "@/lib/discovery/types";
 import Inspector from "./Inspector";
 import Overview from "./Overview";
-import { ArtifactChip, Awaiting, DiscoveryUiContext, StageMarker, TYPE, TypeBadge, TypeMark, VerbatimList } from "./primitives";
+import { ArtifactChip, Awaiting, DiscoveryUiContext, PlainBox, StageMarker, TYPE, TypeBadge, TypeMark, VerbatimList } from "./primitives";
+import ExperimentGuide, { ExperimentCard } from "./Experiments";
 import {
   ApprovalBody,
   BaselineBody,
@@ -138,10 +139,26 @@ function PartBody({ part, d }: { part: StagePart; d: Discovery }) {
     case "approval":
       return <ApprovalBody rvs={reviews} />;
     case "experiment":
-      return <FollowUpBody fus={d.followUps} />;
+      return (
+        <>
+          {d.followUps[0] && (
+            <PlainBox>
+              <p className="font-semibold">{d.followUps[0].experiment.plain.title}</p>
+              <p className="mt-1">{d.followUps[0].experiment.plain.what}</p>
+              {d.followUps[0].experiment.plain.why && <p className="mt-1 text-body-sm text-gray-700">{d.followUps[0].experiment.plain.why}</p>}
+            </PlainBox>
+          )}
+          <FollowUpBody fus={d.followUps} />
+        </>
+      );
     case "critique": {
       const cs = d.followUps.flatMap((f) => f.critiques);
-      return cs[0] ? <CritiqueBody c={cs[0]} earlier={cs.slice(1)} handedOn={false} /> : null;
+      return cs[0] ? (
+        <>
+          <PlainBox>{cs[0].plain}</PlainBox>
+          <CritiqueBody c={cs[0]} earlier={cs.slice(1)} handedOn={false} />
+        </>
+      ) : null;
     }
   }
 }
@@ -162,10 +179,22 @@ function StageBody({ stage, d, listening }: { stage: Stage; d: Discovery; listen
     case "question":
       return <QuestionBody q={d.question} />;
     case "baseline":
-      return d.baseline ? <BaselineBody exp={d.baseline} ev={d.baselineEvidence} /> : null;
+      return d.baseline ? (
+        <>
+          <PlainBox>
+            <p className="font-semibold">{d.baseline.plain.title}</p>
+            <p className="mt-1">{d.baseline.plain.what}</p>
+            {d.baseline.plain.why && <p className="mt-1 text-body-sm text-gray-700">{d.baseline.plain.why}</p>}
+          </PlainBox>
+          <BaselineBody exp={d.baseline} ev={d.baselineEvidence} />
+        </>
+      ) : null;
     case "critique":
       return d.baselineCritiques[0] ? (
-        <CritiqueBody c={d.baselineCritiques[0]} earlier={d.baselineCritiques.slice(1)} handedOn={d.hypotheses.length > 0} />
+        <>
+          <PlainBox>{d.baselineCritiques[0].plain}</PlainBox>
+          <CritiqueBody c={d.baselineCritiques[0]} earlier={d.baselineCritiques.slice(1)} handedOn={d.hypotheses.length > 0} />
+        </>
       ) : null;
     case "update":
       return <UpdateHero us={d.updates} />;
@@ -515,6 +544,7 @@ const AGENTS: { name: string; producer: string; role: string }[] = [
 /** The landing: what the lab is, where the data comes from, how it works, and the question the agents will take on. */
 function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRun: () => void; onFull: () => void }) {
   const producers = Object.values(d.artifacts).map((a) => a.producer ?? "");
+  const experiments = [...(d.baseline ? [d.baseline] : []), ...d.followUps.map((f) => f.experiment)];
   const ran = (p: string) => producers.some((x) => x.includes(p));
   const n = d.dataset?.populationN ?? d.baselineEvidence?.sampleSize ?? null;
   const steps: { icon: typeof Database; title: string; text: string }[] = [
@@ -622,6 +652,23 @@ function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRu
           </ul>
         </section>
       </div>
+
+      {experiments.length > 0 && (
+        <section aria-labelledby="experiments-title">
+          <h2 id="experiments-title" className="px-1 text-h4 text-gray-900">
+            The experiments the agents ran
+          </h2>
+          <p className="mt-1 max-w-[72ch] px-1 text-body-sm text-gray-700">
+            An experiment is one fixed statistical model run by the engine on the survey data. Each has an id so every later step can
+            point to it. What each one found appears during the guided discovery.
+          </p>
+          <div className="mt-3 grid gap-3 lg:grid-cols-2">
+            {experiments.map((e) => (
+              <ExperimentCard key={e.experimentId} exp={e} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -904,6 +951,20 @@ export default function DiscoveryView({
   const done = phase === "done";
   const isRevealed = useCallback((id: string) => done || revealedIds.has(id), [done, revealedIds]);
 
+  // A sentence for the inspector: which experiment an artifact belongs to, or what a critique concluded.
+  const explain = useCallback(
+    (key: string): string | null => {
+      const a = d.artifacts[key];
+      if (!a) return null;
+      const critique = [...d.baselineCritiques, ...d.followUps.flatMap((f) => f.critiques)].find((c) => c.artifact.key === key);
+      if (critique) return critique.plain;
+      const expId = a.sourceExperiment ?? a.id.split(" ")[0];
+      const exp = [d.baseline, ...d.followUps.map((f) => f.experiment)].find((e) => e?.experimentId === expId);
+      return exp ? `Part of ${exp.experimentId}: ${exp.plain.title}` : null;
+    },
+    [d],
+  );
+
   const ui = useMemo(
     () => ({ selectedKey, select: setSelectedKey, fresh, artifacts: d.artifacts, commit: payload.commit, isRevealed }),
     [selectedKey, fresh, d.artifacts, payload.commit, isRevealed],
@@ -1073,6 +1134,8 @@ export default function DiscoveryView({
                   </p>
                 </section>
 
+                <ExperimentGuide exps={[...(d.baseline ? [d.baseline] : []), ...d.followUps.map((f) => f.experiment)]} />
+
                 <section id="stages" tabIndex={-1} aria-label="Discovery stages" className="focus:outline-none">
                   <ol>
                     {d.stages.slice(0, Math.min(revealed, tail)).map((s, i, shownStages) => {
@@ -1117,7 +1180,7 @@ export default function DiscoveryView({
                 className="lg:sticky lg:top-[calc(var(--frame)+92px)] lg:max-h-[calc(100dvh-2*var(--frame)-92px)] lg:self-start lg:overflow-y-auto lg:pb-3"
               >
                 {selectedKey ? (
-                  <Inspector />
+                  <Inspector explain={explain} />
                 ) : (
                   <p className="hidden rounded-lg bg-white/60 p-5 text-body-sm text-gray-700 ring-1 ring-gray-200 lg:block">
                     Every artifact the agents save appears here with its file, hash and producer. Select any id to inspect it.

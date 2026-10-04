@@ -304,6 +304,9 @@ function EvidenceCited({ items }: { items: CritiqueView["evidence"] }) {
 }
 
 export function CritiqueBody({ c, earlier, handedOn }: { c: CritiqueView; earlier: CritiqueView[]; handedOn: boolean }) {
+  // The verdict, its reason and the open questions carry the story; the critic's full review stays one click away.
+  const [full, setFull] = useState(false);
+  const details = c.pointEstimateObservations.length + c.formalInference.length + c.evidence.length + c.limitations.length + c.uncertainties.length + c.unsupported.length;
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -318,41 +321,56 @@ export function CritiqueBody({ c, earlier, handedOn }: { c: CritiqueView; earlie
           <Inline text={c.rationale} />
         </p>
       )}
-      {(c.pointEstimateObservations.length > 0 || c.formalInference.length > 0) && (
-        <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-          <Section label="Point-estimate observations">
-            <VerbatimList items={c.pointEstimateObservations} initial={c.pointEstimateObservations.length} clamp={false} />
-          </Section>
-          <Section label="Formal inference">
-            <VerbatimList items={c.formalInference} initial={c.formalInference.length} clamp={false} />
-          </Section>
+      <Section label="What it leaves open" count={c.openQuestions.length} className="mt-5">
+        <VerbatimList items={c.openQuestions} initial={c.openQuestions.length} />
+        {handedOn && c.openQuestions.length > 0 && (
+          <p className="mt-3 inline-flex items-center gap-2 text-body-sm font-semibold text-blue-700">
+            <ArrowDown aria-hidden size={15} strokeWidth={2.25} />
+            These open questions are the input of the next stage.
+          </p>
+        )}
+      </Section>
+      {details > 0 && (
+        <button
+          type="button"
+          onClick={() => setFull((v) => !v)}
+          aria-expanded={full}
+          className="mt-5 text-body-sm font-semibold text-blue-600 hover:text-blue-700"
+        >
+          {full ? "Hide the critic's full review" : "Show the critic's full review"}
+          <span className="ml-1 font-normal text-gray-700">evidence cited, limitations, uncertainties, claims it rejects</span>
+        </button>
+      )}
+      {full && (
+        <div className="stage-enter">
+          {(c.pointEstimateObservations.length > 0 || c.formalInference.length > 0) && (
+            <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+              <Section label="Point-estimate observations">
+                <VerbatimList items={c.pointEstimateObservations} initial={c.pointEstimateObservations.length} clamp={false} />
+              </Section>
+              <Section label="Formal inference">
+                <VerbatimList items={c.formalInference} initial={c.formalInference.length} clamp={false} />
+              </Section>
+            </div>
+          )}
+          <div className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+            {c.evidence.length > 0 && (
+              <div className="sm:col-span-2">
+                <EvidenceCited items={c.evidence} />
+              </div>
+            )}
+            <Section label="Limitations" count={c.limitations.length}>
+              <VerbatimList items={c.limitations} />
+            </Section>
+            <Section label="Uncertainties" count={c.uncertainties.length}>
+              <VerbatimList items={c.uncertainties} />
+            </Section>
+            <Section label="Interpretations the critic rejects" count={c.unsupported.length} className="sm:col-span-2">
+              <VerbatimList items={c.unsupported} />
+            </Section>
+          </div>
         </div>
       )}
-      <div className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-        {c.evidence.length > 0 && (
-          <div className="sm:col-span-2">
-            <EvidenceCited items={c.evidence} />
-          </div>
-        )}
-        <Section label="Limitations" count={c.limitations.length}>
-          <VerbatimList items={c.limitations} />
-        </Section>
-        <Section label="Uncertainties" count={c.uncertainties.length}>
-          <VerbatimList items={c.uncertainties} />
-        </Section>
-        <Section label="Unsupported interpretations" count={c.unsupported.length} className="sm:col-span-2">
-          <VerbatimList items={c.unsupported} />
-        </Section>
-        <Section label="Untested questions" count={c.openQuestions.length} className="sm:col-span-2">
-          <VerbatimList items={c.openQuestions} initial={c.openQuestions.length} />
-          {handedOn && c.openQuestions.length > 0 && (
-            <p className="mt-3 inline-flex items-center gap-2 text-body-sm font-semibold text-blue-700">
-              <ArrowDown aria-hidden size={15} strokeWidth={2.25} />
-              These open questions are the input of the next stage.
-            </p>
-          )}
-        </Section>
-      </div>
       {earlier.length > 0 && (
         <div className="mt-4 flex flex-wrap items-center gap-2 text-caption text-gray-700">
           Earlier critiques of the same experiment:

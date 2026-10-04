@@ -114,7 +114,7 @@ export default function Overview({
                   <IdOrText id={exp.experimentId} />
                   {exp.hypothesisIds.length > 0 && <span className="text-caption text-gray-700">tests {exp.hypothesisIds.join(", ")}</span>}
                 </div>
-                {exp.question && <p className="mt-1 line-clamp-2 text-body-sm text-gray-900">{exp.question}</p>}
+                <p className="mt-1 text-body-sm text-gray-900">{exp.plain.title}</p>
                 <p className="mt-1.5 flex flex-wrap gap-1.5">
                   <StatusTag status={result} code={false} />
                   <StatusTag status={exp.reviewStatus} code={false} />

@@ -149,6 +149,8 @@ export interface ExperimentView {
   datasetUnchanged: boolean | null;
   sampleSize: number | null;
   datasetVersion: string | null;
+  // The experiment for a reader outside the project, built from the spec, the decision that chose it and its result.
+  plain: { title: string; what: string; why: string | null; finding: string | null };
 }
 
 export interface SlopeView {
@@ -188,6 +190,7 @@ export interface CritiqueView {
   formalInference: string[];
   agent: string | null;
   model: string | null;
+  plain: string; // what this critique is and what it concluded, in plain words
 }
 
 /** H1–H4 as pre-registered, with the latest status the artifacts give them. */
