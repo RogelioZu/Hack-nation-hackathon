@@ -172,9 +172,33 @@ class Validation(unittest.TestCase):
                                                " This learning will resolve uncertainty about sex patterns."),
                             "not what the test will establish")
         ok = copy.deepcopy(WAITING)
-        ok["scientific_rationale"] = ("PROP-003 tests sleep, which had the strongest negative point association "
+        ok["scientific_rationale"] = ("PROP-003 tests sleep, which had the strongest negative point estimate "
                                       "in EXP-001, and directly addresses HYP-005.")
         self.assertEqual(validate(ok)["errors"], [])
+        self.assertRejected(lambda d: d.update(scientific_rationale="PROP-003 tests sleep, which had the strongest "
+                                               "negative point association in EXP-001, and addresses HYP-005."),
+                            "point estimate")
+
+    def test_interval_including_zero_is_inconclusive(self):
+        for wording in ("If the interval includes zero, we learn there is no clear sex difference in the association.",
+                        "If the interval includes zero, the result is inconclusive, suggesting no clear difference.",
+                        "An interval including zero would show the association does not differ by sex.",
+                        "If the interval includes zero, the slopes are the same across groups."):
+            with self.subTest(wording=wording):
+                self.assertRejected(lambda d, w=wording: d.update(expected_learning=w), "inconclusive")
+        ok = copy.deepcopy(WAITING)
+        ok["expected_learning"] = ("An interval that excludes zero would indicate that the association differs by "
+                                   "sex; an interval that includes zero would be inconclusive, not evidence of no "
+                                   "difference.")
+        self.assertEqual(validate(ok)["errors"], [])
+
+    def test_alternatives_rejected_on_scientific_grounds(self):
+        self.assertRejected(lambda d: d["alternatives"][1].update(
+            reason_not_selected="It adds complexity with a moderator that is not used elsewhere in the study."),
+            "scientific criteria")
+        self.assertRejected(lambda d: d["alternatives"][1].update(
+            reason_not_selected="It is a nice idea but we prefer to look at something else for now."),
+            "scientific criterion")
 
     def test_human_review_constraints(self):
         self.assertRejected(lambda d: d.update(human_constraints_respected=["Association language only."]),

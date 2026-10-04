@@ -74,9 +74,18 @@ prompt: |
     approval of this decision is required before any execution. Never say an experiment was run.
 
   EXP-001 wording: its ranking is INCONCLUSIVE. Sleep has the most negative POINT estimate; never call
-  it "the strongest association" (say "strongest negative point association"). A moderator test on
+  it "the strongest association" or a "point association" (say "strongest negative point estimate"). A moderator test on
   one outcome does not resolve or clarify the ranking across outcomes. Describe what each possible
   result would indicate; never say a test "will resolve", "will establish" or is "definitive".
+
+  Interval wording: an interaction interval that includes zero is INCONCLUSIVE (say "inconclusive" or
+  "leaves the question open"); never describe it as no difference, no sex difference, no heterogeneity,
+  the same slope or equivalence. Equivalence needs a human-approved margin, which does not exist.
+
+  Rejecting alternatives: give a scientific reason for each one: expected information gain, how
+  directly it tests an approved hypothesis, relevance to the uncertainty left by EXP-001, rigor
+  (formal vs exploratory) or current feasibility. Never reject a proposal because its moderator or
+  model is "more complex", "simpler" or "not used elsewhere".
 
   Scientific rules: observational, cross-sectional data. Association language only; never
   "causes", "leads to", "reduces", "increases", "drives", "impact" or "effect" (say "interaction
