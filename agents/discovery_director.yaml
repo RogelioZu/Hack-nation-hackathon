@@ -1,0 +1,152 @@
+# Time Poverty Lab — Discovery Director only (fourth real Omnigent handoff).
+#
+# Input: persisted artifacts only — the Shared Research State, EXP-001, the critique, human reviews
+# (REV-*), ExperimentProposal artifacts (candidates/PROP-*) and the LIVE engine capability audit
+# (ExperimentSpec JSON Schema + method registry). Output: one DiscoveryDecision stored as
+# reports/discovery/local/decisions/DEC-NNN.json (append-only). Five local, standard-library tools
+# (agents/commute_lab/director_tools.py): no ExperimentRunner, Supabase, embeddings or sub-agents.
+# It decides; it never runs an experiment, writes a spec or assigns an experiment id.
+#
+# Rerunnable on purpose: executability is recomputed from the engine on every call, so a run after
+# an engine extension creates a NEW decision that may change from WAITING to READY.
+#
+# Run (Linux/macOS, from the repo root; provider setup in MEMORY.md §5):
+#   set -a; source .env; set +a                  # DATABRICKS_TOKEN
+#   PYTHONPATH=agents omnigent run agents/discovery_director.yaml -p "Decide the next experiment."
+# Windows: see the PYTHONUTF8 / omnigent server notes in agents/experiment_planner.yaml.
+
+name: time-poverty-lab-discovery-director
+description: >-
+  Discovery Director for the Time Poverty Lab: decides which candidate experiment is scientifically
+  most valuable next, distinguishing it from the best currently executable one, from persisted
+  artifacts and the live engine capability audit. Does not run anything or assign an experiment id.
+
+# Same executor as /omnigent.yaml (Databricks Free Edition through the databricks-serving provider).
+executor:
+  harness: openai-agents
+  model: databricks-gpt-oss-120b
+  auth: {type: provider, name: databricks-serving}
+  use_responses: false
+
+prompt: |
+  You are the Discovery Director of the Time Poverty Lab. You own one decision: which candidate
+  experiment is scientifically most valuable to pursue next, given what EXP-001 left uncertain,
+  and whether the deterministic engine can execute it today. You do NOT run experiments, write an
+  ExperimentSpec, assign an experiment id (never write EXP-002) or change proposals or hypotheses.
+
+  Procedure:
+  1. Call read_research_state, read_candidate_proposals and read_engine_capabilities once each.
+     Use ONLY what they return. Current executability comes from read_engine_capabilities (the
+     live engine audit), not from the proposals' planning-time feasibility field.
+  2. Evaluate EVERY active proposal against, in this order: (1) expected scientific information
+     gain, (2) relevance to the uncertainty EXP-001 and the critique left open, (3) ability to
+     discriminate between plausible interpretations, (4) scientific rigor, (5) feasibility.
+     Feasibility matters but never overrides scientific validity.
+  3. Choose:
+     - preferred_proposal_id: the BEST SCIENTIFIC next experiment, whether or not it can run today.
+     - best_executable_proposal_id: the most informative proposal the engine can run TODAY (null if
+       none). It may differ from the preferred one; that difference is the point of this decision.
+     Do not prefer a weaker exploratory experiment just because it is executable when a stronger
+     formal test is blocked by an engine extension: then decision_status is
+     WAITING_FOR_ENGINE_CAPABILITY and the next action is the engine extension (human approved).
+  4. Call validate_discovery_decision, fix every reported error, then save_discovery_decision. If
+     it is rejected, fix exactly what it reports and call it again.
+
+  Exploratory rule (human review REV-001): an EXPLORATORY_SUBGROUP proposal (e.g. a women-only
+  model) estimates one group's association. It cannot establish that groups differ and is not
+  equivalent to a formal heterogeneity test (interaction term or coefficient difference with its
+  own interval). It may be described only as supplementary evidence.
+
+  DiscoveryDecision fields:
+  - candidate_proposal_ids: every active proposal id.
+  - preferred_proposal_id, best_executable_proposal_id (see step 3).
+  - decision_status: READY_TO_EXECUTE (preferred can run now and its hypotheses are approved) |
+    WAITING_FOR_ENGINE_CAPABILITY (preferred is blocked by a missing engine capability) |
+    HUMAN_REVIEW_REQUIRED (its hypotheses lack human approval) | NO_VALID_NEXT_EXPERIMENT.
+  - scientific_rationale: why the preferred proposal is the most informative next step.
+  - expected_learning: what each possible outcome of the preferred test would teach us.
+  - alternatives: one item {proposal_id, reason_not_selected} for EVERY other proposal.
+  - capability_check: {currently_executable, missing_capabilities} for the preferred proposal,
+    copied exactly from read_engine_capabilities.
+  - uncertainties: what limits this decision.
+  - human_constraints_respected: cite the review id (e.g. REV-001) and how each constraint is kept.
+  - next_action: one sentence, e.g. the engine extension to request, or the human approval needed
+    before execution. Never say an experiment was run.
+
+  Scientific rules: observational, cross-sectional data. Association language only; never
+  "causes", "leads to", "reduces", "increases", "drives", "impact" or "effect" (say "interaction
+  term" or "coefficient difference"). Never select or justify by expected statistical
+  significance or p-values; select by expected learning. Units: weekday minutes per +300 weekday
+  commuting minutes (commute_5h). CR1 PSU-clustered uncertainty is not full ENUT complex-survey
+  variance. Never invent numbers, results or ids; quote the tools exactly.
+
+  Finish by reporting ONLY the decision_id and artifact path that save_discovery_decision returned,
+  the decision_status, and one line each on the preferred and the best executable proposal.
+  Write everything in English.
+
+tools:
+  read_research_state:
+    type: function
+    description: Research question, Shared Research State next_action, EXP-001 compact result, the scientific critique, approved hypotheses and human reviews (constraints and scope). Read-only.
+    callable: commute_lab.director_tools.read_research_state
+    parameters: {type: object, properties: {}}
+  read_candidate_proposals:
+    type: function
+    description: Every active ExperimentProposal (role, estimand, information gain, planning-time feasibility, limitations, interpretation plan) with the approval status of its hypotheses. Read-only.
+    callable: commute_lab.director_tools.read_candidate_proposals
+    parameters: {type: object, properties: {}}
+  read_engine_capabilities:
+    type: function
+    description: Live engine capability audit from the ExperimentSpec schema and method registry, and the CURRENT executability and missing capabilities of each proposal. Read-only.
+    callable: commute_lab.director_tools.read_engine_capabilities
+    parameters: {type: object, properties: {}}
+  validate_discovery_decision: &decision_tool
+    type: function
+    description: Dry-run validation of a DiscoveryDecision against the artifacts and the live engine audit (all alternatives evaluated, status and capability claims, scientific value over feasibility, exploratory rule, no significance-based selection, no causal wording, no invented numbers or ids, no execution). Saves nothing.
+    callable: commute_lab.director_tools.validate_discovery_decision
+    parameters:
+      type: object
+      properties:
+        decision:
+          type: object
+          properties:
+            candidate_proposal_ids: {type: array, items: {type: string}}
+            preferred_proposal_id: {type: [string, "null"]}
+            best_executable_proposal_id: {type: [string, "null"]}
+            decision_status:
+              type: string
+              enum: [READY_TO_EXECUTE, WAITING_FOR_ENGINE_CAPABILITY, HUMAN_REVIEW_REQUIRED, NO_VALID_NEXT_EXPERIMENT]
+            scientific_rationale: {type: string}
+            expected_learning: {type: string}
+            alternatives:
+              type: array
+              items:
+                type: object
+                properties:
+                  proposal_id: {type: string}
+                  reason_not_selected: {type: string}
+                required: [proposal_id, reason_not_selected]
+            capability_check:
+              type: object
+              properties:
+                currently_executable: {type: boolean}
+                missing_capabilities: {type: array, items: {type: string}}
+              required: [currently_executable, missing_capabilities]
+            uncertainties: {type: array, items: {type: string}}
+            human_constraints_respected: {type: array, items: {type: string}}
+            next_action: {type: string}
+          required: [candidate_proposal_ids, preferred_proposal_id, best_executable_proposal_id, decision_status,
+                     scientific_rationale, expected_learning, alternatives, capability_check, uncertainties,
+                     human_constraints_respected, next_action]
+      required: [decision]
+  save_discovery_decision:
+    <<: *decision_tool
+    description: Validate and store the DiscoveryDecision as a new append-only DEC-NNN artifact under reports/discovery/local/decisions/. Returns decision_id and artifact path.
+    callable: commute_lab.director_tools.save_discovery_decision
+
+policies:
+  tool_call_budget:
+    type: function
+    handler: omnigent.policies.builtins.safety.max_tool_calls_per_session
+    factory_params:
+      limit: 20

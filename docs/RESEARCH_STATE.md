@@ -19,7 +19,7 @@ Memoria científica estructurada del ciclo de descubrimiento. Se **reconstruye**
 
 `<workspace>` es `local` para el ciclo basado en archivos. Las carpetas con UUID que escribe `tools.py` (ciclo con Supabase) son otros workspaces.
 
-`<kind>` ∈ `evidence`, `critiques`, `hypotheses`, `candidates`, `decisions`. Las carpetas desconocidas se ignoran con una advertencia `UNKNOWN_KIND`, así que agregar un tipo nuevo no rompe el estado.
+`<kind>` ∈ `evidence`, `critiques`, `hypotheses`, `candidates`, `decisions`, `reviews`. Las subcarpetas (p. ej. `candidates/superseded/`) no se leen: ahí van los objetos retirados. Las carpetas desconocidas se ignoran con una advertencia `UNKNOWN_KIND`, así que agregar un tipo nuevo no rompe el estado.
 
 ## Regla de cifras
 
@@ -37,7 +37,8 @@ Campo de ID por tipo (el primero es el canónico en el estado):
 | `critiques` | `critique_id` | `CRIT-EXP-001-001` (obligatorio: `CRIT-<experiment_id>-NNN`) |
 | `hypotheses` | `hypothesis_id` | `HYP-001` |
 | `candidates` | `candidate_id` (o `proposal_id`) | `CAND-001-A` |
-| `decisions` | `decision_id` | `DEC-001` |
+| `decisions` | `decision_id` | `DEC-001` (DiscoveryDecision del Director: `agents/commute_lab/director_tools.py`) |
+| `reviews` | `review_id` | `REV-001` (revisión humana) |
 
 Los IDs deben ser únicos en todo el estado (también frente a `EXP-NNN`, `H1`–`H4` y los IDs de evidencia derivados) y seguros como nombre de archivo.
 
@@ -52,8 +53,9 @@ Una referencia es un campo con un ID. Las listas pueden tener IDs o objetos con 
 | hypothesis, candidate | `evidence_ids`, `supporting_evidence_ids`, `opposing_evidence_ids`, `evidence_refs`, `existing_evidence[].evidence_id` | `cites` | evidencia, crítica o experimento |
 | hypothesis | `protocol_hypothesis`, `protocol_hypothesis_ids`, `parent_hypothesis_ids` | `refines` | hipótesis (p. ej. `H3`) |
 | candidate | `hypothesis_id`, `hypothesis_ids`, `tests_hypothesis_ids` | `tests` | hipótesis |
-| decision | `selected_candidate_id`, `candidate_id`, `proposal_id` | `selects` | candidato |
-| decision | `considered_candidate_ids`, `rejected_candidate_ids` | `considers` | candidato |
+| decision | `preferred_proposal_id`, `selected_candidate_id`, `candidate_id`, `proposal_id` | `selects` | candidato |
+| decision | `candidate_proposal_ids`, `alternatives[].proposal_id`, `best_executable_proposal_id`, `considered_candidate_ids`, `rejected_candidate_ids` | `considers` | candidato |
+| review | `approved_hypotheses[].hypothesis_id` | `approves` | hipótesis (el estado lo expone como `hypotheses[].approved_in`) |
 | decision | `based_on_experiment_id`, `based_on_critique_id`, `based_on_ids` | `based_on` | evidencia, crítica, experimento o hipótesis |
 | decision | `experiment_id`, `resulting_experiment_id` | `executed_as` | `EXP-NNN`, que puede no existir aún (advertencia `PENDING_EXPERIMENT`) |
 
@@ -86,7 +88,14 @@ Ejemplo mínimo de hipótesis:
 
 `research_id`, `research_question`, `dataset` (`version`, `population_n`, hash, aprobación), `evidence`, `critiques`, `hypotheses` (H1–H4 del protocolo con `evaluated_in`, más las de agentes), `candidate_experiments`, `experiments` (con `critiques` y `selected_by` inversos), `decisions`, `limitations`, `links` (aristas `from → to` con relación y campo), `next_action`, `provenance` (hash de cada entrada e `inputs_sha256`) y `validation`.
 
-`next_action` es contabilidad, no ciencia: indica la **etapa** que falta para el último experimento (`critique` → `hypotheses` → `candidate_experiments` → `decision` → `run_experiment`) y quién la ejecuta. Nunca elige un candidato ni un experimento. También lista lo que sigue en `REQUIRES_HUMAN_REVIEW`.
+`next_action` es contabilidad, no ciencia: indica la **etapa** que falta para el último experimento (`critique` → `hypotheses` → `candidate_experiments` → `decision` → …) y quién la ejecuta. Nunca elige un candidato ni un experimento. Después de `decision` manda la decisión **más reciente** (son append-only; una nueva corrida del Director agrega otra), según su `decision_status`:
+
+| `decision_status` | Etapa |
+|---|---|
+| `READY_TO_EXECUTE` | `run_experiment` (requiere aprobación humana de la decisión antes de ejecutar) |
+| `WAITING_FOR_ENGINE_CAPABILITY` | `engine_extension` (humano); después se vuelve a correr el Director |
+| `HUMAN_REVIEW_REQUIRED` | `human_review` |
+| `NO_VALID_NEXT_EXPERIMENT` | `hypotheses` | También lista lo que sigue en `REQUIRES_HUMAN_REVIEW`.
 
 ## Validaciones
 

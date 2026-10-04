@@ -1,0 +1,180 @@
+{
+  "decision_id": "DEC-001",
+  "type": "discovery_decision",
+  "candidate_proposal_ids": [
+    "PROP-003",
+    "PROP-005",
+    "PROP-008",
+    "PROP-009"
+  ],
+  "preferred_proposal_id": "PROP-003",
+  "best_executable_proposal_id": "PROP-005",
+  "decision_status": "WAITING_FOR_ENGINE_CAPABILITY",
+  "scientific_rationale": "Proposal PROP-003 tests whether the association between commuting time and sleep time varies by sex via an interaction term. This directly addresses the untested question H3 and the remaining uncertainty from EXP-001 about possible sex‑specific patterns. It has the highest expected information gain (HIGH), can discriminate if the association is stronger in one sex, and provides a formal inference on the interaction coefficient. The engine currently lacks interaction term support, so the proposal cannot be executed now.",
+  "expected_learning": "If the interaction coefficient (commute_5h × sex_female) confidence interval excludes zero on the negative side, the association between commuting time and sleep time is more negative for women than for men. If it excludes zero on the positive side, the association is more negative for men. If the interval includes zero, the data do not show a clear sex‑specific difference in the association.",
+  "alternatives": [
+    {
+      "proposal_id": "PROP-005",
+      "reason_not_selected": "Exploratory subgroup estimate for women only does not provide formal evidence of heterogeneity; it offers medium information gain and serves as supplementary context."
+    },
+    {
+      "proposal_id": "PROP-008",
+      "reason_not_selected": "Tests moderation by child presence, a secondary untested question, and requires multiple missing capabilities beyond interaction_terms."
+    },
+    {
+      "proposal_id": "PROP-009",
+      "reason_not_selected": "Tests sex heterogeneity for leisure time, which is less central than the sleep outcome and also lacks engine support for interaction terms."
+    }
+  ],
+  "capability_check": {
+    "currently_executable": false,
+    "missing_capabilities": [
+      "interaction_terms"
+    ]
+  },
+  "uncertainties": [
+    "Engine does not currently support interaction terms, preventing execution of PROP-003.",
+    "Observational, cross‑sectional design limits causal interpretation.",
+    "Potential limited power to detect a sex interaction given the sample size.",
+    "Cluster‑approximation (CR1 PSU‑clustered) provides only an approximate variance estimate."
+  ],
+  "human_constraints_respected": [
+    "REV-001: hypotheses approved for planning, no causal language used, formal heterogeneity test requires inference on the difference between groups."
+  ],
+  "next_action": "Add the interaction_terms capability to the experiment engine to enable formal heterogeneity testing.",
+  "considered_candidate_ids": [
+    "PROP-003",
+    "PROP-005",
+    "PROP-008",
+    "PROP-009"
+  ],
+  "based_on_ids": [
+    "CRIT-EXP-001-001",
+    "EXP-001"
+  ],
+  "decided_by": "discovery_director",
+  "provenance": {
+    "agent": "discovery_director",
+    "model": "databricks-gpt-oss-120b",
+    "created_at": "2026-10-04T04:45:35.980598+00:00",
+    "code_version": "645007482e3f6ef7946b81e8c02805841a098a7d",
+    "engine_capability_audit": {
+      "schema": "metadata/experiment_contract.schema.json",
+      "schema_sha256": "7e3e6ce0a513b902335017f7651842440552bdf4ae0596fce04f7a01c9789dd0",
+      "registry": "src/experiments/methods/__init__.py",
+      "registry_sha256": "2780765c1d8f9b314cbd2fcf8a26b203e13ca3e549c2d77c6187737166eea42c",
+      "supported": {
+        "population_filter_sex": true,
+        "population_filter_state": true,
+        "population_filter_age": true,
+        "population_filter_has_child_u15": false,
+        "population_filter_has_minor_u18": false,
+        "stratified_subgroup_models": true,
+        "approved_covariates": true,
+        "covariates_outside_schema": false,
+        "interaction_terms": false,
+        "formal_between_group_comparison": false,
+        "nonlinear_terms": false,
+        "cr1_cluster_uncertainty": true,
+        "full_survey_design_variance": false
+      }
+    },
+    "proposal_executability": {
+      "PROP-003": {
+        "currently_executable": false,
+        "missing_capabilities": [
+          "interaction_terms"
+        ],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_in_schema": true
+        }
+      },
+      "PROP-005": {
+        "currently_executable": true,
+        "missing_capabilities": [],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_in_schema": true
+        }
+      },
+      "PROP-008": {
+        "currently_executable": false,
+        "missing_capabilities": [
+          "covariates_outside_schema",
+          "formal_between_group_comparison",
+          "interaction_terms"
+        ],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_in_schema": false
+        }
+      },
+      "PROP-009": {
+        "currently_executable": false,
+        "missing_capabilities": [
+          "interaction_terms"
+        ],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_in_schema": true
+        }
+      }
+    },
+    "preferred_hypotheses_approved_in": [
+      "REV-001"
+    ],
+    "research_state_inputs_sha256": "8815f442571f795b8862e9d06982dc02c5d8ce5022fc9e6348a0338f87e88f53",
+    "source_artifacts": [
+      {
+        "path": "reports/discovery/local/candidates/PROP-003.json",
+        "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb"
+      },
+      {
+        "path": "reports/discovery/local/candidates/PROP-005.json",
+        "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb"
+      },
+      {
+        "path": "reports/discovery/local/candidates/PROP-008.json",
+        "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4"
+      },
+      {
+        "path": "reports/discovery/local/candidates/PROP-009.json",
+        "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca"
+      },
+      {
+        "path": "reports/discovery/local/reviews/REV-001.json",
+        "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-005.json",
+        "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-007.json",
+        "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-008.json",
+        "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2"
+      },
+      {
+        "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+      },
+      {
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28"
+      }
+    ],
+    "policy": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+  }
+}
