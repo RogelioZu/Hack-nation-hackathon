@@ -74,7 +74,32 @@ const first = (...vs: unknown[]): string | null => {
   return null;
 };
 
-/** A status exactly as written, with the tone the UI uses for it. Components never decide tones themselves. */
+// Plain-language readings of the status codes artifacts write. The code itself is always shown next to its label.
+const STATUS_TEXT: Record<string, [string, string]> = {
+  SUPPORTED: ["Supported", "Evidence consistent with the hypothesis under the specified model; still an observational association."],
+  NOT_SUPPORTED: ["Not supported", "Evidence does not support the hypothesis under the specified model."],
+  UNSUPPORTED: ["Not supported", "Evidence does not support the hypothesis under the specified model."],
+  INCONCLUSIVE: ["Inconclusive", "Tested, but the uncertainty interval does not allow a conclusion either way."],
+  UNTESTED: ["Untested", "No experiment has evaluated this yet."],
+  EXPERIMENT_COMPLETED: ["Completed", "The engine finished the run twice with identical results. This is a technical state, not a scientific approval."],
+  REQUIRES_HUMAN_REVIEW: ["Awaiting expert review", "A human has not yet reviewed this result; treat it as provisional."],
+  INCONCLUSIVE_RANKING: ["Ranking inconclusive", "Not every pair of outcomes can be told apart once uncertainty is accounted for."],
+  NOT_APPLICABLE_SINGLE_OUTCOME: ["Ranking not applicable", "Only one outcome was modelled, so there is nothing to rank."],
+  INCONCLUSIVE_INTERVAL_INCLUDES_ZERO: ["Inconclusive: interval includes zero", "The data are compatible with no difference and with a sizeable one. This is not evidence of no difference."],
+  UNCERTAIN: ["Uncertain", "The critic finds the evidence usable but limited by its uncertainty and design."],
+  VALID: ["Valid", "The critic finds no problem that would change the interpretation."],
+  REQUIRES_REVISION: ["Needs revision", "The critic found a problem that must be fixed before interpreting the result."],
+  APPROVED_FOR_PLANNING: ["Approved for planning", "A human approved these hypotheses as inputs to experiment planning only."],
+  APPROVED_FOR_EXECUTION: ["Approved to run", "A human approved running this experiment. It does not approve any result."],
+  FORMAL_HETEROGENEITY_TEST: ["Formal test", "Estimates the difference between groups with its own interval."],
+  EXPLORATORY_SUBGROUP: ["Exploratory", "Describes one group only; cannot establish a difference between groups."],
+  REQUIRES_ENGINE_EXTENSION: ["Needs engine extension", "The deterministic engine could not compute this when it was planned."],
+  EXECUTABLE_NOW: ["Runnable", "The deterministic engine can compute this as specified."],
+  WAITING_FOR_ENGINE_CAPABILITY: ["Waiting for engine", "The preferred experiment needs a capability the engine did not have yet."],
+  READY_TO_EXECUTE: ["Ready to run", "The preferred experiment is runnable; it still needs human approval."],
+};
+
+/** A status exactly as written, with the tone and plain-language label the UI uses. Components never decide either. */
 export function statusOf(code: unknown): StatusView | null {
   const c = str(code);
   if (!c) return null;
@@ -88,9 +113,11 @@ export function statusOf(code: unknown): StatusView | null {
         : /READY|APPROVED|EXECUTABLE|COMPLETED|SUPPORTED|VALID|PASS/.test(u)
           ? "good"
           : "neutral";
-  return { code: c, tone };
+  const text = STATUS_TEXT[u];
+  const fallback = c.replace(/_/g, " ").toLowerCase();
+  return { code: c, tone, label: text?.[0] ?? fallback.charAt(0).toUpperCase() + fallback.slice(1), meaning: text?.[1] ?? null };
 }
-const status = (code: unknown, fallback: string): StatusView => statusOf(code) ?? { code: fallback, tone: "neutral" };
+const status = (code: unknown, fallback: string): StatusView => statusOf(code) ?? statusOf(fallback)!;
 
 /** Strings, or objects carrying a statement under one of the usual keys, flattened to text. */
 function texts(v: unknown): string[] {
@@ -918,9 +945,20 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
     artifactKeys,
     awaiting,
   });
+  // What each stage answers, in a researcher's terms; the short title feeds the section navigation.
+  const STAGE_COPY: Record<Stage["key"], { short: string; purpose: string }> = {
+    question: { short: "Question", purpose: "What the lab set out to learn, for whom, and with which data." },
+    baseline: { short: baseline?.experimentId ?? "Evidence", purpose: "What the first experiment estimated, and how certain it is." },
+    critique: { short: "Critique", purpose: "Is that result reliable, and what does it leave open?" },
+    planning: { short: "Planning", purpose: "Which falsifiable explanations are worth testing, and which experiments could test them?" },
+    decision: { short: "Decision", purpose: "Which experiment teaches the most next, and can the engine run it?" },
+    followup: { short: followUps[0]?.experiment.experimentId ?? "New experiment", purpose: "What the chosen experiment found, and what the critic makes of it." },
+    update: { short: "Update", purpose: "How the lab's scientific state changed because of the new result." },
+  };
   const stage = (number: number, key: Stage["key"], title: string, type: ArtifactType, awaiting: Awaiting, own: string[], parts: StagePart[] = []): Stage => {
     const artifactKeys = [...new Set([...own, ...parts.flatMap((p) => p.artifactKeys)])];
-    return { key, number, title, type, recorded: artifactKeys.length > 0, artifactKeys, awaiting, parts };
+    const copy = STAGE_COPY[key];
+    return { key, number, title, shortTitle: copy.short, purpose: copy.purpose, type, recorded: artifactKeys.length > 0, artifactKeys, awaiting, parts };
   };
 
   const planningParts = [

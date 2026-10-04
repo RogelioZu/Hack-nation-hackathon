@@ -8,7 +8,8 @@ web
 
 ## Users
 
-- **Primarios: jueces del Hack-Nation 7th Global AI Hackathon (Challenge 03, Databricks · Agentic Scientific Discovery)** viendo el demo de 2 minutos, proyectado o grabado. Lo ven de lejos, una sola vez y con narración; la pantalla tiene que avanzar por etapas y leerse sin acercarse.
+- **Primarios (desde 2026-10-04): investigadores** que leen la corrida a su ritmo: necesitan ver de un vistazo en qué estado está cada hipótesis y experimento, saltar a cualquier etapa, entender cada código de estado sin glosario y llegar al archivo fuente de cada cifra. Por eso la portada abre con el resumen "Where the investigation stands" y una barra de secciones; el replay cronometrado es secundario (botón "Walkthrough").
+- **Jueces del Hack-Nation 7th Global AI Hackathon (Challenge 03, Databricks · Agentic Scientific Discovery)** viendo el demo de 2 minutos, proyectado o grabado. Lo ven de lejos, una sola vez y con narración; la pantalla tiene que avanzar por etapas y leerse sin acercarse.
 - Secundarios: quien abre la URL pública (`https://commute-time-lab.vercel.app`) después del demo, sin narrador, y el equipo que sigue una sesión de Omnigent mientras corre.
 
 ## Product Purpose

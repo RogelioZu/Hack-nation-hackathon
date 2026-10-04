@@ -43,8 +43,10 @@ export type ArtifactType =
 /** A status exactly as an artifact writes it, plus the tone the adapter assigned to it. */
 export type Tone = "good" | "warn" | "uncertain" | "neutral";
 export interface StatusView {
-  code: string;
+  code: string; // exactly as the artifact writes it
   tone: Tone;
+  label: string; // plain-language reading of the code, from the adapter's glossary
+  meaning: string | null; // one sentence on what the code means for a researcher
 }
 
 export interface Fact {
@@ -342,6 +344,8 @@ export interface Stage {
   key: StageKey;
   number: number;
   title: string;
+  shortTitle: string; // for the section navigation
+  purpose: string; // the scientific question this stage answers
   type: ArtifactType;
   recorded: boolean;
   artifactKeys: string[]; // primary artifact first

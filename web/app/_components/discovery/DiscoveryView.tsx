@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Hourglass, Pause, Play, TriangleAlert } from
 import Wordmark from "../Wordmark";
 import type { DiscoveryPayload, DiscoveryRunViewModel as Discovery, EvidenceView, Stage, StageKey } from "@/lib/discovery/types";
 import Inspector from "./Inspector";
+import Overview from "./Overview";
 import { ArtifactChip, Awaiting, DiscoveryUiContext, StageMarker, TYPE, TypeBadge, VerbatimList } from "./primitives";
 import {
   ApprovalBody,
@@ -247,6 +248,7 @@ function StageItem({
                 )}
               </span>
             )}
+            <p className={`w-full max-w-[64ch] text-body-sm ${dark ? "text-blue-100" : "text-gray-700"}`}>{stage.purpose}</p>
           </header>
           {stage.recorded ? <StageBody stage={stage} d={d} listening={listening} /> : <Awaiting {...stage.awaiting} listening={listening} />}
         </article>
@@ -553,7 +555,22 @@ export default function DiscoveryView({
     return () => window.removeEventListener("keydown", onKey);
   }, [mode, step, play, restart, goTo]);
 
-  const recorded = d.stages.filter((s) => s.recorded).length;
+  // Scroll spy: the section navigation follows the stage in the reading band (upper third of the viewport).
+  const [inView, setInView] = useState<string>("overview");
+  useEffect(() => {
+    const ids = ["overview", ...d.stages.slice(0, tail).map((s) => `stage-${s.key}`), ...(tail < total ? ["stage-band"] : [])];
+    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => Boolean(el));
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (hit) setInView(hit.target.id);
+      },
+      { rootMargin: "-25% 0px -65% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [d.stages, tail, total, cursor]);
+
   const ago = Math.max(0, Math.round((now - Date.parse(payload.loadedAt)) / 1000));
   const evidence = latestEvidence(d);
   const headline = headlineOf(d);
@@ -573,42 +590,105 @@ export default function DiscoveryView({
       >
         Skip to discovery stages
       </a>
-      <header className="sticky top-0 z-40 flex h-20 items-center gap-4 bg-gray-100 px-4 md:gap-6 md:px-8 lg:top-[var(--frame)] lg:rounded-tr-2xl">
-        {/* Replay is the only mode with a control; LIVE stays reachable for the team at /?mode=live. */}
-        <Link href="/" className="mr-auto rounded-sm text-gray-900" aria-label="tiemPO, replay from the start">
-          <Wordmark className="text-[26px] leading-none sm:text-[30px]" />
+      <header className="sticky top-0 z-40 flex min-h-20 flex-wrap items-center gap-x-4 gap-y-2 bg-gray-100 px-4 py-3 md:gap-x-6 md:px-8 lg:top-[var(--frame)] lg:rounded-tr-2xl">
+        {/* On desktop the sidebar carries the wordmark; the bar is for moving through the run. */}
+        <Link href="/" className="rounded-sm text-gray-900 lg:hidden" aria-label="tiemPO, discovery run">
+          <Wordmark className="text-[26px] leading-none" />
         </Link>
+        <nav aria-label="Sections" className="order-last -mx-1 w-full overflow-x-auto md:order-none md:mx-0 md:w-auto md:flex-1">
+          <ol className="flex items-center gap-1 px-1 py-1 md:px-0">
+            <li>
+              <a
+                href="#overview"
+                aria-current={inView === "overview" ? "location" : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPlaying(false);
+                  setPausedMid(false);
+                  goTo(null);
+                }}
+                className={`flex h-9 items-center rounded-full px-3 text-body-sm font-semibold whitespace-nowrap transition-colors duration-[120ms] ${
+                  inView === "overview" ? "bg-white text-gray-900 shadow-[0_0_0_1px_var(--color-gray-200)]" : "text-gray-700 hover:bg-white/70 hover:text-gray-900"
+                }`}
+              >
+                Overview
+              </a>
+            </li>
+            {d.stages.map((s, i) => {
+              const target = i >= tail ? "stage-band" : `stage-${s.key}`;
+              const current = inView === target && i <= tail;
+              return (
+                <li key={s.key}>
+                  <a
+                    href={`#${target}`}
+                    aria-current={current ? "location" : undefined}
+                    title={`${s.number} · ${s.title}${s.recorded ? "" : " (awaiting agents)"}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPlaying(false);
+                      setPausedMid(false);
+                      if (mode === "replay" && cursor != null) {
+                        setElapsed(cues[i] ?? 0);
+                        goTo(i, s.key);
+                      } else {
+                        if (s.artifactKeys[0]) setSelectedKey(s.artifactKeys[0]);
+                        scrollToStage(i >= tail ? "band" : s.key);
+                      }
+                    }}
+                    className={`flex h-9 items-center gap-2 rounded-full pr-3 pl-1.5 text-body-sm font-semibold whitespace-nowrap transition-colors duration-[120ms] ${
+                      current ? "bg-white text-gray-900 shadow-[0_0_0_1px_var(--color-gray-200)]" : "text-gray-700 hover:bg-white/70 hover:text-gray-900"
+                    }`}
+                  >
+                    <span
+                      aria-hidden
+                      className={`flex size-6 items-center justify-center rounded-[5px] text-caption font-bold tabular ${
+                        s.recorded ? TYPE[s.type].solid : "bg-gray-50 text-gray-700 outline-1 outline-dashed -outline-offset-1 outline-gray-400"
+                      }`}
+                    >
+                      {s.number}
+                    </span>
+                    {s.shortTitle}
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
         {mode === "replay" ? (
-          <div className="flex items-center gap-1" role="group" aria-label="Replay controls">
-            <span className="hidden sm:contents">
-              <GhostButton label="Previous stage (←)" onClick={() => step(-1)}>
-                <ChevronLeft aria-hidden size={18} strokeWidth={2} />
-              </GhostButton>
-            </span>
+          <div className="ml-auto flex items-center gap-1" role="group" aria-label="Guided walkthrough">
+            {(playing || cursor != null) && (
+              <>
+                <span className="hidden sm:contents">
+                  <GhostButton label="Previous stage (←)" onClick={() => step(-1)}>
+                    <ChevronLeft aria-hidden size={18} strokeWidth={2} />
+                  </GhostButton>
+                </span>
+                <span className="mx-1 hidden min-w-[6.5rem] text-caption font-semibold text-gray-900 tabular xl:block">
+                  {/* Only the stage is announced; the ticking clock stays silent. */}
+                  <span aria-live="polite">{position}</span>
+                  {(playing || elapsed > 0) && cursor != null && (
+                    <span className="block font-medium text-gray-700">
+                      {clock(elapsed)} / {clock(end)}
+                    </span>
+                  )}
+                </span>
+                <GhostButton label="Next stage (→)" onClick={() => step(1)}>
+                  <ChevronRight aria-hidden size={18} strokeWidth={2} />
+                </GhostButton>
+              </>
+            )}
             <button
               type="button"
               onClick={play}
-              title={playing ? "Pause the discovery replay (Space)" : "Start the discovery replay (Space)"}
-              className="flex h-10 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold whitespace-nowrap text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+              title={playing ? "Pause the guided walkthrough (Space)" : "Reveal the run stage by stage, as it happened (Space). Esc shows everything."}
+              className="flex h-9 items-center gap-2 rounded-full bg-white pr-4 pl-3 text-body-sm font-semibold whitespace-nowrap text-blue-700 ring-1 ring-blue-300 transition-colors duration-[120ms] hover:bg-blue-50 active:bg-blue-100"
             >
-              {playing ? <Pause aria-hidden size={15} strokeWidth={2.5} /> : <Play aria-hidden size={15} strokeWidth={2.5} />}
-              {playing ? "Pause" : pausedMid ? "Resume" : "Start discovery"}
+              {playing ? <Pause aria-hidden size={14} strokeWidth={2.5} /> : <Play aria-hidden size={14} strokeWidth={2.5} />}
+              {playing ? "Pause" : pausedMid ? "Resume" : "Walkthrough"}
             </button>
-            <GhostButton label="Next stage (→)" onClick={() => step(1)}>
-              <ChevronRight aria-hidden size={18} strokeWidth={2} />
-            </GhostButton>
-            <span className="ml-3 hidden min-w-[9.5rem] text-body-sm font-semibold text-gray-900 tabular md:block">
-              {/* Only the stage is announced; the ticking clock stays silent. */}
-              <span aria-live="polite">{position}</span>
-              {(playing || elapsed > 0) && cursor != null && (
-                <span className="block text-caption font-medium text-gray-700">
-                  {clock(elapsed)} / {clock(end)}
-                </span>
-              )}
-            </span>
           </div>
         ) : (
-          <span className="hidden items-center gap-2 text-body-sm font-semibold text-gray-900 sm:flex">
+          <span className="ml-auto hidden items-center gap-2 text-body-sm font-semibold text-gray-900 sm:flex">
             {live ? (
               <>
                 <span aria-hidden className="size-2 animate-pulse rounded-full bg-green-500" />
@@ -626,77 +706,13 @@ export default function DiscoveryView({
       </header>
 
       <main className="space-y-8 px-4 pb-12 md:px-8">
-        <section
-          aria-labelledby="thesis"
-          className="grid gap-6 rounded-xl bg-white p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-center xl:gap-10"
-        >
-          <div>
-            {/* The headline is the latest evidence in the engine's own words, so it updates when a new result lands. */}
-            {/* The headline is the latest scientific update in the artifact's own words, so it changes when a new result lands. */}
-            <h1 id="thesis" className="text-[26px] leading-[32px] font-extrabold sm:text-[30px] sm:leading-[36px] tracking-[-0.02em] text-balance text-gray-900">
-              {headline?.text ?? "No research question has been recorded yet."}
-            </h1>
-            {headline && (
-              <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-gray-700">
-                {headline.keys.map((k) => (
-                  <ArtifactChip key={k} artifactKey={k} />
-                ))}
-                {evidence?.sampleSize != null && <span className="tabular">n = {evidence.sampleSize.toLocaleString("en-US")}</span>}
-                <span aria-hidden className="text-gray-300">
-                  ·
-                </span>
-                <span>{payload.source}</span>
-              </p>
-            )}
-            {errors.length > 0 && (
-              <p role="alert" className="mt-3 flex items-start gap-2 text-body-sm font-semibold text-gray-900">
-                <TriangleAlert aria-hidden size={16} className="mt-0.5 shrink-0 text-yellow-700" />
-                {errors.length} artifact problem{errors.length === 1 ? "" : "s"}: {errors[0].message}
-              </p>
-            )}
-            <p className="mt-4 max-w-[64ch] text-[17px] leading-7 text-gray-700">
-              Agents examine the evidence, name what is uncertain, decide what is worth testing next; a deterministic engine runs the
-              experiment and humans approve each consequential step. Every stage below is read from a real artifact; any stage still
-              missing waits, named, for the agent that produces it.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-200 pt-5 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-10">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="text-title-card text-gray-900">Discovery loop</p>
-              <p className="text-body-sm font-semibold text-gray-900 tabular">
-                {recorded} of {total} recorded
-              </p>
-            </div>
-            <ol aria-label="Stages" className="mt-3 grid grid-cols-7 gap-1">
-              {d.stages.map((s, i) => (
-                <li key={s.key}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPlaying(false);
-                      setPausedMid(false);
-                      if (mode === "replay" && cursor != null) {
-                        setElapsed(cues[i] ?? 0);
-                        goTo(i, s.key);
-                      } else {
-                        if (s.artifactKeys[0]) setSelectedKey(s.artifactKeys[0]);
-                        scrollToStage(s.key);
-                      }
-                    }}
-                    aria-label={`Stage ${s.number}, ${s.title}: ${s.recorded ? "recorded" : "awaiting agents"}`}
-                    title={`${s.number} · ${s.title}`}
-                    className={`flex h-7 w-full items-center justify-center rounded-sm text-caption font-bold tabular transition-transform duration-[120ms] hover:-translate-y-0.5 ${
-                      s.recorded ? TYPE[s.type].solid : "bg-gray-50 text-gray-700 outline-1 outline-dashed -outline-offset-1 outline-gray-400"
-                    } ${cursor === i || (cursor != null && cursor >= tail && i >= tail) ? "shadow-[0_0_0_3px_var(--color-blue-300)]" : ""}`}
-                  >
-                    {s.number}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        <Overview
+          d={d}
+          headline={headline}
+          source={payload.source}
+          sampleSize={evidence?.sampleSize ?? null}
+          errors={errors.map((e) => e.message)}
+        />
 
         {d.sessions.length > 1 && (
           <nav aria-label="Discovery sessions" className="flex flex-wrap items-center gap-2 text-caption text-gray-700">
