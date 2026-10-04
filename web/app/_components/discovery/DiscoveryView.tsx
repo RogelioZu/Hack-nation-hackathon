@@ -5,16 +5,14 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowRight,
-  Bot,
   Braces,
   Check,
   ChevronLeft,
   ChevronRight,
-  Clock,
-  Cpu,
   Database,
   FastForward,
   Hourglass,
+  House,
   LoaderCircle,
   Pause,
   Play,
@@ -547,12 +545,12 @@ function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRu
   const experiments = [...(d.baseline ? [d.baseline] : []), ...d.followUps.map((f) => f.experiment)];
   const ran = (p: string) => producers.some((x) => x.includes(p));
   const n = d.dataset?.populationN ?? d.baselineEvidence?.sampleSize ?? null;
-  const steps: { icon: typeof Database; title: string; text: string }[] = [
-    { icon: Clock, title: "The problem", text: "Long weekday commutes compete with the rest of a worker's day. Which part of personal time gives way?" },
-    { icon: Database, title: "Official data", text: "INEGI's National Time-Use Survey (ENUT 2024): Monday–Friday minutes per activity, with survey weights." },
-    { icon: Bot, title: "Agents decide", text: "Specialist agents critique results, propose hypotheses and choose the next experiment. They exchange JSON, not chat." },
-    { icon: Cpu, title: "Deterministic engine", text: "Only a fixed, tested statistics engine computes numbers: every run twice, on a hash-checked dataset." },
-    { icon: ShieldCheck, title: "Honest findings", text: "Every estimate carries its interval, and a human approves each consequential step. Inconclusive is a valid answer." },
+  const steps: { title: string; text: string }[] = [
+    { title: "The problem", text: "Long weekday commutes compete with the rest of a worker's day. Which part of personal time gives way?" },
+    { title: "Official data", text: "INEGI's National Time-Use Survey (ENUT 2024): Monday–Friday minutes per activity, with survey weights." },
+    { title: "Agents decide", text: "Specialist agents critique results, propose hypotheses and choose the next experiment. They exchange JSON, not chat." },
+    { title: "Deterministic engine", text: "Only a fixed, tested statistics engine computes numbers: every run twice, on a hash-checked dataset." },
+    { title: "Honest findings", text: "Every estimate carries its interval, and a human approves each consequential step. Inconclusive is a valid answer." },
   ];
   return (
     <div className="space-y-6 py-2">
@@ -586,7 +584,7 @@ function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRu
             className="flex h-12 items-center gap-2 rounded-full bg-blue-500 pr-6 pl-5 text-[17px] font-semibold text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
           >
             <Play aria-hidden size={16} strokeWidth={2.5} />
-            Start guided discovery
+            Start investigation
           </button>
           <button type="button" onClick={onFull} className="text-body-sm font-semibold text-blue-600 hover:text-blue-700">
             Skip to the full record <ArrowRight aria-hidden size={14} className="inline" />
@@ -599,13 +597,10 @@ function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRu
           How the lab works
         </h2>
         <ol className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          {steps.map(({ icon: Icon, title, text }, i) => (
+          {steps.map(({ title, text }, i) => (
             <li key={title} className="rounded-lg bg-white p-5">
-              <p className="flex items-center gap-2 text-body font-semibold text-gray-900">
-                <span className="flex size-7 items-center justify-center rounded-sm bg-blue-50 text-caption font-bold text-blue-700 tabular">{i + 1}</span>
-                <Icon aria-hidden size={16} strokeWidth={2} className="text-blue-600" />
-                {title}
-              </p>
+              <span className="flex size-7 items-center justify-center rounded-sm bg-blue-50 text-caption font-bold text-blue-700 tabular">{i + 1}</span>
+              <p className="mt-3 text-body font-semibold text-gray-900">{title}</p>
               <p className="mt-2 text-body-sm text-gray-700">{text}</p>
             </li>
           ))}
@@ -628,7 +623,7 @@ function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRu
           </ul>
           <p className="mt-4 text-body-sm text-gray-700">
             Times are total Monday–Friday minutes; the exposure is five extra hours of weekday commuting (+300 minutes). The
-            guided discovery replays the recorded Omnigent session, step by step, from {source}.
+            investigation replays the recorded Omnigent session, step by step, from {source}.
           </p>
         </section>
         <section aria-labelledby="agents-title" className="rounded-xl bg-white p-6 sm:p-8">
@@ -660,7 +655,7 @@ function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRu
           </h2>
           <p className="mt-1 max-w-[72ch] px-1 text-body-sm text-gray-700">
             An experiment is one fixed statistical model run by the engine on the survey data. Each has an id so every later step can
-            point to it. What each one found appears during the guided discovery.
+            point to it. What each one found appears during the investigation.
           </p>
           <div className="mt-3 grid gap-3 lg:grid-cols-2">
             {experiments.map((e) => (
@@ -746,11 +741,13 @@ export default function DiscoveryView({
   session,
   initialStage,
   full = false,
+  autostart = false,
 }: {
   payload: DiscoveryPayload;
   session?: string;
   initialStage?: number; // 0-based; opens the run paused after that stage (?stage=N)
   full?: boolean; // ?view=full: the whole record at once
+  autostart?: boolean; // ?start=1: begin the run immediately
 }) {
   const { run: d, mode, liveUnavailable } = payload;
   const router = useRouter();
@@ -761,7 +758,7 @@ export default function DiscoveryView({
   const units = tail + (tail < total ? 1 : 0);
 
   const startDone = full || mode === "live";
-  const [phase, setPhase] = useState<Phase>(startDone ? "done" : initialStage != null ? "running" : "idle");
+  const [phase, setPhase] = useState<Phase>(startDone ? "done" : initialStage != null || autostart ? "running" : "idle");
   const [revealed, setRevealed] = useState(startDone ? units : initialStage != null ? Math.min(units, initialStage + 1) : 0);
   const [step, setStep] = useState<Step>("read");
   const [lines, setLines] = useState(0);
@@ -886,6 +883,22 @@ export default function DiscoveryView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [revealed, units, tail, phase]);
 
+  // Back to the landing page: the run resets, the hero and the start button return.
+  const home = useCallback(() => {
+    setPhase("idle");
+    setRevealed(0);
+    setStep("read");
+    setLines(0);
+    setPaused(false);
+    setSelectedKey(defaultSelection(d));
+    window.scrollTo({ top: 0 });
+    if (window.location.search) window.history.replaceState(null, "", window.location.pathname);
+  }, [d]);
+  useEffect(() => {
+    window.addEventListener("tiempo:home", home);
+    return () => window.removeEventListener("tiempo:home", home);
+  }, [home]);
+
   const skip = useCallback(() => {
     setPhase("done");
     setRevealed(units);
@@ -985,7 +998,15 @@ export default function DiscoveryView({
       </a>
       <header className="sticky top-0 z-40 flex min-h-20 flex-wrap items-center gap-x-4 gap-y-2 bg-gray-100 px-4 py-3 md:gap-x-6 md:px-8 lg:top-[var(--frame)] lg:rounded-tr-2xl">
         {/* On desktop the sidebar carries the wordmark; the bar is for moving through the run. */}
-        <Link href="/" className="rounded-sm text-gray-900 lg:hidden" aria-label="tiemPO, new discovery run">
+        <Link
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            home();
+          }}
+          className="rounded-sm text-gray-900 lg:hidden"
+          aria-label="tiemPO, back to home"
+        >
           <Wordmark className="text-[26px] leading-none" />
         </Link>
         {phase !== "idle" && (
@@ -1051,6 +1072,22 @@ export default function DiscoveryView({
         )}
         {mode === "replay" ? (
           <div className="ml-auto flex items-center gap-1" role="group" aria-label="Run controls">
+            {phase === "idle" && (
+              <button
+                type="button"
+                onClick={run}
+                className="flex h-10 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold whitespace-nowrap text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+              >
+                <Play aria-hidden size={15} strokeWidth={2.5} />
+                Start investigation
+              </button>
+            )}
+            {phase !== "idle" && (
+              <GhostButton label="Back to home" onClick={home}>
+                <House aria-hidden size={16} strokeWidth={2} />
+                <span className="hidden 2xl:inline">Home</span>
+              </GhostButton>
+            )}
             {phase !== "idle" && (
               <GhostButton label="Previous step (←)" onClick={previous} disabled={revealed <= 1 && phase !== "done"}>
                 <ChevronLeft aria-hidden size={16} strokeWidth={2.25} />
@@ -1077,10 +1114,12 @@ export default function DiscoveryView({
               <button
                 type="button"
                 onClick={run}
-                className="flex h-9 items-center gap-2 rounded-full bg-white pr-4 pl-3 text-body-sm font-semibold whitespace-nowrap text-blue-700 ring-1 ring-blue-300 transition-colors duration-[120ms] hover:bg-blue-50 active:bg-blue-100"
+                title="Run the investigation again"
+                aria-label="Run the investigation again"
+                className="flex h-9 items-center gap-2 rounded-full bg-white pr-3 pl-3 2xl:pr-4 text-body-sm font-semibold whitespace-nowrap text-blue-700 ring-1 ring-blue-300 transition-colors duration-[120ms] hover:bg-blue-50 active:bg-blue-100"
               >
                 <RotateCcw aria-hidden size={14} strokeWidth={2.5} />
-                Run again
+                <span className="hidden 2xl:inline">Run again</span>
               </button>
             )}
           </div>
@@ -1172,6 +1211,24 @@ export default function DiscoveryView({
                       errors={errors.map((e) => e.message)}
                     />
                     <KeyResults d={d} />
+                    <div className="flex flex-wrap items-center justify-center gap-3 py-4">
+                      <button
+                        type="button"
+                        onClick={home}
+                        className="flex h-11 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+                      >
+                        <House aria-hidden size={16} strokeWidth={2} />
+                        Back to home
+                      </button>
+                      <button
+                        type="button"
+                        onClick={run}
+                        className="flex h-11 items-center gap-2 rounded-full bg-white pr-5 pl-4 text-body font-semibold text-blue-700 ring-1 ring-blue-300 transition-colors duration-[120ms] hover:bg-blue-50"
+                      >
+                        <RotateCcw aria-hidden size={15} strokeWidth={2.5} />
+                        Run the investigation again
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

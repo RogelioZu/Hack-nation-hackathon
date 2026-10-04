@@ -10,5 +10,7 @@ export default async function DiscoveryPage({ searchParams }: PageProps<"/">) {
   const initialStage = mode === "replay" && stage >= 1 && stage <= payload.run.stages.length ? stage - 1 : undefined;
   // ?view=full opens the whole record at once; otherwise replay starts from the question composer.
   const full = params.view === "full";
-  return <DiscoveryView payload={payload} session={session} initialStage={initialStage} full={full} />;
+  // ?start=1 (the reading guide's buttons) opens the page with the investigation already running.
+  const autostart = params.start === "1";
+  return <DiscoveryView payload={payload} session={session} initialStage={initialStage} full={full} autostart={autostart} />;
 }

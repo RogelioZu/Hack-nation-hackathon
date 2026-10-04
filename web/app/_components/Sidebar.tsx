@@ -22,6 +22,9 @@ export default function Sidebar() {
     >
       <Link
         href="/"
+        onClick={() => {
+          if (pathname === "/") window.dispatchEvent(new Event("tiempo:home"));
+        }}
         aria-label="tiemPO, discovery"
         className="mb-8 hidden rounded-sm px-3 pt-2 text-white focus-visible:outline-white lg:block"
       >
@@ -35,6 +38,10 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              // Already on the discovery page: return it to its landing state instead of a no-op navigation.
+              onClick={() => {
+                if (href === "/" && pathname === "/") window.dispatchEvent(new Event("tiempo:home"));
+              }}
               aria-current={active ? "page" : undefined}
               className={`flex h-12 flex-col items-center justify-center gap-0.5 rounded-xl px-3 text-caption font-medium whitespace-nowrap transition-colors duration-[120ms] focus-visible:outline-white md:h-10 md:flex-row md:gap-3 md:rounded-full md:text-body lg:justify-start ${
                 active ? "bg-white text-blue-500" : "text-white hover:bg-blue-700"
