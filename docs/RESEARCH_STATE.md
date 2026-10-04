@@ -56,6 +56,7 @@ Una referencia es un campo con un ID. Las listas pueden tener IDs o objetos con 
 | decision | `preferred_proposal_id`, `selected_candidate_id`, `candidate_id`, `proposal_id` | `selects` | candidato |
 | decision | `candidate_proposal_ids`, `alternatives[].proposal_id`, `best_executable_proposal_id`, `considered_candidate_ids`, `rejected_candidate_ids` | `considers` | candidato |
 | review | `approved_hypotheses[].hypothesis_id` | `approves` | hipótesis (el estado lo expone como `hypotheses[].approved_in`) |
+| review | `approved_decision_id` (con `decision: APPROVED_FOR_EXECUTION`) | `approves` | decisión: si aprueba la última decisión `READY_TO_EXECUTE`, `next_action` muestra `approved_in` y ya no pide aprobación |
 | decision | `based_on_experiment_id`, `based_on_critique_id`, `based_on_ids` | `based_on` | evidencia, crítica, experimento o hipótesis |
 | decision | `experiment_id`, `resulting_experiment_id` | `executed_as` | `EXP-NNN`, que puede no existir aún (advertencia `PENDING_EXPERIMENT`) |
 

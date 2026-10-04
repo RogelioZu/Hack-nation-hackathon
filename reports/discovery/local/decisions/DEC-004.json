@@ -1,0 +1,182 @@
+{
+  "decision_id": "DEC-004",
+  "type": "discovery_decision",
+  "candidate_proposal_ids": [
+    "PROP-003",
+    "PROP-005",
+    "PROP-008",
+    "PROP-009"
+  ],
+  "preferred_proposal_id": "PROP-003",
+  "best_executable_proposal_id": "PROP-003",
+  "decision_status": "READY_TO_EXECUTE",
+  "scientific_rationale": "PROP-003 performs a formal heterogeneity test of the commuting‑sleep coefficient by sex, directly addressing the key uncertainty left by EXP‑001 that the strongest negative point estimate for sleep may differ between men and women. It uses an interaction term, which provides a rigorous, formally inferable coefficient difference, and has the highest expected information gain among all proposals. The test clarifies whether the observed negative coefficient for sleep is uniform or moderated by sex, a question highlighted in the critique and approved hypothesis HYP‑005, and thus is the most informative next step.",
+  "expected_learning": "If the 95% confidence interval for the interaction coefficient excludes zero on the negative side, the data support a more negative commuting‑sleep coefficient among women than men. If it excludes zero on the positive side, the coefficient is more negative among men. If the interval includes zero, the evidence is inconclusive about any sex difference, indicating the pooled coefficient applies to both sexes.",
+  "alternatives": [
+    {
+      "proposal_id": "PROP-005",
+      "reason_not_selected": "Provides a sex‑specific estimate but does not formally test heterogeneity; its information gain is medium and the result cannot establish a difference between sexes."
+    },
+    {
+      "proposal_id": "PROP-008",
+      "reason_not_selected": "Tests moderation by child presence, which is a secondary untested question; while scientifically valuable, it addresses a different dimension than the primary unresolved issue (sleep) and has comparable information gain but lower priority."
+    },
+    {
+      "proposal_id": "PROP-009",
+      "reason_not_selected": "Assesses sex differences for leisure time, a dimension with a weaker association and higher uncertainty; thus it is less directly relevant to the primary unresolved issue from EXP‑001."
+    }
+  ],
+  "capability_check": {
+    "currently_executable": true,
+    "missing_capabilities": []
+  },
+  "uncertainties": [
+    "CR1 PSU‑clustered sandwich approximation rather than full ENUT complex‑survey variance",
+    "Retention of high‑leverage observations may affect standard errors",
+    "Observational cross‑sectional design limits causal interpretation",
+    "Potential limited statistical power for detecting interaction effects"
+  ],
+  "human_constraints_respected": [
+    "REV-001: hypothesis approved, interaction test is a formal heterogeneity assessment, no causal language used"
+  ],
+  "next_action": "Proceed to execute PROP-003 after human approval of this decision.",
+  "considered_candidate_ids": [
+    "PROP-003",
+    "PROP-005",
+    "PROP-008",
+    "PROP-009"
+  ],
+  "based_on_ids": [
+    "CRIT-EXP-001-001",
+    "EXP-001"
+  ],
+  "decided_by": "discovery_director",
+  "provenance": {
+    "agent": "discovery_director",
+    "model": "databricks-gpt-oss-120b",
+    "created_at": "2026-10-04T05:18:49.612367+00:00",
+    "code_version": "2c8643cabd3117aca9aa7b5fd9134c1e859fc840",
+    "engine_capability_audit": {
+      "schema": "metadata/experiment_contract.schema.json",
+      "schema_sha256": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+      "registry": "src/experiments/methods/__init__.py",
+      "registry_sha256": "2780765c1d8f9b314cbd2fcf8a26b203e13ca3e549c2d77c6187737166eea42c",
+      "supported": {
+        "population_filter_sex": true,
+        "population_filter_state": true,
+        "population_filter_age": true,
+        "population_filter_has_child_u15": false,
+        "population_filter_has_minor_u18": false,
+        "stratified_subgroup_models": true,
+        "approved_covariates": true,
+        "covariates_outside_schema": false,
+        "interaction_terms": true,
+        "formal_between_group_comparison": true,
+        "nonlinear_terms": false,
+        "cr1_cluster_uncertainty": true,
+        "full_survey_design_variance": false
+      },
+      "engine_capabilities": "metadata/experiment_engine_capabilities.json",
+      "engine_capabilities_sha256": "30dc82dadab903502c52a9f69473f140e71a3b2a4acb11755cca181860e6d5c2"
+    },
+    "proposal_executability": {
+      "PROP-003": {
+        "currently_executable": true,
+        "missing_capabilities": [],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_supported": true,
+          "binary_moderators": [
+            "sex"
+          ]
+        }
+      },
+      "PROP-005": {
+        "currently_executable": true,
+        "missing_capabilities": [],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_supported": true,
+          "binary_moderators": []
+        }
+      },
+      "PROP-008": {
+        "currently_executable": true,
+        "missing_capabilities": [],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_supported": true,
+          "binary_moderators": [
+            "has_child_u15"
+          ]
+        }
+      },
+      "PROP-009": {
+        "currently_executable": true,
+        "missing_capabilities": [],
+        "checks": {
+          "exposure_supported": true,
+          "outcome_supported": true,
+          "method_in_registry": true,
+          "covariates_supported": true,
+          "binary_moderators": [
+            "sex"
+          ]
+        }
+      }
+    },
+    "preferred_hypotheses_approved_in": [
+      "REV-001"
+    ],
+    "research_state_inputs_sha256": "c47350da7643af85361e315fb5a649344cc77644ed4ccacec64c0b63fdf01926",
+    "source_artifacts": [
+      {
+        "path": "reports/discovery/local/candidates/PROP-003.json",
+        "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb"
+      },
+      {
+        "path": "reports/discovery/local/candidates/PROP-005.json",
+        "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb"
+      },
+      {
+        "path": "reports/discovery/local/candidates/PROP-008.json",
+        "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4"
+      },
+      {
+        "path": "reports/discovery/local/candidates/PROP-009.json",
+        "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca"
+      },
+      {
+        "path": "reports/discovery/local/reviews/REV-001.json",
+        "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-005.json",
+        "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-007.json",
+        "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-008.json",
+        "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2"
+      },
+      {
+        "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+      },
+      {
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28"
+      }
+    ],
+    "policy": "decision only: no experiment executed, no ExperimentSpec written, no experiment id assigned"
+  }
+}

@@ -33,6 +33,8 @@ REGISTRY = ROOT / "src" / "experiments" / "methods" / "__init__.py"
 ENGINE_DOC = ROOT / "docs" / "EXPERIMENT_ENGINE.md"
 MANIFEST = ROOT / "metadata" / "analytic_v1_manifest.json"
 AGENT_SPEC = ROOT / "agents" / "experiment_planner.yaml"
+# The engine's own capability export, kept equal to src/experiments/capabilities.py by the engine validator.
+ENGINE_CAPABILITIES = ROOT / "metadata" / "experiment_engine_capabilities.json"
 
 MAX_ACTIVE = 8
 LEVELS = ("LOW", "MEDIUM", "HIGH")
@@ -101,8 +103,18 @@ def _registry_methods() -> list[str]:
     return re.findall(r"[\"']([a-z_]+)[\"']\s*:", block.group(1)) if block else []
 
 
+def _engine_export() -> dict:
+    """Declared engine capabilities ({} for an engine that predates the export: schema audit only)."""
+    return json.loads(ENGINE_CAPABILITIES.read_text(encoding="utf-8")) if ENGINE_CAPABILITIES.exists() else {}
+
+
 def capability_audit() -> dict:
-    """What the deterministic engine can execute today, with the evidence each answer comes from."""
+    """What the deterministic engine can execute today, with the evidence each answer comes from.
+
+    Combines the schema/registry inspection with what the engine itself declares in
+    metadata/experiment_engine_capabilities.json, so an approved engine extension is recognised
+    without hard-coding proposals or variables.
+    """
     defs = _schema()
     spec, population = defs["ExperimentSpec"]["properties"], defs["Population"]["properties"]
     spec_fields, population_fields = list(spec), list(population)
@@ -115,6 +127,9 @@ def capability_audit() -> dict:
     nonlinear_fields = any_field(r"spline|polynomial|nonlinear|transform|categor|knot")
     uncertainty = _enum(spec["uncertainty"])
     methods = _registry_methods()
+    engine = _engine_export()
+    declared = engine.get("supported") or {}
+    interactions = bool(interaction_fields) and bool(declared.get("exposure_x_binary_moderator_interaction", True))
     supported = {
         "population_filter_sex": "sexes" in population_fields,
         "population_filter_state": "states" in population_fields,
@@ -124,12 +139,17 @@ def capability_audit() -> dict:
         "stratified_subgroup_models": bool({"sexes", "states", "age_min"} & set(population_fields)),
         "approved_covariates": bool(_enum(spec["covariates"])),
         "covariates_outside_schema": False,
-        "interaction_terms": bool(interaction_fields),
-        "formal_between_group_comparison": bool(contrast_fields),
-        "nonlinear_terms": bool(nonlinear_fields),
+        "interaction_terms": interactions,
+        # A formal interaction coefficient with its own interval IS the between-group comparison.
+        "formal_between_group_comparison": bool(contrast_fields) or
+        (interactions and bool(declared.get("formal_interaction_coefficient_inference"))),
+        "nonlinear_terms": bool(nonlinear_fields) or bool(declared.get("nonlinear_terms")),
         "cr1_cluster_uncertainty": "psu_cluster_CR1_t" in uncertainty,
-        "full_survey_design_variance": any(u != "psu_cluster_CR1_t" for u in uncertainty),
+        "full_survey_design_variance": any(u != "psu_cluster_CR1_t" for u in uncertainty) or
+        bool(declared.get("full_complex_survey_variance")),
     }
+    # Binary moderators whose main effect the engine adds through the interaction itself.
+    moderators = sorted((engine.get("interaction") or {}).get("binary_moderators") or {}) if interactions else []
     return {
         "supported": supported,
         "spec_values": {"exposure": _enum(spec["exposure"]), "outcomes": _enum(spec["outcomes"]),
@@ -139,7 +159,11 @@ def capability_audit() -> dict:
                                        "age_min": population["age_min"]["minimum"],
                                        "age_max": population["age_max"]["maximum"]}},
         "registry_methods": methods,
+        "engine_binary_moderators": moderators,
         "evidence": {
+            "engine_capabilities": _rel(ENGINE_CAPABILITIES) if engine else None,
+            "engine_capabilities_sha256": _sha256(ENGINE_CAPABILITIES) if engine else None,
+            "engine_declared": declared,
             "schema": _rel(SCHEMA), "schema_sha256": _sha256(SCHEMA),
             "registry": _rel(REGISTRY), "registry_sha256": _sha256(REGISTRY),
             "experiment_spec_fields": spec_fields, "population_fields": population_fields,
@@ -150,7 +174,7 @@ def capability_audit() -> dict:
             "ranking_note": "EXP-001 paired comparisons contrast OUTCOMES within the same sample; they are not "
                             "comparisons between population groups.",
             "subgroup_note": "Separate runs with a population filter give separate coefficients; the engine does "
-                             "not compute their difference or its uncertainty.",
+                             "not compute their difference or its uncertainty (a formal interaction does).",
             "rank_deficiency": "Restricting to one sex while keeping 'sex' as covariate (or one state with "
                                "'state') makes the design rank-deficient: drop that covariate.",
         },
@@ -288,10 +312,11 @@ def _check(p: dict, review_id: str) -> tuple[list[str], dict]:
     missing_caps = sorted(implied - set(caps))
     if missing_caps:
         errors.append(f"the proposal needs capabilities it does not list: {missing_caps}")
-    if set(covariates) - set(values["covariates"]) and "covariates_outside_schema" not in caps:
+    outside = set(covariates) - set(values["covariates"]) - set(audit["engine_binary_moderators"])
+    if outside and "covariates_outside_schema" not in caps:
         errors.append("covariates outside the schema require 'covariates_outside_schema' in required_engine_capabilities")
     unsupported = sorted(c for c in set(caps) | implied if not supported.get(c, False))
-    if set(covariates) - set(values["covariates"]):
+    if outside:
         unsupported.append("covariates_outside_schema")
 
     feasibility = p["feasibility"] if isinstance(p["feasibility"], dict) else {}
@@ -357,7 +382,8 @@ def _check(p: dict, review_id: str) -> tuple[list[str], dict]:
             if m not in covariates or m not in variables:
                 errors.append(f"interaction with {m}: include {m} as a main effect in covariates and in "
                               f"required_variables")
-            if m not in values["covariates"] and "covariates_outside_schema" not in caps:
+            if m not in values["covariates"] and m not in audit["engine_binary_moderators"] \
+                    and "covariates_outside_schema" not in caps:
                 errors.append(f"{m} is not a schema covariate: add 'covariates_outside_schema' to "
                               f"required_engine_capabilities")
 

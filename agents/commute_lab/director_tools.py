@@ -45,10 +45,38 @@ SIGNIFICANCE = re.compile(r"\bsignifican\w*|\bp[- ]?values?\b|\bp\s*[<=]|\bpower
                           r"\blikely to (find|detect|show) (an? )?(effect|difference|association)", re.IGNORECASE)
 EXECUTION_CLAIM = re.compile(r"\b(was|were|has been|have been|is being) (run|executed)\b|\b(i|we) (ran|executed)\b",
                              re.IGNORECASE)
-# EXP-001's ranking is INCONCLUSIVE: sleep has the most negative POINT estimate, not the "strongest association"
-# (AGENTS.md §7.5). "strongest negative point association" is the accepted wording.
-RANKING_OVERCLAIM = re.compile(r"\b(strongest|largest|biggest|most negative)\b(?:(?!\bpoint\b)[^.;]){0,40}?\bassociation|"
-                               r"\bmost (displaced|affected|sacrificed)\b", re.IGNORECASE)
+# EXP-001's ranking is INCONCLUSIVE: sleep has the most negative POINT ESTIMATE, not the "strongest association"
+# (AGENTS.md §7.5). "strongest negative point estimate" is the accepted wording; "point association" is not.
+RANKING_OVERCLAIM = re.compile(r"\b(strongest|largest|biggest|most negative)\b[^.;]{0,40}?\bassociation|"
+                               r"\bpoint associations?\b|\bmost (displaced|affected|sacrificed)\b", re.IGNORECASE)
+# An interval that includes zero is INCONCLUSIVE: never evidence of no difference / no heterogeneity.
+INCLUDES_ZERO = re.compile(r"\b(includ\w*|cross\w*|span\w*|contain\w*|overlap\w*)\b[^.;]{0,20}\bzero\b",
+                           re.IGNORECASE)
+INCONCLUSIVE = re.compile(r"\binconclusive\b|\bunresolved\b|\b(leav\w*|remain\w*|stay\w*)\b[^.;]{0,20}\bopen\b|"
+                          r"\bundetermined\b|\bcannot (tell|distinguish|determine)\b", re.IGNORECASE)
+NO_DIFFERENCE = re.compile(r"\bno (clear |evident |meaningful |real |apparent |obvious |sex |group )*(difference|"
+                           r"heterogeneity|moderation|interaction|variation)s?\b|\b(does|do|did) not (differ|vary)\b|"
+                           r"\bsame (association|slope|pattern)\b|\b(is|are|be|were|was) (the same|identical|equal)\b|"
+                           r"\bappl(y|ies) (equally )?to both\b|\b(holds|is the same) for both\b|\buniform (across|for)\b|"
+                           r"\bpooled (coefficient|estimate|association|slope) (applies|holds)\b|"
+                           r"\b(absence|lack) of (a |any )?(difference|"
+                           r"heterogeneity|moderation)\b|\bevidence of no\b|\bhomogeneous\b|\bequivalen\w*\b",
+                           re.IGNORECASE)
+NEGATED = re.compile(r"\bnot (as |taken as |read as )?(evidence|proof) (of|for)\b|\b(does|do|would|should) not "
+                     r"(show|mean|imply|establish|indicate|demonstrate)\b|\bcannot (show|establish|indicate)\b|"
+                     r"\bnor\b", re.IGNORECASE)
+# Cross-outcome comparisons restate EXP-001's INCONCLUSIVE ranking (outcome labels are added from the schema).
+COMPARATIVE = r"\b(weaker|stronger|smaller|larger|less negative|more negative)\b[^.;]{0,20}\b(association|estimate|coefficient)s?\b"
+OUTCOME_COMPARISON = re.compile(r"\b(dimension|outcome)s?\b[^.;]{0,25}" + COMPARATIVE, re.IGNORECASE)
+DIFFERENT_OUTCOME = re.compile(r"\bdifferent (dimension|outcome)\b", re.IGNORECASE)
+# Alternatives are rejected on scientific grounds, never on convenience.
+NON_SCIENTIFIC_REASON = re.compile(r"\b(complex\w*|complicat\w*|simpl(e|er|est|icity)|easier|harder|"
+                                   r"not used elsewhere|used elsewhere|unfamiliar|less familiar|extra (work|effort)|"
+                                   r"more work)\b", re.IGNORECASE)
+SCIENTIFIC_CRITERIA = re.compile(r"\binformati\w*|\bdirect\w*|\bhypothes\w*|\b(un)?certain\w*|\bEXP-\d{3}|"
+                                 r"\b(left|leaves|remain\w*) open\b|\brigo\w*|\bformal\w*|\bexplorator\w*|"
+                                 r"\bfeasib\w*|\bexecutab\w*|\bengine\b|\binterval\w*|\b(primary|secondary)\b|"
+                                 r"\bestablish\w*|\bevidence\b", re.IGNORECASE)
 # One moderator test on one outcome cannot settle the ranking across outcomes, and no test "will" settle anything.
 RANKING_RESOLUTION = re.compile(r"\b(resolv\w*|clarif\w*|settl\w*|determin\w*|establish\w*)\b[^.;]{0,40}\branking\b",
                                 re.IGNORECASE)
@@ -323,6 +351,20 @@ def _check(d: dict, ctx: dict) -> list[str]:
     for a in alternatives:
         if isinstance(a, dict) and len(str(a.get("reason_not_selected") or "").split()) < 8:
             errors.append(f"explain why {a.get('proposal_id')} was not selected (at least one full sentence)")
+        reason = str(a.get("reason_not_selected") or "") if isinstance(a, dict) else ""
+        if NON_SCIENTIFIC_REASON.search(reason):
+            errors.append(f"reject {a.get('proposal_id')} on scientific criteria (information gain, directness of the "
+                          f"hypothesis test, uncertainty left by EXP-001, rigor, current feasibility), not on "
+                          f"convenience: {NON_SCIENTIFIC_REASON.search(reason).group(0)!r}")
+        elif reason and not SCIENTIFIC_CRITERIA.search(reason):
+            errors.append(f"the reason for not selecting {a.get('proposal_id')} must name a scientific criterion "
+                          f"(information gain, directness, uncertainty left by EXP-001, rigor or feasibility)")
+        # Claims about an alternative must agree with its artifact (e.g. which outcome it studies).
+        alt = proposals.get(a.get("proposal_id")) if isinstance(a, dict) else None
+        if alt and preferred in proposals and DIFFERENT_OUTCOME.search(reason) \
+                and alt.get("outcome") == proposals[preferred].get("outcome"):
+            errors.append(f"{a.get('proposal_id')} studies the same outcome ({alt.get('outcome')}) as {preferred}; "
+                          f"do not describe it as a different dimension or outcome")
     for name in ("scientific_rationale", "expected_learning", "next_action"):
         if len(str(d[name]).split()) < 8:
             errors.append(f"{name} needs at least one full sentence")
@@ -345,11 +387,28 @@ def _check(d: dict, ctx: dict) -> list[str]:
     causal = [s for s in texts["selection"] if CAUSAL.search(REGRESSION_TERMS.sub(" ", MAIN_EFFECT.sub(" ", s)))]
     if causal:
         errors.append(f"causal wording in the decision; use association language: {causal[:2]}")
+    # Comparing outcomes restates EXP-001's inconclusive cross-outcome ranking.
+    labels = [o.removesuffix("_weekday_min").replace("_", " ") for o in ctx["audit"]["spec_values"]["outcomes"]]
+    than_outcome = re.compile(COMPARATIVE + r"[^.;]{0,30}\bthan\b[^.;]{0,15}\b(" + "|".join(map(re.escape, labels)) + r")\b",
+                              re.IGNORECASE)
+    for text in texts["all"]:
+        match = OUTCOME_COMPARISON.search(text) or than_outcome.search(text)
+        if match:
+            errors.append(f"EXP-001's cross-outcome ranking is INCONCLUSIVE: do not call one outcome's association "
+                          f"weaker/stronger than another's ({match.group(0)!r}); use information gain, directness or "
+                          f"uncertainty instead")
+    # An interval that includes zero is inconclusive, never evidence of no difference.
+    for sentence in (s for text in texts["all"] for s in SENTENCE.split(text)):
+        if INCLUDES_ZERO.search(sentence) and not INCONCLUSIVE.search(sentence):
+            errors.append(f"an interval that includes zero is inconclusive; say so explicitly: {sentence!r}")
+        if NO_DIFFERENCE.search(sentence) and not NEGATED.search(sentence):
+            errors.append(f"an interval that includes zero is inconclusive, never evidence of no difference / no "
+                          f"heterogeneity: {NO_DIFFERENCE.search(sentence).group(0)!r}")
     # The EXP-001 ranking stays inconclusive; outcomes are possibilities, not promises.
     for text in texts["all"]:
         for pattern, message in ((RANKING_OVERCLAIM, "EXP-001 gives sleep the most negative POINT estimate with an "
-                                  "INCONCLUSIVE ranking: say 'strongest negative point association', never the "
-                                  "strongest association"),
+                                  "INCONCLUSIVE ranking: say 'strongest negative point estimate', never the "
+                                  "strongest association or a 'point association'"),
                                  (RANKING_RESOLUTION, "a single moderator test does not resolve or clarify the ranking "
                                   "across outcomes"),
                                  (CERTAINTY, "state what each result would indicate, not what the test will establish")):

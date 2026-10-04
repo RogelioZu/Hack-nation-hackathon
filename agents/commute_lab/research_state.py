@@ -77,8 +77,10 @@ REFS: dict[str, list[tuple[str, frozenset, str]]] = {
                 + [(p, EVIDENCE | {"hypothesis"}, "based_on")
                    for p in ("based_on_experiment_id", "based_on_critique_id", "based_on_ids[]", "evidence_ids[]")],
 }
-# Human reviews (REV-NNN) approve hypotheses for planning.
-REFS["review"] = [("approved_hypotheses[].hypothesis_id", frozenset({"hypothesis"}), "approves")]
+# Human reviews approve hypotheses for planning (REV-NNN) or a decision for execution (approved_decision_id).
+REFS["review"] = [("approved_hypotheses[].hypothesis_id", frozenset({"hypothesis"}), "approves"),
+                  ("approved_decision_id", frozenset({"decision"}), "approves")]
+EXECUTION_APPROVAL = "APPROVED_FOR_EXECUTION"
 # A decision may name the experiment it will produce before that experiment exists.
 FUTURE_REFS = {"decision": [("experiment_id", "executed_as"), ("resulting_experiment_id", "executed_as")]}
 ITEM_ID_FIELDS = ("evidence_id", "id", "ref", "critique_id", "hypothesis_id", "candidate_id", "proposal_id")
@@ -390,7 +392,15 @@ def _next_action(experiments: list[dict], state: dict) -> dict | None:
     if stage == "engine_extension":
         action["then"] = "rerun discovery_director: it recomputes executability from the engine"
     if stage == "run_experiment":
-        action["requires"] = "human approval of the decision before execution"
+        approved_in = sorted((r["review_id"] for r in state.get("reviews", [])
+                              if r.get("decision") == EXECUTION_APPROVAL and
+                              any(x["relation"] == "approves" and x["to"] == latest_decision["decision_id"]
+                                  for x in r["references"])), key=_natural)
+        if approved_in:
+            action["approved_in"] = approved_in
+            action["requires"] = "assign the next experiment id and build its ExperimentSpec from the approved proposal"
+        else:
+            action["requires"] = "human approval of the decision before execution"
     return action
 
 

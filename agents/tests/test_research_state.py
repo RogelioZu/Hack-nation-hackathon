@@ -130,6 +130,22 @@ class FutureArtifacts(unittest.TestCase):
         action = self.build()["next_action"]
         self.assertEqual((action["stage"], action["inputs"]), ("run_experiment", ["DEC-002"]))
 
+    def test_human_approval_of_a_ready_decision_is_recorded(self):
+        save_artifact("hypotheses", hypothesis(), self.root)
+        save_artifact("candidates", {"proposal_id": "PROP-001", "hypothesis_ids": ["HYP-001"]}, self.root)
+        save_artifact("decisions", {"decision_id": "DEC-001", "preferred_proposal_id": "PROP-001",
+                                    "candidate_proposal_ids": ["PROP-001"],
+                                    "decision_status": "READY_TO_EXECUTE"}, self.root)
+        self.assertIn("human approval", self.build()["next_action"]["requires"])
+        save_artifact("reviews", {"review_id": "REV-OTHER", "decision": "APPROVED_FOR_EXECUTION"}, self.root)
+        self.assertNotIn("approved_in", self.build()["next_action"])  # must reference the decision
+        save_artifact("reviews", {"review_id": "REV-DEC-001-001", "review_type": "DECISION_APPROVAL",
+                                  "approved_decision_id": "DEC-001", "decision": "APPROVED_FOR_EXECUTION"}, self.root)
+        state = self.build()
+        self.assertTrue(state["validation"]["valid"], state["validation"]["errors"])
+        self.assertEqual(state["next_action"]["approved_in"], ["REV-DEC-001-001"])
+        self.assertNotIn("human approval", state["next_action"]["requires"])
+
     def test_candidate_with_supabase_style_proposal_id(self):
         save_artifact("hypotheses", hypothesis(), self.root)
         save_artifact("candidates", {"proposal_id": "CAND-X", "hypothesis_id": "HYP-001"}, self.root)
