@@ -31,6 +31,7 @@ HYPOTHESIS_DIR = DISCOVERY / "hypotheses"
 CRITIQUE_DIR = DISCOVERY / "critiques"
 DECISION_DIR = DISCOVERY / "decisions"
 AGENT_SPEC = ROOT / "agents" / "discovery_director.yaml"
+ENGINE_CAPABILITIES = ROOT / "metadata" / "experiment_engine_capabilities.json"
 
 STATUSES = ("READY_TO_EXECUTE", "WAITING_FOR_ENGINE_CAPABILITY", "HUMAN_REVIEW_REQUIRED", "NO_VALID_NEXT_EXPERIMENT")
 DECISION_FIELDS = ("candidate_proposal_ids", "preferred_proposal_id", "best_executable_proposal_id",
@@ -89,28 +90,60 @@ def _approvals(reviews: dict[str, dict]) -> dict[str, dict]:
     return approved
 
 
+def _engine_capabilities() -> dict:
+    """The engine's own capability export (kept equal to src/experiments/capabilities.py by the engine
+    validator); {} for an engine that predates it, which then relies on the schema audit alone."""
+    return _load(ENGINE_CAPABILITIES) if ENGINE_CAPABILITIES.exists() else {}
+
+
+def _moderators(proposal: dict, engine: dict) -> list[str]:
+    """Binary moderators named in the proposal's estimand or test (e.g. sex, has_child_u15)."""
+    if "interaction_terms" not in proposal.get("required_engine_capabilities", []):
+        return []
+    names = (engine.get("interaction") or {}).get("binary_moderators") or {}
+    text = " ".join(str(proposal.get(k) or "") for k in ("comparison_or_estimand", "experimental_test"))
+    return sorted(m for m in names if re.search(rf"(?<![a-z0-9_]){re.escape(m)}(?![a-z0-9]|_u)", text))
+
+
 def _executability(proposal: dict, audit: dict) -> dict:
-    """Can the engine run this proposal today? Recomputed from the live capability audit."""
+    """Can the engine run this proposal today? Recomputed from the live schema audit and the engine's
+    capability export. Planner capability names map onto what the engine declares it supports."""
     supported, values = audit["supported"], audit["spec_values"]
+    engine = _engine_capabilities()
+    declared = engine.get("supported") or {}
+    interaction = engine.get("interaction") or {}
+    moderators = _moderators(proposal, engine)
+    interactions_ok = bool(supported.get("interaction_terms")) and \
+        bool(declared.get("exposure_x_binary_moderator_interaction", True))
+    covariates = set(proposal.get("covariates", []))
+    # A binary moderator's main effect enters through the interaction itself (engine contract), so it
+    # does not need to be a schema covariate.
+    outside = covariates - set(values["covariates"]) - (set(moderators) if interactions_ok else set())
+    available = {
+        "interaction_terms": interactions_ok and (bool(moderators) or not interaction),
+        "formal_between_group_comparison": bool(supported.get("formal_between_group_comparison")) or
+        (interactions_ok and bool(declared.get("formal_interaction_coefficient_inference"))),
+        "covariates_outside_schema": not outside,
+        "nonlinear_terms": bool(supported.get("nonlinear_terms") or declared.get("nonlinear_terms")),
+    }
     missing = []
     for cap in proposal.get("required_engine_capabilities", []):
-        if cap == "covariates_outside_schema":  # available once every covariate is in the schema enum
-            available = set(proposal.get("covariates", [])) <= set(values["covariates"])
-        else:
-            available = bool(supported.get(cap, False))
-        if not available:
+        if not available.get(cap, bool(supported.get(cap, False))):
             missing.append(cap)
+    if outside and "covariates_outside_schema" not in missing:
+        missing.append("covariates_outside_schema")
+    if len(moderators) > 1 and not declared.get("multiple_moderators", False):
+        missing.append("multiple_moderators")
     checks = {
         "exposure_supported": proposal.get("exposure") in values["exposure"],
         "outcome_supported": proposal.get("outcome") in values["outcomes"],
         "method_in_registry": proposal.get("method") in audit["registry_methods"],
-        "covariates_in_schema": set(proposal.get("covariates", [])) <= set(values["covariates"]),
+        "covariates_supported": not outside,
+        "binary_moderators": moderators,
     }
-    for name, ok in checks.items():
-        if not ok and name != "covariates_in_schema":
+    for name in ("exposure_supported", "outcome_supported", "method_in_registry"):
+        if not checks[name]:
             missing.append(name.removesuffix("_supported").removesuffix("_in_registry") + "_not_supported")
-    if not checks["covariates_in_schema"] and "covariates_outside_schema" not in missing:
-        missing.append("covariates_outside_schema")
     return {"currently_executable": not missing, "missing_capabilities": sorted(set(missing)), "checks": checks}
 
 
@@ -188,7 +221,9 @@ def read_engine_capabilities() -> str:
     except (OSError, ValueError, KeyError) as exc:
         return _err(str(exc))
     audit = ctx["audit"]
+    engine = _engine_capabilities()
     return _ok(supported=audit["supported"], spec_values=audit["spec_values"], registry_methods=audit["registry_methods"],
+               engine_capabilities={k: engine.get(k) for k in ("supported", "interaction", "limitations")} or None,
                evidence={k: audit["evidence"][k] for k in ("schema", "schema_sha256", "registry", "registry_sha256",
                                                            "fields_matching_interaction", "fields_matching_group_contrast")},
                proposals={pid: v["executability"] for pid, v in ctx["view"].items()})
@@ -396,6 +431,8 @@ def save_discovery_decision(decision: dict) -> str:
                 "schema": audit["schema"], "schema_sha256": audit["schema_sha256"],
                 "registry": audit["registry"], "registry_sha256": audit["registry_sha256"],
                 "supported": ctx["audit"]["supported"],
+                "engine_capabilities": _rel(ENGINE_CAPABILITIES) if ENGINE_CAPABILITIES.exists() else None,
+                "engine_capabilities_sha256": sha256(ENGINE_CAPABILITIES) if ENGINE_CAPABILITIES.exists() else None,
             },
             "proposal_executability": {pid: v["executability"] for pid, v in ctx["view"].items()},
             "preferred_hypotheses_approved_in": ctx["view"][preferred]["approving_reviews"] if preferred else [],

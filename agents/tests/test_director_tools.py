@@ -37,10 +37,36 @@ WAITING = {
 }
 
 
-def with_interactions():
+def before_extension():
+    """The engine as it was for DEC-001: no interaction field in the schema, no capability export."""
     audit = capability_audit()
-    audit = {**audit, "supported": {**audit["supported"], "interaction_terms": True}}
-    return mock.patch.object(director, "capability_audit", return_value=audit)
+    audit = {**audit, "supported": {**audit["supported"], "interaction_terms": False,
+                                    "formal_between_group_comparison": False}}
+    patches = [mock.patch.object(director, "capability_audit", return_value=audit),
+               mock.patch.object(director, "_engine_capabilities", return_value={})]
+
+    class Both:
+        def __enter__(self):
+            for p in patches:
+                p.start()
+
+        def __exit__(self, *exc):
+            for p in patches:
+                p.stop()
+    return Both()
+
+
+READY = {**copy.deepcopy(WAITING), "decision_status": "READY_TO_EXECUTE", "best_executable_proposal_id": "PROP-003",
+         "capability_check": {"currently_executable": True, "missing_capabilities": []},
+         "next_action": "Request human approval of this decision before the runner builds the spec."}
+READY["alternatives"] = [
+    {"proposal_id": "PROP-005", "reason_not_selected": "It is a women-only exploratory model; it cannot establish "
+                                                       "a difference between women and men."},
+    {"proposal_id": "PROP-008", "reason_not_selected": "It tests the child moderator, a secondary question after the "
+                                                       "sex difference that EXP-001 left open for sleep."},
+    {"proposal_id": "PROP-009", "reason_not_selected": "It targets leisure, whose EXP-001 interval was wider, so "
+                                                       "sleep is the more informative first moderator test."},
+]
 
 
 def validate(decision):
@@ -55,12 +81,28 @@ class ReadTools(unittest.TestCase):
         self.assertEqual({h["hypothesis_id"] for h in state["approved_hypotheses"]}, {"HYP-005", "HYP-007", "HYP-008"})
         proposals = json.loads(director.read_candidate_proposals())["proposals"]
         self.assertEqual([p["proposal_id"] for p in proposals], WAITING["candidate_proposal_ids"])
-        caps = json.loads(director.read_engine_capabilities())["proposals"]
+        with before_extension():
+            caps = json.loads(director.read_engine_capabilities())["proposals"]
         self.assertFalse(caps["PROP-003"]["currently_executable"])
+        self.assertEqual(caps["PROP-003"]["missing_capabilities"], ["interaction_terms"])
         self.assertTrue(caps["PROP-005"]["currently_executable"])
+
+    def test_current_engine_supports_binary_moderators(self):
+        caps = json.loads(director.read_engine_capabilities())["proposals"]
+        for pid, moderator in (("PROP-003", "sex"), ("PROP-008", "has_child_u15"), ("PROP-009", "sex")):
+            self.assertTrue(caps[pid]["currently_executable"], caps[pid])
+            self.assertEqual(caps[pid]["checks"]["binary_moderators"], [moderator])
+        self.assertEqual(caps["PROP-005"]["checks"]["binary_moderators"], [])
 
 
 class Validation(unittest.TestCase):
+    """Rules checked against the engine as it was for DEC-001 (interactions not yet available)."""
+
+    def setUp(self):
+        self.engine = before_extension()
+        self.engine.__enter__()
+        self.addCleanup(self.engine.__exit__)
+
     def assertRejected(self, change, fragment):
         decision = copy.deepcopy(WAITING)
         change(decision)
@@ -126,19 +168,12 @@ class Validation(unittest.TestCase):
 
 class CapabilityRerun(unittest.TestCase):
     def test_same_preference_changes_status_after_engine_extension(self):
-        with with_interactions():
-            caps = json.loads(director.read_engine_capabilities())["proposals"]
-            self.assertTrue(caps["PROP-003"]["currently_executable"])
-            self.assertTrue(caps["PROP-009"]["currently_executable"])
-            self.assertFalse(caps["PROP-008"]["currently_executable"])  # still needs covariates + contrast
-            self.assertTrue(any("expected READY_TO_EXECUTE" in e for e in validate(WAITING)["errors"]))
-            ready = copy.deepcopy(WAITING)
-            ready.update(decision_status="READY_TO_EXECUTE", best_executable_proposal_id="PROP-003",
-                         capability_check={"currently_executable": True, "missing_capabilities": []},
-                         next_action="Request human approval of this decision before the runner builds the spec.")
-            alts = {a["proposal_id"]: a for a in ready["alternatives"]}
-            ready["alternatives"] = [alts["PROP-005"], alts["PROP-008"], alts["PROP-009"]]
-            self.assertEqual(validate(ready)["errors"], [])
+        with before_extension():
+            self.assertEqual(validate(WAITING)["errors"], [])
+            self.assertTrue(any("expected WAITING" in e for e in validate(READY)["errors"]))
+        # The committed engine (binary moderator interactions): same preference, new status.
+        self.assertTrue(any("expected READY_TO_EXECUTE" in e for e in validate(WAITING)["errors"]))
+        self.assertEqual(validate(READY)["errors"], [])
 
 
 class Persistence(unittest.TestCase):
@@ -151,12 +186,9 @@ class Persistence(unittest.TestCase):
                 return research_state.save_artifact(kind, payload, root=root)
             with mock.patch.object(director, "DECISION_DIR", decisions), \
                     mock.patch.object(director, "save_artifact", save):
-                first = json.loads(director.save_discovery_decision(WAITING))
-                with with_interactions():
-                    ready = copy.deepcopy(WAITING)
-                    ready.update(decision_status="READY_TO_EXECUTE", best_executable_proposal_id="PROP-003",
-                                 capability_check={"currently_executable": True, "missing_capabilities": []})
-                    second = json.loads(director.save_discovery_decision(ready))
+                with before_extension():
+                    first = json.loads(director.save_discovery_decision(WAITING))
+                second = json.loads(director.save_discovery_decision(READY))
             self.assertEqual((first["decision_id"], second["decision_id"]), ("DEC-001", "DEC-002"))
             saved = json.loads((decisions / "DEC-001.json").read_text(encoding="utf-8"))
             self.assertEqual(saved["decision_status"], "WAITING_FOR_ENGINE_CAPABILITY")
@@ -166,7 +198,7 @@ class Persistence(unittest.TestCase):
             self.assertTrue(later["provenance"]["engine_capability_audit"]["supported"]["interaction_terms"])
 
     def test_rejected_decision_is_not_saved(self):
-        bad = copy.deepcopy(WAITING)
+        bad = copy.deepcopy(READY)
         bad["alternatives"] = []
         before = sorted(director.DECISION_DIR.glob("DEC-*.json")) if director.DECISION_DIR.exists() else []
         result = json.loads(director.save_discovery_decision(bad))
