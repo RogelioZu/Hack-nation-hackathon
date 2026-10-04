@@ -414,7 +414,9 @@ uv run python -m rag.eval                         # QA de recuperación: hit@1, 
 uv python install 3.12 && uv venv -p 3.12 .venv-experiments
 uv pip install -p .venv-experiments/bin/python -r requirements-experiments.txt
 python scripts/validate_experiment_engine.py        # validación completa del motor; escribe reports/experiments/EXP-001/engine_validation.json
-PYTHONPATH=. python -m unittest discover -s tests   # solo los 16 tests (tests/ no es paquete)
+PYTHONPATH=. python -m unittest discover -s tests   # 35 tests del motor (tests/ no es paquete)
+PYTHONPATH=agents:. python -m unittest discover -s agents/tests   # 49 tests de las tools de agentes
+python scripts/build_research_state.py --check      # valida el Shared Research State sin escribir; sin --check lo regenera
 python scripts/run_experiment.py experiments/EXP-001/spec.json   # corre 2 veces y REESCRIBE reports/experiments/EXP-001/
 
 # Omnigent (desde la raíz; las tools necesitan agents/ y analysis/ en el path)
@@ -437,8 +439,11 @@ PYTHONUTF8=1 PYTHONPATH=agents omnigent run agents/experiment_planner.yaml --ser
 PYTHONPATH=agents:analysis python -c "from pathlib import Path; from omnigent.spec import load; print(load(Path('omnigent.yaml')).name)"
 
 # Web (desde web/)
-npm run dev                                       # http://localhost:3000/research/00000000-0000-0000-0000-000000000001
-npx next typegen && npx tsc --noEmit && npm run lint && npm run build
+npm run dev                                       # http://localhost:3000/ (REPLAY), /?mode=live (lee reports/ en local), /?stage=N
+npm run snapshot                                  # regenera data/discovery-run.json desde los artefactos commiteados
+npm run test:discovery                            # pruebas de aceptación A–L (CHECK_URL=http://localhost:3000/ revisa la página)
+npx next typegen && npx tsc --noEmit && npm run lint && npm run build   # build corre el snapshot en prebuild
+# Cadena tras artefactos nuevos: python scripts/build_research_state.py && (cd web && npm run snapshot) y commitear ambos
 ```
 
 ## 11. Roadmap de 10 horas

@@ -6,7 +6,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ---
 
-## 1. Estado actual (2026-10-03)
+## 1. Estado actual (2026-10-04)
 
 | Frente | Estado |
 |---|---|
@@ -19,6 +19,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Pipeline ENUT → `analytic_v1` | ✅ Construido y validado fuera del repo (fases 1 → 2A → 2B). **`APPROVED_FOR_EXPERIMENTS`**. ENUT 2024, n = 2,563. Documentación en `docs/` y `metadata/analytic_v1_manifest.json` (commit `805b7c2`) |
 | Motor de experimentos (`src/experiments/`) | ✅ Determinista, `ExperimentSpec` → `ExperimentResult`, solo `weighted_linear_regression` con CR1 por UPM. Tests en `tests/` |
 | EXP-001 | ✅ `EXPERIMENT_COMPLETED`, `REQUIRES_HUMAN_REVIEW`, `INCONCLUSIVE_RANKING`. Resultados en `reports/experiments/EXP-001/` (ver §4) |
+| EXP-002 | ✅ `EXPERIMENT_COMPLETED`, `REQUIRES_HUMAN_REVIEW`. Interacción traslado × sexo para sueño (PROP-003, elegida en DEC-005 y aprobada en REV-DEC-005-001). Interacción −17.715 [−47.532, 12.101], `INCONCLUSIVE_INTERVAL_INCLUDES_ZERO`; ranking `NOT_APPLICABLE_SINGLE_OUTCOME`. CRIT-EXP-002-002: **H3 `UNTESTED` → `INCONCLUSIVE`**. Resultados en `reports/experiments/EXP-002/` |
 | Motor de experimentos: empaquetado | ✅ Clon limpio verificado el 2026-10-03: `pip install -r requirements-experiments.txt`, validador PASS, EXP-001 con 0 diferencias numéricas, sin datos crudos ni `staging_v1` (§5). Ese clon era Windows; en Linux pasa desde el 2026-10-03 con tolerancia relativa 1e-9 en floats (§5). Pendiente: borrar `audit/` y `metadata/provenance.json`; validar `omnigent.yaml` en un entorno con Omnigent |
 | Tools (`agents/commute_lab/tools.py`) | ✅ Reescritas el 2026-10-03: 15 tools conectadas al motor real (`run_experiment` → `scripts/run_experiment.py` en `.venv-experiments`; `save_proposals` verifica specs en seco con `scripts/check_experiment_spec.py`). Smoke test completo contra Supabase sin LLM (ver §5) |
 | Capa agéntica de descubrimiento | ✅ Implementada en `omnigent.yaml` + `initial_state.json`: EXP-001 → crítico → literatura → hipótesis → Data Steward → ≥2 candidatos → el Director elige → runner → crítico → decisión actualizada (`AGENTS.md` §7.2). ⏳ Falta la primera sesión real con LLM |
@@ -27,7 +28,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Discovery Director | ✅ Rama `feat/discovery-director` (2026-10-03): `agents/discovery_director.yaml` + `commute_lab/director_tools.py` (5 tools, solo librería estándar, sin ExperimentRunner). Recalcula la ejecutabilidad de cada `PROP-*` con la auditoría en vivo del motor (`planner_tools.capability_audit`) y distingue la mejor propuesta científica de la mejor ejecutable hoy. **Corrida real** (Linux, Databricks `gpt-oss-120b`): `DEC-001` = `WAITING_FOR_ENGINE_CAPABILITY`, preferida PROP-003, ejecutable hoy PROP-005, falta `interaction_terms`. Al extender el motor se vuelve a correr y crea `DEC-002` (nunca sobrescribe). La ejecutabilidad combina la auditoría del schema con `metadata/experiment_engine_capabilities.json` (export del motor): con las interacciones de moderador binario (PR #3), PROP-003, PROP-008 (`has_child_u15` entra como moderador, no como covariable) y PROP-009 ya son ejecutables. ✅ **RUN B** (rama `feat/director-rerun`): `DEC-002` = `READY_TO_EXECUTE`, misma preferencia PROP-003, ahora ejecutable; `next_action` del estado = `run_experiment` con aprobación humana previa. Una primera corrida de RUN B se descartó sin commitear porque decía "strongest observed negative association" y que el test aclararía el ranking: el validador ahora rechaza `RANKING_OVERCLAIM`, "resolve/clarify the ranking", "will resolve/establish" y un `READY_TO_EXECUTE` sin aprobación humana en `next_action` |
 | Papers de OpenAlex | 🟡 `search_openalex` funciona y registra cada paper en `sources` (`kind = 'paper'`, solo metadatos y resumen, sin pasajes) |
 | Despliegue en Vercel | ✅ https://commute-time-lab.vercel.app (producción, pública) |
-| Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
+| Repo | ✅ `feat/ui` fusionada en `main` (2026-10-04, fast-forward). En Linux, verificado: 35 tests del motor y 49 de agentes OK; `validate_experiment_engine.py` PASS (EXP-001 con diferencias relativas ≤ 3.4e-11, dentro de la tolerancia 1e-9 de un sistema distinto); `research_state.json` vigente; web build y `test:discovery` OK |
 
 ## 2. Infraestructura
 
@@ -299,11 +300,17 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 7. Próximos pasos
 
-1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): el motor ya soporta interacciones con moderador binario. Falta la decisión del Discovery Director y la revisión humana de PROP-003, PROP-005, PROP-008 y PROP-009 antes de ejecutar cualquier `ExperimentSpec`. Para el ciclo completo: `--with supabase`, un PAT en `DATABRICKS_TOKEN` y la receta de §5.
+1. **Siguiente paso del ciclo:**
+   - EXP-002 ya se ejecutó y CRIT-EXP-002-002 dejó H3 en `INCONCLUSIVE`.
+   - Según `research_state.json` (`next_action`), lo siguiente es el `hypothesis_agent` con CRIT-EXP-002-002 como entrada.
+   - Siguen pendientes de revisión humana EXP-001 y EXP-002.
+   - No elegir EXP-003 a mano.
+   - Para el ciclo completo: `--with supabase`, un PAT en `DATABRICKS_TOKEN` y la receta de §5.
+   - Después de cada artefacto nuevo: `python scripts/build_research_state.py && (cd web && npm run snapshot)`.
 2. Probar `search_web` con `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE` reales.
 3. Panel web: ✅ la espina (`/`) ya muestra críticas, hipótesis, candidatos, selección, nueva evidencia y decisión desde los JSON de `reports/discovery/`. Cada vez que se commiteen artefactos nuevos: `cd web && npm run snapshot` (o `npm run build`, que lo corre en `prebuild`) y commitear `web/data/discovery-run.json`; si no, el REPLAY de Vercel no los muestra. Verificar con `npm run test:discovery`.
 4. Borrar `audit/` y `metadata/provenance.json` (§5).
 5. Confirmar con el equipo si el track exige Omnigent administrado por Databricks; hoy el executor usa Databricks Free Edition desde Omnigent de código abierto.
 6. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).
 7. Decidir sobre `rls_auto_enable()` (ver §2).
-8. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.
+8. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel. **La versión publicada todavía es la UI anterior (9 etapas, sin EXP-002)**. Hay que redeployar desde `main`.
