@@ -48,7 +48,9 @@ class RepoState(unittest.TestCase):
         latest = state["experiments"][-1]
         if not latest["critiques"]:  # a new result is critiqued before any further decision
             self.assertEqual((action["stage"], action["inputs"]), ("critique", [latest["experiment_id"]]))
-        elif state["decisions"]:
+        elif action["stage"] == "hypotheses":  # critiqued, but no hypothesis cites the new critique yet
+            self.assertEqual(action["inputs"], latest["critiques"])
+        elif state["decisions"] and action["stage"] not in {"candidate_experiments", "decision"}:
             self.assertEqual(action["inputs"], [state["decisions"][-1]["decision_id"]])
 
     def test_deterministic_and_number_free(self):

@@ -59,7 +59,9 @@ _EVIDENCE_REFS = ("evidence_ids[]", "supporting_evidence_ids[]", "opposing_evide
 REFS: dict[str, list[tuple[str, frozenset, str]]] = {
     "evidence": [("experiment_id", frozenset({"experiment"}), "derived_from")],
     "critique": [("experiment_id", frozenset({"experiment"}), "interprets"),
-                 ("provenance.source_experiment_id", frozenset({"experiment"}), "interprets")],
+                 ("provenance.source_experiment_id", frozenset({"experiment"}), "interprets")]
+                + [(p, frozenset({"hypothesis"}), "assesses")
+                   for p in ("hypothesis_assessments[].hypothesis_id", "hypothesis_assessments[].protocol_hypothesis_id")],
     "hypothesis": [(p, frozenset({"critique"}), "motivated_by") for p in _CRITIQUE_REFS]
                   + [(p, EVIDENCE, "cites") for p in _EVIDENCE_REFS]
                   + [(p, frozenset({"hypothesis"}), "refines")
@@ -462,8 +464,16 @@ def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | No
     for link in b.links:
         if link["relation"] == "approves":
             approvals.setdefault(link["to"], []).append(link["from"])
+    assessments = {}
+    for link in b.links:
+        if link["relation"] == "assesses":
+            assessments.setdefault(link["to"], set()).add(link["from"])
     for h in sections["hypotheses"]:
         h["approved_in"] = sorted(approvals.get(h["hypothesis_id"], []), key=_natural)
+    # Critiques that assessed a hypothesis from an experiment result (status lives in the critique artifact).
+    for h in [*sections["hypotheses"], *hypotheses]:
+        if h["hypothesis_id"] in assessments:
+            h["assessed_in"] = sorted(assessments[h["hypothesis_id"]], key=_natural)
     for h in hypotheses:
         h["evaluated_in"] = sorted(e["evidence_id"] for e in evidence
                                    if e.get("kind") == "engine_hypothesis_assessment" and e["hypothesis_id"] == h["hypothesis_id"])
