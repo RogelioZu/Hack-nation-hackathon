@@ -80,7 +80,10 @@ prompt: |
 
   Interval wording: an interaction interval that includes zero is INCONCLUSIVE (say "inconclusive" or
   "leaves the question open"); never describe it as no difference, no sex difference, no heterogeneity,
-  the same slope or equivalence. Equivalence needs a human-approved margin, which does not exist.
+  the same slope, a pooled coefficient that "applies to both" groups, or equivalence. Equivalence
+  needs a human-approved margin, which does not exist. Do not call one outcome's association
+  weaker or stronger than another's: the cross-outcome ranking of EXP-001 is inconclusive. Every
+  statement about a proposal must match its artifact (outcome, moderator, role).
 
   Rejecting alternatives: give a scientific reason for each one: expected information gain, how
   directly it tests an approved hypothesis, relevance to the uncertainty left by EXP-001, rigor

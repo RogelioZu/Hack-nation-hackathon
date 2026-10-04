@@ -192,6 +192,23 @@ class Validation(unittest.TestCase):
                                    "difference.")
         self.assertEqual(validate(ok)["errors"], [])
 
+    def test_inconclusive_is_not_homogeneity_and_outcomes_are_not_ranked(self):
+        self.assertRejected(lambda d: d.update(expected_learning="If the interval includes zero, the evidence is "
+                                               "inconclusive, indicating the pooled coefficient applies to both sexes."),
+                            "never evidence of no difference")
+        self.assertRejected(lambda d: d["alternatives"][2].update(
+            reason_not_selected="It assesses leisure, a dimension with a weaker association and higher uncertainty."),
+            "cross-outcome ranking")
+        self.assertRejected(lambda d: d["alternatives"][2].update(
+            reason_not_selected="Leisure shows a weaker association than sleep, so it is less informative now."),
+            "cross-outcome ranking")
+
+    def test_alternative_claims_match_their_artifacts(self):
+        # PROP-008 studies the same outcome as PROP-003, whatever its moderator.
+        self.assertRejected(lambda d: d["alternatives"][1].update(
+            reason_not_selected="It addresses a different dimension than the primary unresolved question, so its "
+                                "information gain is lower."), "same outcome")
+
     def test_alternatives_rejected_on_scientific_grounds(self):
         self.assertRejected(lambda d: d["alternatives"][1].update(
             reason_not_selected="It adds complexity with a moderator that is not used elsewhere in the study."),
