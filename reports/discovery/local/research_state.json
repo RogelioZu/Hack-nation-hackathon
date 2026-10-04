@@ -258,6 +258,33 @@
       "status": "INCONCLUSIVE_RANKING",
       "artifact": "reports/experiments/EXP-001/result.json",
       "pointer": "/sensitivity_results/0"
+    },
+    {
+      "evidence_id": "EXP-002/estimates/adjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-002",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/estimates/0"
+    },
+    {
+      "evidence_id": "EXP-002/hypotheses/H3",
+      "kind": "engine_hypothesis_assessment",
+      "experiment_id": "EXP-002",
+      "hypothesis_id": "H3",
+      "assessment": "inconclusive",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/inconclusive_hypotheses/0"
+    },
+    {
+      "evidence_id": "EXP-002/ranking",
+      "kind": "experiment_ranking",
+      "experiment_id": "EXP-002",
+      "status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/ranking"
     }
   ],
   "critiques": [
@@ -304,7 +331,9 @@
       "title": "Sex Heterogeneity",
       "artifact": "docs/EXPERIMENT_PROTOCOL.md",
       "pointer": "#H3",
-      "evaluated_in": [],
+      "evaluated_in": [
+        "EXP-002/hypotheses/H3"
+      ],
       "references": []
     },
     {
@@ -447,6 +476,33 @@
       "selected_by": [],
       "critiques": [
         "CRIT-EXP-001-001"
+      ]
+    },
+    {
+      "experiment_id": "EXP-002",
+      "status": "EXPERIMENT_COMPLETED",
+      "review_status": "REQUIRES_HUMAN_REVIEW",
+      "dataset_version": "analytic_v1",
+      "method": "weighted_linear_regression",
+      "hypothesis_ids": [
+        "H3"
+      ],
+      "ranking_status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+      "quality_flags": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED",
+        "REQUIRES_HUMAN_REVIEW"
+      ],
+      "artifacts": {
+        "spec": "reports/experiments/EXP-002/spec.json",
+        "result": "reports/experiments/EXP-002/result.json",
+        "validation": "reports/experiments/EXP-002/validation.json"
+      },
+      "result_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+      "selected_by": [],
+      "critiques": [],
+      "authorized_by": [
+        "REV-DEC-005-001"
       ]
     }
   ],
@@ -718,6 +774,11 @@
           "to": "DEC-005",
           "relation": "approves",
           "field": "approved_decision_id"
+        },
+        {
+          "to": "EXP-002",
+          "relation": "authorizes",
+          "field": "approved_experiment.experiment_id_to_assign"
         }
       ]
     }
@@ -782,6 +843,108 @@
       "artifact": "reports/experiments/EXP-001/result.json",
       "pointer": "/limitations/9",
       "text": "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/0",
+      "text": "Observational associations; no identification of mechanisms or intervention effects."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/2",
+      "text": "EST_DIS identifies nested PSUs and is reported, but covariance does not center scores within strata or apply stratification gains."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/3",
+      "text": "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/4",
+      "text": "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/5",
+      "text": "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/6",
+      "text": "Pointwise 95% intervals are descriptive. With one primary outcome there are no Bonferroni outcome or pairwise-difference families; no joint guarantee across sensitivity models."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/7",
+      "text": "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/8",
+      "text": "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/9",
+      "text": "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/10",
+      "text": "Observational, cross-sectional association; the interaction does not identify a causal effect or mechanism."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/11",
+      "text": "The interaction coefficient is the formal estimand for the difference in exposure slopes between the two moderator groups."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/12",
+      "text": "An interval that includes zero is inconclusive about heterogeneity; it is not evidence of no difference."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/13",
+      "text": "No equivalence margin has been approved, so equivalence is not assessed."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/14",
+      "text": "CR1 PSU-cluster uncertainty is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/15",
+      "text": "Rows missing the moderator are excluded under the model-specific complete-case policy, never assigned to a group."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/16",
+      "text": "In moderated models the Estimate coefficient refers to the reference-group exposure slope; heterogeneity is assessed only through the interaction coefficient."
     },
     {
       "source_id": "CRIT-EXP-001-001",
@@ -1120,30 +1283,33 @@
       "to": "DEC-005",
       "relation": "approves",
       "field": "approved_decision_id"
+    },
+    {
+      "from": "REV-DEC-005-001",
+      "to": "EXP-002",
+      "relation": "authorizes",
+      "field": "approved_experiment.experiment_id_to_assign"
     }
   ],
   "next_action": {
     "derived": true,
-    "latest_experiment_id": "EXP-001",
+    "latest_experiment_id": "EXP-002",
     "pending_human_review": [
-      "EXP-001"
+      "EXP-001",
+      "EXP-002"
     ],
-    "stage": "run_experiment",
-    "agent": "experiment_runner",
+    "stage": "critique",
+    "agent": "scientific_critic",
     "inputs": [
-      "DEC-005"
-    ],
-    "decision_status": "READY_TO_EXECUTE",
-    "approved_in": [
-      "REV-DEC-005-001"
-    ],
-    "requires": "assign the next experiment id and build its ExperimentSpec from the approved proposal"
+      "EXP-002"
+    ]
   },
   "provenance": {
     "workspace": "reports/discovery/local",
     "inputs": {
       "docs/EXPERIMENT_PROTOCOL.md": "32eda44226c54c75fb5442a338bc489dbedfb904c3e78c836b71a9970239d0ed",
       "experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+      "experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
       "initial_state.json": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755",
       "metadata/analytic_v1_experiment_approval.json": "0844f5f5cb0a4c936e3e0551542055961c5e6293e8305e2c5c181a0620186081",
       "metadata/analytic_v1_manifest.json": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
@@ -1164,10 +1330,13 @@
       "reports/discovery/local/reviews/REV-DEC-005-001.json": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
       "reports/experiments/EXP-001/result.json": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
       "reports/experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
-      "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d"
+      "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+      "reports/experiments/EXP-002/result.json": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+      "reports/experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+      "reports/experiments/EXP-002/validation.json": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee"
     },
-    "inputs_sha256": "bb0295ec8d18ae5c18564fbd73af6605d0baff445706dee4698cbd8e2239e140",
-    "generator_sha256": "c900a5e2b77004551281fedbc16ceef3fc5bc883fae0780a4a2ad4d3ff6f36e0",
+    "inputs_sha256": "ed00a0df8011bcc634c6685a2a2bf7da5df39022d6a02d91089bc058a7a46647",
+    "generator_sha256": "d88361256d04de00f7dbd7451200dcf032d0ebb3c6110f69334bf80a2da5fd06",
     "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
   },
   "validation": {
