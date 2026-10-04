@@ -22,9 +22,12 @@ export async function getDiscovery(mode: DiscoveryMode, session?: string): Promi
   await connection();
   const loadedAt = new Date().toISOString();
   const root = repoRoot();
-  // A deployment can carry stray parts of the repository (seen on Vercel: /?mode=live rendered an empty run), so LIVE
-  // needs the whole layout the agents write into; otherwise it falls back to the replay bundle and says so.
-  const liveReachable = ["initial_state.json", "reports/experiments", "reports/discovery"].every((p) => existsSync(path.join(root, p)));
+  // LIVE is the lab machine reading what the agents write. A deployment only carries files traced at build time (on
+  // Vercel these paths get bundled), so it never counts as live; locally LIVE needs the whole layout the agents write
+  // into. Otherwise it falls back to the replay bundle and says so.
+  const deployed = Boolean(process.env.VERCEL);
+  const liveReachable =
+    !deployed && ["initial_state.json", "reports/experiments", "reports/discovery"].every((p) => existsSync(path.join(root, p)));
 
   if (mode === "live" && liveReachable) {
     let raw = (await collectArtifacts(root)) as RawArtifact[];
