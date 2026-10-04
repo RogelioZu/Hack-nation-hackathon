@@ -8,6 +8,9 @@
 
 tiemPO is a small, auditable discovery lab. Omnigent agents critique real results, propose falsifiable hypotheses, design competing experiments and decide what to test next. A deterministic statistics engine is the only component that produces numbers. Every step leaves a versioned JSON artifact with IDs and SHA-256 hashes. The web app replays that chain from question to updated scientific state.
 
+![The tiemPO console mid-run: the Scientific Critic's verdict on EXP-001 with the questions it leaves open, while the Hypothesis Agent and Experiment Planner work on the next step](docs/img/console.png)
+<sub>The console mid-run. The critic's verdict on EXP-001 lists what it leaves open; the next agents are working, showing the checks they run and the files they save. The inspector on the right explains the selected artifact.</sub>
+
 ---
 
 ## What the lab found
@@ -72,7 +75,11 @@ Agents do not chat. They exchange one **Shared Research State** JSON object and 
 
 ## Try it
 
-**1. Watch the replay (no setup).** Open https://commute-time-lab.vercel.app and press *Start investigation*. The agents take turns as in the recorded session: each runs its checks, saves its artifacts and waits at human approval gates before its result appears; *Inspect agent handoff* shows the real JSON it passed on. Previous, Play/Pause and Next step through the run, and the conclusion and key results arrive last. `/?view=full` opens the whole record at once.
+**1. Watch the replay (no setup).**
+
+![tiemPO landing page: mission, data provenance (INEGI ENUT 2024, n = 2,563 workers), orchestration and the Start investigation button](docs/img/home.png)
+
+Open https://commute-time-lab.vercel.app and press *Start investigation*. The agents take turns as in the recorded session: each runs its checks, saves its artifacts and waits at human approval gates before its result appears; *Inspect agent handoff* shows the real JSON it passed on. Previous, Play/Pause and Next step through the run, and the conclusion and key results arrive last. `/?view=full` opens the whole record at once.
 
 **2. Reproduce the numbers** (Python 3.12, from the repo root):
 
@@ -101,7 +108,7 @@ PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.js
 python scripts/build_research_state.py && (cd web && npm run snapshot)   # refresh state + UI after new artifacts
 ```
 
-**4. Run the web app locally:**
+**4. Run the web app locally** (Node.js 22.18+ or 23.6+: the snapshot script imports the TypeScript adapter directly):
 
 ```bash
 cd web && npm install
