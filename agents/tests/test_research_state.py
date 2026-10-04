@@ -38,8 +38,12 @@ class RepoState(unittest.TestCase):
         self.assertEqual([h["hypothesis_id"] for h in state["hypotheses"]][4:], ["HYP-005", "HYP-007", "HYP-008"])
         candidates = [c["candidate_id"] for c in state["candidate_experiments"]]
         self.assertEqual(candidates, ["PROP-003", "PROP-005", "PROP-008", "PROP-009"])
-        self.assertEqual(state["next_action"]["stage"], "decision")
-        self.assertEqual(state["next_action"]["inputs"], candidates)
+        # The stage follows the committed artifacts (it advances as the loop does); with decisions, the latest governs.
+        action = state["next_action"]
+        self.assertIn(action["stage"], {"critique", "hypotheses", "candidate_experiments", "decision",
+                                        "engine_extension", "human_review", "run_experiment"})
+        if state["decisions"]:
+            self.assertEqual(action["inputs"], [state["decisions"][-1]["decision_id"]])
 
     def test_deterministic_and_number_free(self):
         first, second = build_state(ROOT)[0], build_state(ROOT)[0]
@@ -111,6 +115,20 @@ class FutureArtifacts(unittest.TestCase):
         downstream = ids(trace(state, "EXP-001")["used_by"])
         for expected in (CRIT, "HYP-001", "CAND-001-A", "DEC-001"):
             self.assertIn(expected, downstream)
+
+    def test_latest_discovery_decision_sets_the_stage(self):
+        save_artifact("hypotheses", hypothesis(), self.root)
+        save_artifact("candidates", {"proposal_id": "PROP-001", "hypothesis_ids": ["HYP-001"]}, self.root)
+        save_artifact("decisions", {"decision_id": "DEC-001", "preferred_proposal_id": "PROP-001",
+                                    "candidate_proposal_ids": ["PROP-001"], "alternatives": [],
+                                    "decision_status": "WAITING_FOR_ENGINE_CAPABILITY"}, self.root)
+        action = self.build()["next_action"]
+        self.assertEqual((action["stage"], action["inputs"]), ("engine_extension", ["DEC-001"]))
+        save_artifact("decisions", {"decision_id": "DEC-002", "preferred_proposal_id": "PROP-001",
+                                    "candidate_proposal_ids": ["PROP-001"],
+                                    "decision_status": "READY_TO_EXECUTE"}, self.root)
+        action = self.build()["next_action"]
+        self.assertEqual((action["stage"], action["inputs"]), ("run_experiment", ["DEC-002"]))
 
     def test_candidate_with_supabase_style_proposal_id(self):
         save_artifact("hypotheses", hypothesis(), self.root)

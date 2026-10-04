@@ -4,7 +4,7 @@ Rebuilt deterministically from committed artifacts, never from LLM conversation 
 
     reports/experiments/EXP-NNN/{spec,result,validation}.json     engine output (source of truth)
     reports/discovery/<workspace>/<kind>/<ID>.json                  agent artifacts, one file per object
-        kind in: evidence, critiques, hypotheses, candidates, decisions
+        kind in: evidence, critiques, hypotheses, candidates, decisions, reviews
 
 The state stores IDs, references and JSON pointers into those artifacts. Scientific numbers are never
 copied: a reviewer resolves them from the pointed artifact. Standard library only, no database.
@@ -42,6 +42,7 @@ KINDS = {
     "hypotheses": ("hypothesis", "hypotheses", ("hypothesis_id",)),
     "candidates": ("candidate", "candidate_experiments", ("candidate_id", "proposal_id")),
     "decisions": ("decision", "decisions", ("decision_id",)),
+    "reviews": ("review", "reviews", ("review_id",)),
 }
 # State entries always use the first (canonical) ID field name: a candidate is "candidate_id" in the state
 # even when its artifact calls it "proposal_id" (tools.py, Supabase loop).
@@ -68,18 +69,28 @@ REFS: dict[str, list[tuple[str, frozenset, str]]] = {
                  + [(p, frozenset({"critique"}), "motivated_by") for p in _CRITIQUE_REFS]
                  + [(p, EVIDENCE, "cites") for p in _EVIDENCE_REFS],
     "decision": [(p, frozenset({"candidate"}), "selects")
-                 for p in ("proposal_id", "candidate_id", "selected_candidate_id", "selected_proposal_id")]
+                 for p in ("proposal_id", "candidate_id", "selected_candidate_id", "selected_proposal_id",
+                           "preferred_proposal_id")]
                 + [(p, frozenset({"candidate"}), "considers")
-                   for p in ("considered_candidate_ids[]", "rejected_candidate_ids[]", "alternative_candidate_ids[]")]
+                   for p in ("considered_candidate_ids[]", "rejected_candidate_ids[]", "alternative_candidate_ids[]",
+                             "candidate_proposal_ids[]", "alternatives[].proposal_id", "best_executable_proposal_id")]
                 + [(p, EVIDENCE | {"hypothesis"}, "based_on")
                    for p in ("based_on_experiment_id", "based_on_critique_id", "based_on_ids[]", "evidence_ids[]")],
 }
+# Human reviews (REV-NNN) approve hypotheses for planning.
+REFS["review"] = [("approved_hypotheses[].hypothesis_id", frozenset({"hypothesis"}), "approves")]
 # A decision may name the experiment it will produce before that experiment exists.
 FUTURE_REFS = {"decision": [("experiment_id", "executed_as"), ("resulting_experiment_id", "executed_as")]}
 ITEM_ID_FIELDS = ("evidence_id", "id", "ref", "critique_id", "hypothesis_id", "candidate_id", "proposal_id")
+# DiscoveryDecision status (agents/commute_lab/director_tools.py) -> pipeline stage it leads to.
+DECISION_STAGES = {"READY_TO_EXECUTE": ("run_experiment", "experiment_runner"),
+                   "WAITING_FOR_ENGINE_CAPABILITY": ("engine_extension", "human"),
+                   "HUMAN_REVIEW_REQUIRED": ("human_review", "human"),
+                   "NO_VALID_NEXT_EXPERIMENT": ("hypotheses", "hypothesis_agent")}
 # Short non-numeric fields copied into the state for readability (statements stay in the artifact).
 DISPLAY = ("code", "title", "label", "status", "scientific_status", "type", "generated_by", "agent",
-           "protocol_hypothesis", "contract_feasible", "rule_applied")
+           "protocol_hypothesis", "contract_feasible", "rule_applied", "analysis_role", "review_type", "decision",
+           "decision_status", "preferred_proposal_id", "best_executable_proposal_id")
 
 
 def sha256(path: Path) -> str:
@@ -371,7 +382,20 @@ def _next_action(experiments: list[dict], state: dict) -> dict | None:
     decisions = from_refs(state["decisions"], "decision_id", "selects", set(candidates))
     if not decisions:
         return {**action, "stage": "decision", "agent": "discovery_director", "inputs": candidates}
-    return {**action, "stage": "run_experiment", "agent": "experiment_runner", "inputs": decisions}
+    # The latest decision governs (decisions are append-only; a rerun adds a new one).
+    latest_decision = next(d for d in state["decisions"] if d["decision_id"] == max(decisions, key=_natural))
+    stage, agent = DECISION_STAGES.get(latest_decision.get("decision_status"), ("run_experiment", "experiment_runner"))
+    action = {**action, "stage": stage, "agent": agent, "inputs": [latest_decision["decision_id"]],
+              "decision_status": latest_decision.get("decision_status")}
+    if stage == "engine_extension":
+        action["then"] = "rerun discovery_director: it recomputes executability from the engine"
+    if stage == "run_experiment":
+        action["requires"] = "human approval of the decision before execution"
+    return action
+
+
+def _natural(text: str) -> list:
+    return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", text)]
 
 
 def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | None = None,
@@ -393,8 +417,8 @@ def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | No
             b.register(f"{cid}/evidence/{i}", "critique_evidence", artifact)
 
     sections: dict[str, list[dict]] = {"evidence": [], "critiques": [], "hypotheses": [],
-                                       "candidate_experiments": [], "decisions": []}
-    order = ["evidence", "critique", "hypothesis", "candidate", "decision"]  # upstream first
+                                       "candidate_experiments": [], "decisions": [], "reviews": []}
+    order = ["evidence", "critique", "hypothesis", "review", "candidate", "decision"]  # upstream first
     section_of = {kind: section for kind, section, _ in KINDS.values()}
     for kind in order:
         for artifact, object_id, payload in found[kind]:
@@ -420,6 +444,12 @@ def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | No
             by_id[link["to"]]["critiques"].append(link["from"])
         if link["relation"] == "executed_as" and link["to"] in by_id:
             by_id[link["to"]]["selected_by"].append(link["from"])
+    approvals = {}
+    for link in b.links:
+        if link["relation"] == "approves":
+            approvals.setdefault(link["to"], []).append(link["from"])
+    for h in sections["hypotheses"]:
+        h["approved_in"] = sorted(approvals.get(h["hypothesis_id"], []), key=_natural)
     for h in hypotheses:
         h["evaluated_in"] = sorted(e["evidence_id"] for e in evidence
                                    if e.get("kind") == "engine_hypothesis_assessment" and e["hypothesis_id"] == h["hypothesis_id"])
@@ -461,7 +491,8 @@ def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | No
         "hypotheses": hypotheses + sorted(sections["hypotheses"], key=lambda e: e["hypothesis_id"]),
         "candidate_experiments": sorted(sections["candidate_experiments"], key=lambda e: e["candidate_id"]),
         "experiments": sorted(experiments, key=lambda e: _exp_number(e["experiment_id"])),
-        "decisions": sorted(sections["decisions"], key=lambda e: e["decision_id"]),
+        "decisions": sorted(sections["decisions"], key=lambda e: _natural(e["decision_id"])),
+        "reviews": sorted(sections["reviews"], key=lambda e: _natural(e["review_id"])),
         "limitations": unique_limitations,
         "links": sorted(b.links, key=lambda l: (l["from"], l["relation"], l["to"], l["field"])),
         "next_action": None,

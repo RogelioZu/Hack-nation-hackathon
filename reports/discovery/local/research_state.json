@@ -315,9 +315,110 @@
       "pointer": "#H4",
       "evaluated_in": [],
       "references": []
+    },
+    {
+      "hypothesis_id": "HYP-005",
+      "artifact": "reports/discovery/local/hypotheses/HYP-005.json",
+      "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+      "references": [
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "motivated_by",
+          "field": "source_critique_ids[]"
+        }
+      ],
+      "source": "agent",
+      "approved_in": [
+        "REV-001"
+      ]
+    },
+    {
+      "hypothesis_id": "HYP-007",
+      "artifact": "reports/discovery/local/hypotheses/HYP-007.json",
+      "sha256": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+      "references": [
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "motivated_by",
+          "field": "source_critique_ids[]"
+        }
+      ],
+      "source": "agent",
+      "approved_in": [
+        "REV-001"
+      ]
+    },
+    {
+      "hypothesis_id": "HYP-008",
+      "artifact": "reports/discovery/local/hypotheses/HYP-008.json",
+      "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+      "references": [
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "motivated_by",
+          "field": "source_critique_ids[]"
+        }
+      ],
+      "source": "agent",
+      "approved_in": [
+        "REV-001"
+      ]
     }
   ],
-  "candidate_experiments": [],
+  "candidate_experiments": [
+    {
+      "candidate_id": "PROP-003",
+      "artifact": "reports/discovery/local/candidates/PROP-003.json",
+      "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+      "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+      "references": [
+        {
+          "to": "HYP-005",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    },
+    {
+      "candidate_id": "PROP-005",
+      "artifact": "reports/discovery/local/candidates/PROP-005.json",
+      "sha256": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+      "analysis_role": "EXPLORATORY_SUBGROUP",
+      "references": [
+        {
+          "to": "HYP-005",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    },
+    {
+      "candidate_id": "PROP-008",
+      "artifact": "reports/discovery/local/candidates/PROP-008.json",
+      "sha256": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+      "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+      "references": [
+        {
+          "to": "HYP-007",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    },
+    {
+      "candidate_id": "PROP-009",
+      "artifact": "reports/discovery/local/candidates/PROP-009.json",
+      "sha256": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
+      "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+      "references": [
+        {
+          "to": "HYP-008",
+          "relation": "tests",
+          "field": "hypothesis_ids[]"
+        }
+      ]
+    }
+  ],
   "experiments": [
     {
       "experiment_id": "EXP-001",
@@ -349,7 +450,80 @@
       ]
     }
   ],
-  "decisions": [],
+  "decisions": [
+    {
+      "decision_id": "DEC-001",
+      "artifact": "reports/discovery/local/decisions/DEC-001.json",
+      "sha256": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+      "type": "discovery_decision",
+      "decision_status": "WAITING_FOR_ENGINE_CAPABILITY",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-005",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "review_id": "REV-001",
+      "artifact": "reports/discovery/local/reviews/REV-001.json",
+      "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+      "review_type": "HYPOTHESIS_REVIEW",
+      "decision": "APPROVED_FOR_PLANNING",
+      "references": [
+        {
+          "to": "HYP-005",
+          "relation": "approves",
+          "field": "approved_hypotheses[].hypothesis_id"
+        },
+        {
+          "to": "HYP-007",
+          "relation": "approves",
+          "field": "approved_hypotheses[].hypothesis_id"
+        },
+        {
+          "to": "HYP-008",
+          "relation": "approves",
+          "field": "approved_hypotheses[].hypothesis_id"
+        }
+      ]
+    }
+  ],
   "limitations": [
     {
       "source_id": "EXP-001",
@@ -472,6 +646,108 @@
       "to": "EXP-001",
       "relation": "interprets",
       "field": "experiment_id"
+    },
+    {
+      "from": "DEC-001",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-001",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "HYP-005",
+      "to": "CRIT-EXP-001-001",
+      "relation": "motivated_by",
+      "field": "source_critique_ids[]"
+    },
+    {
+      "from": "HYP-007",
+      "to": "CRIT-EXP-001-001",
+      "relation": "motivated_by",
+      "field": "source_critique_ids[]"
+    },
+    {
+      "from": "HYP-008",
+      "to": "CRIT-EXP-001-001",
+      "relation": "motivated_by",
+      "field": "source_critique_ids[]"
+    },
+    {
+      "from": "PROP-003",
+      "to": "HYP-005",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "PROP-005",
+      "to": "HYP-005",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "PROP-008",
+      "to": "HYP-007",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "PROP-009",
+      "to": "HYP-008",
+      "relation": "tests",
+      "field": "hypothesis_ids[]"
+    },
+    {
+      "from": "REV-001",
+      "to": "HYP-005",
+      "relation": "approves",
+      "field": "approved_hypotheses[].hypothesis_id"
+    },
+    {
+      "from": "REV-001",
+      "to": "HYP-007",
+      "relation": "approves",
+      "field": "approved_hypotheses[].hypothesis_id"
+    },
+    {
+      "from": "REV-001",
+      "to": "HYP-008",
+      "relation": "approves",
+      "field": "approved_hypotheses[].hypothesis_id"
     }
   ],
   "next_action": {
@@ -480,11 +756,13 @@
     "pending_human_review": [
       "EXP-001"
     ],
-    "stage": "hypotheses",
-    "agent": "hypothesis_agent",
+    "stage": "engine_extension",
+    "agent": "human",
     "inputs": [
-      "CRIT-EXP-001-001"
-    ]
+      "DEC-001"
+    ],
+    "decision_status": "WAITING_FOR_ENGINE_CAPABILITY",
+    "then": "rerun discovery_director: it recomputes executability from the engine"
   },
   "provenance": {
     "workspace": "reports/discovery/local",
@@ -494,13 +772,22 @@
       "initial_state.json": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755",
       "metadata/analytic_v1_experiment_approval.json": "0844f5f5cb0a4c936e3e0551542055961c5e6293e8305e2c5c181a0620186081",
       "metadata/analytic_v1_manifest.json": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+      "reports/discovery/local/candidates/PROP-003.json": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+      "reports/discovery/local/candidates/PROP-005.json": "45c73eeea7c7be8506e757640401e9d31beb5c95ae8f98dba202b00d00c3d9bb",
+      "reports/discovery/local/candidates/PROP-008.json": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
+      "reports/discovery/local/candidates/PROP-009.json": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
       "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+      "reports/discovery/local/decisions/DEC-001.json": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
+      "reports/discovery/local/hypotheses/HYP-005.json": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+      "reports/discovery/local/hypotheses/HYP-007.json": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
+      "reports/discovery/local/hypotheses/HYP-008.json": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
+      "reports/discovery/local/reviews/REV-001.json": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
       "reports/experiments/EXP-001/result.json": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
       "reports/experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
       "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d"
     },
-    "inputs_sha256": "dd5e661c7026fc0a780e0076b547a20634ddcf1fd034eb335eedc947a0c97d27",
-    "generator_sha256": "f050f90650039931e4bdb18f5c8fb4c762cc661c60213ae693deacc2c0e240b1",
+    "inputs_sha256": "cfb759f599b54a7913751c26e52efb18b70046ead4ec19cb8df86b0169f2edfa",
+    "generator_sha256": "a5a626accc2c56af562afa1f42bff2fb428f2506be274796782306866a854897",
     "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
   },
   "validation": {
