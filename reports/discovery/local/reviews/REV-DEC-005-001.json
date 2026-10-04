@@ -1,0 +1,62 @@
+{
+  "review_id": "REV-DEC-005-001",
+  "review_type": "DECISION_APPROVAL",
+  "approved_decision_id": "DEC-005",
+  "decision": "APPROVED_FOR_EXECUTION",
+  "selected_proposal_id": "PROP-003",
+  "approved_experiment": {
+    "proposal_id": "PROP-003",
+    "hypothesis_ids": [
+      "HYP-005"
+    ],
+    "protocol_hypothesis": "H3",
+    "experiment_id_to_assign": "EXP-002",
+    "model": "sleep_weekday_min ~ commute_5h + sex + commute_5h x sex + approved covariates",
+    "engine": "deterministic ExperimentRunner, weighted_linear_regression with binary moderator interaction"
+  },
+  "constraints": [
+    "PROP-003 tests H3: heterogeneity by sex in the commute_5h-sleep_weekday_min association.",
+    "This experiment does NOT resolve the inconclusive ranking across personal-time outcomes.",
+    "The sentence suggesting it could explain the overall ranking uncertainty is not endorsed by the human review.",
+    "The stated reason for deprioritizing PROP-008 is considered weak and is not necessary for approving PROP-003.",
+    "An interaction interval containing zero must be interpreted as INCONCLUSIVE, not as evidence of no difference.",
+    "All interpretations remain observational and non-causal."
+  ],
+  "not_endorsed": [
+    {
+      "artifact": "reports/discovery/local/decisions/DEC-005.json",
+      "field": "scientific_rationale",
+      "text": "It has the highest expected information gain (HIGH) and can discriminate whether the observed strongest negative point estimate for sleep varies by sex, which could explain the inconclusive ranking of personal‑time dimensions",
+      "reason": "An interaction test on sleep does not explain or resolve the cross-outcome ranking uncertainty."
+    },
+    {
+      "artifact": "reports/discovery/local/decisions/DEC-005.json",
+      "field": "alternatives[PROP-008].reason_not_selected",
+      "text": "Tests child‑presence moderation, which is relevant but secondary to the primary sex‑difference question and adds a covariate not central to the ranking uncertainty.",
+      "reason": "Weak reason; not necessary for approving PROP-003."
+    }
+  ],
+  "scope": "Approves the scientific question and the experiment (PROP-003 as EXP-002), not any result. DEC-005 is kept unchanged; this review records the human interpretation constraints.",
+  "reviewed_artifacts": [
+    {
+      "path": "reports/discovery/local/decisions/DEC-005.json",
+      "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d"
+    },
+    {
+      "path": "reports/discovery/local/candidates/PROP-003.json",
+      "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb"
+    },
+    {
+      "path": "reports/discovery/local/hypotheses/HYP-005.json",
+      "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f"
+    },
+    {
+      "path": "reports/discovery/local/reviews/REV-001.json",
+      "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560"
+    }
+  ],
+  "reviewer": "human project lead (the user of the Claude Code session)",
+  "recorded_by": "Claude Code, transcription of the user's approval message",
+  "source": "User message approving DEC-005 so that PROP-003 becomes EXP-002",
+  "recorded_at": "2026-10-04T05:27:53.139674+00:00"
+}

@@ -542,6 +542,144 @@
           "field": "based_on_ids[]"
         }
       ]
+    },
+    {
+      "decision_id": "DEC-003",
+      "artifact": "reports/discovery/local/decisions/DEC-003.json",
+      "sha256": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    },
+    {
+      "decision_id": "DEC-004",
+      "artifact": "reports/discovery/local/decisions/DEC-004.json",
+      "sha256": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
+    },
+    {
+      "decision_id": "DEC-005",
+      "artifact": "reports/discovery/local/decisions/DEC-005.json",
+      "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+      "type": "discovery_decision",
+      "decision_status": "READY_TO_EXECUTE",
+      "preferred_proposal_id": "PROP-003",
+      "best_executable_proposal_id": "PROP-003",
+      "references": [
+        {
+          "to": "PROP-003",
+          "relation": "selects",
+          "field": "preferred_proposal_id"
+        },
+        {
+          "to": "PROP-003",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-005",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-008",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "PROP-009",
+          "relation": "considers",
+          "field": "considered_candidate_ids[]"
+        },
+        {
+          "to": "CRIT-EXP-001-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        },
+        {
+          "to": "EXP-001",
+          "relation": "based_on",
+          "field": "based_on_ids[]"
+        }
+      ]
     }
   ],
   "reviews": [
@@ -566,6 +704,20 @@
           "to": "HYP-008",
           "relation": "approves",
           "field": "approved_hypotheses[].hypothesis_id"
+        }
+      ]
+    },
+    {
+      "review_id": "REV-DEC-005-001",
+      "artifact": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+      "sha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+      "review_type": "DECISION_APPROVAL",
+      "decision": "APPROVED_FOR_EXECUTION",
+      "references": [
+        {
+          "to": "DEC-005",
+          "relation": "approves",
+          "field": "approved_decision_id"
         }
       ]
     }
@@ -778,6 +930,132 @@
       "field": "preferred_proposal_id"
     },
     {
+      "from": "DEC-003",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-003",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "DEC-004",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-004",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
+      "from": "DEC-005",
+      "to": "CRIT-EXP-001-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "EXP-001",
+      "relation": "based_on",
+      "field": "based_on_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-003",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-005",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-008",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-009",
+      "relation": "considers",
+      "field": "considered_candidate_ids[]"
+    },
+    {
+      "from": "DEC-005",
+      "to": "PROP-003",
+      "relation": "selects",
+      "field": "preferred_proposal_id"
+    },
+    {
       "from": "HYP-005",
       "to": "CRIT-EXP-001-001",
       "relation": "motivated_by",
@@ -836,6 +1114,12 @@
       "to": "HYP-008",
       "relation": "approves",
       "field": "approved_hypotheses[].hypothesis_id"
+    },
+    {
+      "from": "REV-DEC-005-001",
+      "to": "DEC-005",
+      "relation": "approves",
+      "field": "approved_decision_id"
     }
   ],
   "next_action": {
@@ -847,10 +1131,13 @@
     "stage": "run_experiment",
     "agent": "experiment_runner",
     "inputs": [
-      "DEC-002"
+      "DEC-005"
     ],
     "decision_status": "READY_TO_EXECUTE",
-    "requires": "human approval of the decision before execution"
+    "approved_in": [
+      "REV-DEC-005-001"
+    ],
+    "requires": "assign the next experiment id and build its ExperimentSpec from the approved proposal"
   },
   "provenance": {
     "workspace": "reports/discovery/local",
@@ -867,16 +1154,20 @@
       "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
       "reports/discovery/local/decisions/DEC-001.json": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
       "reports/discovery/local/decisions/DEC-002.json": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
+      "reports/discovery/local/decisions/DEC-003.json": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
+      "reports/discovery/local/decisions/DEC-004.json": "41c2f56d7b378f98bbc02c5796539399208f9fa27fbc1faf7052880fa5a42450",
+      "reports/discovery/local/decisions/DEC-005.json": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
       "reports/discovery/local/hypotheses/HYP-005.json": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
       "reports/discovery/local/hypotheses/HYP-007.json": "789664c436c48092bb35d9c803e2d0cadb67dbd99d70a203dc7a9f29cf9601dc",
       "reports/discovery/local/hypotheses/HYP-008.json": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2",
       "reports/discovery/local/reviews/REV-001.json": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+      "reports/discovery/local/reviews/REV-DEC-005-001.json": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
       "reports/experiments/EXP-001/result.json": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
       "reports/experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
       "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d"
     },
-    "inputs_sha256": "5c38ba0987fff0ad5a523d10e93b5b87903a5f58c2512839f2faad5f46443330",
-    "generator_sha256": "a5a626accc2c56af562afa1f42bff2fb428f2506be274796782306866a854897",
+    "inputs_sha256": "bb0295ec8d18ae5c18564fbd73af6605d0baff445706dee4698cbd8e2239e140",
+    "generator_sha256": "c900a5e2b77004551281fedbc16ceef3fc5bc883fae0780a4a2ad4d3ff6f36e0",
     "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
   },
   "validation": {
