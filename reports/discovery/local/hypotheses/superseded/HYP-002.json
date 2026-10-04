@@ -1,0 +1,89 @@
+{
+  "hypothesis_id": "HYP-002",
+  "source_experiment_ids": [
+    "EXP-001"
+  ],
+  "source_critique_ids": [
+    "CRIT-EXP-001-001"
+  ],
+  "scientific_question": "Does the association between commuting burden and sleep time differ by sex, being more negative for women than for men?",
+  "falsifiable_claim": "sleep_weekday_min coefficient is more negative among female workers than among male workers",
+  "motivation": {
+    "observed_evidence": [
+      {
+        "kind": "OBSERVED_EVIDENCE",
+        "statement": "Adjusted sleep_weekday_min coefficient = -48.711 (95% pointwise CI [-63.481, -33.94]; Bonferroni outcome interval [-67.565, -29.856])",
+        "source": "estimates[adjusted:sleep_weekday_min].coefficient"
+      },
+      {
+        "kind": "OBSERVED_EVIDENCE",
+        "statement": "UNTESTED_QUESTION: Does the association between commuting burden and personal‑time allocation differ by sex (H3)?",
+        "source": "critique.untested_questions"
+      }
+    ],
+    "scientific_inference": [
+      {
+        "kind": "INFERENCE",
+        "statement": "The model adjusts for sex but does not report separate coefficients for each sex."
+      },
+      {
+        "kind": "INFERENCE",
+        "statement": "The overall negative association suggests a potential difference that could vary by sex."
+      }
+    ],
+    "unresolved_uncertainty": [
+      "It is unknown whether the sleep association is stronger (more negative) for women than for men."
+    ]
+  },
+  "required_variables": [
+    "commute_5h",
+    "sleep_weekday_min",
+    "sex",
+    "work_weekday_min",
+    "age",
+    "state"
+  ],
+  "expected_direction": "more_negative",
+  "supporting_observation": "The sleep coefficient estimated in the female subgroup is more negative than that estimated in the male subgroup.",
+  "contradicting_observation": "The sleep coefficient in the female subgroup is not more negative than in the male subgroup.",
+  "current_evidence_status": "UNTESTED",
+  "kind": "NEW_HYPOTHESIS",
+  "engine_capability_assessment": {
+    "known_executable": true,
+    "reason": "Engine can run weighted linear regression on filtered subpopulations defined by sex and compare coefficients.",
+    "assessed_by": "hypothesis_agent (provisional; the Experiment Planner decides feasibility)"
+  },
+  "limitations": [
+    "Separate subgroup runs are descriptive and not a formal interaction test.",
+    "Variance approximation (CR1 PSU‑clustered) may affect subgroup standard errors."
+  ],
+  "review_status": "REQUIRES_HUMAN_REVIEW",
+  "provenance": {
+    "dataset_version": "analytic_v1",
+    "agent": "hypothesis_agent",
+    "model": "databricks-gpt-oss-120b",
+    "harness": "openai-agents",
+    "timestamp": "2026-10-04T02:58:22.299817+00:00",
+    "code_version": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+    "source_artifacts": [
+      {
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "3113a9eecf8d7458cc482c78da9e47386ec574b976f094ccdbb8dbde59c384aa",
+        "integrity": "content identical; LF checkout of CRLF-validated bytes"
+      },
+      {
+        "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+      },
+      {
+        "path": "metadata/analytic_v1_manifest.json",
+        "sha256": "f23add970d81e9bab5930a793a301d8512208b08b8948084d99d4a63c5afb8d3"
+      },
+      {
+        "path": "metadata/experiment_contract.schema.json",
+        "sha256": "113a14d1acfd5f935c2e831d500d6dd7748bcf89c180de094806ab6672fbce54"
+      }
+    ],
+    "validation": "contract, approved variables, observational language, numbers traceable to sources"
+  }
+}

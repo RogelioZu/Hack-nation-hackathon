@@ -24,7 +24,7 @@ def hypothesis(hid="HYP-001", **extra):
 
 
 class RepoState(unittest.TestCase):
-    """The committed repository: EXP-001 + CRIT-EXP-001-001."""
+    """The committed repository: EXP-001 + CRIT-EXP-001-001 + approved hypotheses + planner candidates."""
 
     def test_rebuilds_valid_state(self):
         state, _ = build_state(ROOT)
@@ -34,8 +34,12 @@ class RepoState(unittest.TestCase):
         self.assertEqual([e["experiment_id"] for e in state["experiments"]], ["EXP-001"])
         self.assertEqual(state["experiments"][0]["critiques"], [CRIT])
         self.assertEqual([h["hypothesis_id"] for h in state["hypotheses"]][:4], ["H1", "H2", "H3", "H4"])
-        self.assertEqual(state["next_action"]["stage"], "hypotheses")
-        self.assertEqual(state["next_action"]["inputs"], [CRIT])
+        # Hypothesis Agent and Experiment Planner outputs are indexed; superseded/ subfolders are not.
+        self.assertEqual([h["hypothesis_id"] for h in state["hypotheses"]][4:], ["HYP-005", "HYP-007", "HYP-008"])
+        candidates = [c["candidate_id"] for c in state["candidate_experiments"]]
+        self.assertEqual(candidates, ["PROP-003", "PROP-005", "PROP-008", "PROP-009"])
+        self.assertEqual(state["next_action"]["stage"], "decision")
+        self.assertEqual(state["next_action"]["inputs"], candidates)
 
     def test_deterministic_and_number_free(self):
         first, second = build_state(ROOT)[0], build_state(ROOT)[0]

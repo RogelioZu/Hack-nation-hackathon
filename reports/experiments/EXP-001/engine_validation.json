@@ -20,7 +20,10 @@
   "exp001_result_bytes_match_validation_record": true,
   "exp001_repeated_execution_identical": true,
   "exp001_numeric_values_compared": 1801,
-  "exp001_numerical_differences": 0,
+  "exp001_float_relative_tolerance": 1e-09,
+  "exp001_numerical_differences_beyond_tolerance": 0,
+  "exp001_floats_not_bit_identical": 0,
+  "exp001_max_float_relative_difference": 0.0,
   "exp001_non_environment_differences": 0,
   "exp001_environment_provenance_changed": [
     "code_fingerprints",

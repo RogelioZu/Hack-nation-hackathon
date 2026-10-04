@@ -1,0 +1,119 @@
+{
+  "proposal_id": "PROP-006",
+  "hypothesis_ids": [
+    "HYP-008"
+  ],
+  "scientific_question": "Does the association between commuting time and leisure time differ between women and men?",
+  "experimental_test": "Weighted linear regression with interaction term between commute_5h and sex (female) to test difference in exposure association for leisure_weekday_min.",
+  "analysis_role": "FORMAL_HETEROGENEITY_TEST",
+  "population": {
+    "source": "approved_analytic_v1",
+    "states": [
+      "09",
+      "15"
+    ],
+    "age_min": 18,
+    "age_max": 65,
+    "sexes": [
+      "male",
+      "female"
+    ]
+  },
+  "exposure": "commute_5h",
+  "outcome": "leisure_weekday_min",
+  "covariates": [
+    "work_weekday_min",
+    "age",
+    "sex",
+    "state"
+  ],
+  "method": "weighted_linear_regression",
+  "required_variables": [
+    "commute_5h",
+    "leisure_weekday_min",
+    "work_weekday_min",
+    "age",
+    "sex",
+    "state"
+  ],
+  "comparison_or_estimand": "Interaction coefficient for commute_5h:sex_female (difference in association between females and males).",
+  "expected_information_gain": {
+    "level": "HIGH",
+    "reason": "Directly tests HYP-008 heterogeneity, clarifying whether the commuting–leisure relationship varies by sex."
+  },
+  "scientific_value": "Identifies potential sex-specific differences in the commuting–leisure association, informing interpretation of overall findings.",
+  "feasibility": {
+    "status": "REQUIRES_ENGINE_EXTENSION",
+    "reason": "Engine does not currently support interaction terms needed for formal heterogeneity testing.",
+    "checked_against": "engine capability audit (schema + registry)"
+  },
+  "required_engine_capabilities": [
+    "interaction_terms"
+  ],
+  "limitations": [
+    "Observational, cross‑sectional design; cannot infer causality.",
+    "Requires engine extension to compute interaction term and its uncertainty.",
+    "Potential limited power for detecting interaction."
+  ],
+  "result_interpretation_plan": {
+    "supporting_result": "The 95% confidence interval for the interaction coefficient excludes zero on the negative side, indicating a more negative association among women.",
+    "contradicting_result": "The 95% confidence interval excludes zero on the positive side, indicating a more negative association among men.",
+    "inconclusive_result": "The 95% confidence interval includes zero, indicating no clear difference between sexes."
+  },
+  "selected": false,
+  "experiment_id": null,
+  "review_status": "REQUIRES_HUMAN_REVIEW",
+  "provenance": {
+    "hypothesis_ids": [
+      "HYP-008"
+    ],
+    "critique_ids": [
+      "CRIT-EXP-001-001"
+    ],
+    "experiment_ids": [
+      "EXP-001"
+    ],
+    "human_review_id": "REV-001",
+    "dataset_version": [
+      "analytic_v1"
+    ],
+    "agent": "experiment_planner",
+    "model": "databricks-gpt-oss-120b",
+    "timestamp": "2026-10-04T03:34:24.460731+00:00",
+    "code_version": "ca6c7d753ae516f2ccc13206dcfd6aa09d686606",
+    "engine_capability_audit": {
+      "schema_sha256": "113a14d1acfd5f935c2e831d500d6dd7748bcf89c180de094806ab6672fbce54",
+      "registry_sha256": "2780765c1d8f9b314cbd2fcf8a26b203e13ca3e549c2d77c6187737166eea42c"
+    },
+    "source_artifacts": [
+      {
+        "path": "reports/discovery/local/reviews/REV-001.json",
+        "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560"
+      },
+      {
+        "path": "reports/discovery/local/hypotheses/HYP-008.json",
+        "sha256": "1a751cbc3c16d24059b2764d4050a914a13768131e2c0cc30383e210f64b6ad2"
+      },
+      {
+        "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+        "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+      },
+      {
+        "path": "reports/experiments/EXP-001/result.json",
+        "sha256": "3113a9eecf8d7458cc482c78da9e47386ec574b976f094ccdbb8dbde59c384aa"
+      },
+      {
+        "path": "metadata/experiment_contract.schema.json",
+        "sha256": "113a14d1acfd5f935c2e831d500d6dd7748bcf89c180de094806ab6672fbce54"
+      },
+      {
+        "path": "src/experiments/methods/__init__.py",
+        "sha256": "2780765c1d8f9b314cbd2fcf8a26b203e13ca3e549c2d77c6187737166eea42c"
+      },
+      {
+        "path": "metadata/analytic_v1_manifest.json",
+        "sha256": "f23add970d81e9bab5930a793a301d8512208b08b8948084d99d4a63c5afb8d3"
+      }
+    ]
+  }
+}

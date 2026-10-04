@@ -194,6 +194,57 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **Motor en Windows:** `.venv-experiments` creado con `uv venv -p 3.12` + `requirements-experiments.txt`; el validador da PASS. `tools.py` ahora usa por defecto `.venv-experiments/Scripts/python.exe` en Windows (y `bin/python` en el resto); `EXPERIMENT_PYTHON` sigue teniendo prioridad.
 - **Bootstrap anterior con `OPENAI_API_KEY`:** la llave es válida, pero su organización **no tiene créditos** ("You have no credits remaining"). El harness `codex` descarta `OPENAI_API_KEY` y necesita la CLI `codex`, que no está instalada (la app de escritorio de Codex no la expone).
 
+- **Hypothesis Agent (2026-10-04):** `agents/hypothesis_agent.yaml` con tres tools de librería estándar (`commute_lab/hypothesis_tools.py`):
+  - `read_hypothesis_context`: entrega el resultado de EXP-001, la crítica, las 22 variables aprobadas, H1–H4 y el contrato del motor, leído del JSON Schema.
+  - `validate_hypothesis`: validación en seco, sin guardar.
+  - `save_hypothesis`: asigna `HYP-NNN` secuencial (contando también `superseded/`), no sobrescribe y permite máximo 4 hipótesis activas por crítica.
+  - Los artefactos van en `reports/discovery/local/hypotheses/` (misma convención que las críticas), con estado `UNTESTED` y `REQUIRES_HUMAN_REVIEW`.
+- **El validador rechaza:**
+  - lenguaje causal (incluido "effect");
+  - "strongest negative association" (se debe decir "point estimate");
+  - afirmaciones vagas o sin comparación;
+  - criterios de apoyo y refutación sin incertidumbre (se exige un intervalo que excluya o incluya el cero);
+  - variables o nombres `snake_case` fuera del contrato;
+  - variables que el experimento no estimó, presentadas como evidencia observada;
+  - cifras, decimales o enteros, que no estén en las fuentes;
+  - `known_executable: true` para interacciones, formas no lineales, variables fuera del schema o diferencias entre grupos;
+  - otros `EXP-*`, frases que eligen la siguiente prueba y duplicados (Jaccard ≥ 0.6);
+  - **hipótesis que no son nuevas**: deben agregar un subgrupo, una comparación entre grupos, una variable aprobada no usada o una forma funcional distinta.
+- **Corridas reales** con `databricks-gpt-oss-120b`:
+  - Primera corrida: HYP-001 a 003. Segunda: HYP-004 a 006.
+  - Las dos pasaron el validador de ese momento, pero la revisión encontró huecos: criterios basados solo en estimaciones puntuales, "effect", `known_executable: true` en una diferencia entre grupos, y re-pruebas de coeficientes que EXP-001 ya estimó.
+  - Después de cada revisión se endureció el validador y se archivaron esas hipótesis sin cambios en `hypotheses/superseded/` (con `README.md`). Sus IDs no se reutilizan. HYP-005, de la segunda corrida, sí era válida y sigue activa.
+  - Tercera corrida: HYP-007 y 008.
+  - **Activas:** HYP-005 (sueño, mujeres vs. hombres), HYP-007 (sueño, con vs. sin `has_child_u15`) y HYP-008 (ocio, por sexo). Las tres con `known_executable: null`. Esperan revisión humana; no van al Experiment Planner.
+- **Trampa de escritura:** al parchear Python con heredocs, `\b` dentro de strings no-raw se escribió como el carácter de retroceso (0x08). Las regex no fallan; simplemente nunca coinciden. Parchear desde archivos `.py` y revisar que el archivo no tenga caracteres de control.
+- ✅ **Bytes de EXP-001 en git (resuelto el 2026-10-04):** `main` (commit `2bd1fbf`) restauró los bytes CRLF certificados de `reports/experiments/EXP-001/result.json` (`5e4084a3…`) y `metadata/analytic_v1_manifest.json` (`f800513b…`). `feat/hypothesis-agent` los recibió al fusionar `main` (merge por fast-forward a `555ea10`). El crítico, el validador y las tools leen EXP-001 con bytes exactos.
+  - Las hipótesis y propuestas generadas antes del arreglo guardaron el hash LF observado (`3113a9ee…`) como `sha256`. `hypotheses/PROVENANCE_NOTE.md` y `candidates/PROVENANCE_NOTE.md` aclaran cuál es el hash canónico; esos artefactos no se reescriben porque REV-001 certifica los bytes de las hipótesis.
+  - Desde entonces, `hypothesis_tools` y `planner_tools` guardan `observed_sha256` y `certified_sha256` por separado (`_experiment_provenance`).
+
+- **Revisión humana REV-001 (2026-10-04):** `reports/discovery/local/reviews/REV-001.json`. Aprueba HYP-005, HYP-007 y HYP-008 para la planificación, con 5 restricciones: las direcciones son hipótesis; la heterogeneidad exige inferir sobre la diferencia entre grupos; los subgrupos separados no bastan; el análisis es observacional; sin lenguaje causal. Es una transcripción literal del mensaje del usuario, marcada como tal y con los hashes de las hipótesis. El Planner rechaza cualquier hipótesis que haya cambiado después de la revisión.
+- **Experiment Planner:** `agents/experiment_planner.yaml` con tres tools de librería estándar (`commute_lab/planner_tools.py`):
+  - `read_planning_context`: entrega la revisión, las hipótesis aprobadas, la crítica, EXP-001, las variables y la **auditoría de capacidades**. La auditoría se deriva en cada llamada del JSON Schema y del registro de métodos: interacciones, comparación formal entre grupos, no linealidad y filtro por `has_child_u15` → **no soportados**; filtros por sexo, estado y edad → sí.
+  - `validate_proposal` (en seco) y `save_proposal`, que escribe `reports/discovery/local/candidates/PROP-NNN.json` (el tipo `candidates` del Shared Research State; antes era `proposals/`, que el estado ignoraba) con `selected=false`, `experiment_id=null` y `REQUIRES_HUMAN_REVIEW`.
+- **El validador de propuestas exige:**
+  - que la factibilidad coincida con la auditoría;
+  - que `FORMAL_HETEROGENEITY_TEST` liste `interaction_terms` o `formal_between_group_comparison`;
+  - que `EXPLORATORY_SUBGROUP` declare que no establece heterogeneidad y no se compare contra el estimado global;
+  - que la interacción incluya el término principal del moderador, declarando `covariates_outside_schema` si el moderador no está en el schema;
+  - que "incluye el cero" sea inconcluso;
+  - que en una hipótesis bidireccional el apoyo acepte ambos sentidos y la refutación sea por equivalencia, con un margen fijado por humanos;
+  - que no repita EXP-001;
+  - sin sobreafirmaciones ("definitive", "prove"), sin lenguaje causal ("main effect" sí está permitido), sin elegir ni asignar EXP-*, sin cifras inventadas y sin duplicados (mismas hipótesis y mismo outcome).
+- **Corridas reales:** cinco, con `databricks-gpt-oss-120b`. PROP-001, 002, 004, 006 y 007 se archivaron en `candidates/superseded/` (con `README.md`); el validador de cada momento no había detectado sus fallas.
+  - En la primera corrida el agente afirmó haber guardado PROP-003 sin llamar a `save_proposal`. **Siempre verificar en disco, nunca el resumen del agente.**
+  - En la cuarta, el CLI de Omnigent terminó con "Turn did not complete within 120s" (subscribe-after-post race).
+- **Activas:**
+  - PROP-003: HYP-005, interacción traslado × sexo para sueño.
+  - PROP-008: HYP-007, interacción × `has_child_u15`, que también requiere esa covariable fuera del schema.
+  - PROP-009: HYP-008, interacción × sexo para ocio, bidireccional.
+  - Las tres anteriores son `REQUIRES_ENGINE_EXTENSION`.
+  - PROP-005: HYP-005, modelo exploratorio solo de mujeres, `EXECUTABLE_NOW`, declarado insuficiente para establecer heterogeneidad.
+  - Esperan revisión humana. No se eligió ninguna ni se asignó EXP-002.
+
 ### Vercel
 - Cuenta Hobby. El proyecto `commute-time-lab` está en el scope `roger-1592` (`team_37NrEuZAkgRsRYTKpMCwC5j9`).
   - El MCP de Vercel da **403 si se pasa `teamId`**. Funciona sin `teamId` (usa el scope por defecto).
@@ -211,7 +262,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 7. Próximos pasos
 
-1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): revisión humana de `CRIT-EXP-001-001`; luego conectar el Hypothesis Agent a esa crítica. Para el ciclo completo: `--with supabase` en el entorno de Omnigent, un PAT en `DATABRICKS_TOKEN` y la receta de §5. Comprobar que el ASK salta cuando un sub-agente llama a `run_experiment`.
+1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): revisión humana de PROP-003, PROP-005, PROP-008 y PROP-009. El Shared Research State ya marca `next_action.stage = decision` (Discovery Director). Las pruebas formales requieren una extensión del motor (interacciones y `has_child_u15` como covariable), que debe pasar por aprobación humana (`AGENTS.md` §7.4). Para el ciclo completo: `--with supabase`, un PAT en `DATABRICKS_TOKEN` y la receta de §5.
 2. Probar `search_web` con `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE` reales.
 3. Panel web: mostrar críticas (veredicto), candidatos A/B con su factibilidad y la decisión actualizada; hoy salen como filas genéricas de `decisions`/`experiment_proposals`.
 4. Borrar `audit/` y `metadata/provenance.json` (§5).
