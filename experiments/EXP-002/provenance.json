@@ -1,0 +1,107 @@
+{
+  "experiment_id": "EXP-002",
+  "spec": "experiments/EXP-002/spec.json",
+  "spec_sha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+  "decision_id": "DEC-005",
+  "decision_approval_id": "REV-DEC-005-001",
+  "proposal_id": "PROP-003",
+  "hypothesis_ids": {
+    "agent": [
+      "HYP-005"
+    ],
+    "protocol": [
+      "H3"
+    ]
+  },
+  "source_experiment_id": "EXP-001",
+  "dataset_version": "analytic_v1",
+  "code_version": "e4dd8c4d7c91c00ee4e1fc49b7b09990b069a124",
+  "spec_translation_code_version": "a812598efa1dcd5fc0fa45636e0b98b86ec31cfb",
+  "engine_capabilities_sha256": "30dc82dadab903502c52a9f69473f140e71a3b2a4acb11755cca181860e6d5c2",
+  "source_artifacts": {
+    "decision": {
+      "path": "reports/discovery/local/decisions/DEC-005.json",
+      "sha256": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d"
+    },
+    "decision_approval": {
+      "path": "reports/discovery/local/reviews/REV-DEC-005-001.json",
+      "sha256": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445"
+    },
+    "proposal": {
+      "path": "reports/discovery/local/candidates/PROP-003.json",
+      "sha256": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb"
+    },
+    "hypothesis": {
+      "path": "reports/discovery/local/hypotheses/HYP-005.json",
+      "sha256": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f"
+    },
+    "hypothesis_approval": {
+      "path": "reports/discovery/local/reviews/REV-001.json",
+      "sha256": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560"
+    },
+    "critique": {
+      "path": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
+      "sha256": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181"
+    },
+    "source_experiment_spec": {
+      "path": "experiments/EXP-001/spec.json",
+      "sha256": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2"
+    },
+    "source_experiment_result": {
+      "path": "reports/experiments/EXP-001/result.json",
+      "sha256": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28"
+    },
+    "dataset": {
+      "path": "data/processed/analytic_v1.parquet",
+      "sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94"
+    },
+    "dataset_manifest": {
+      "path": "metadata/analytic_v1_manifest.json",
+      "sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759"
+    },
+    "engine_capabilities": {
+      "path": "metadata/experiment_engine_capabilities.json",
+      "sha256": "30dc82dadab903502c52a9f69473f140e71a3b2a4acb11755cca181860e6d5c2"
+    },
+    "engine_contract": {
+      "path": "metadata/experiment_contract.schema.json",
+      "sha256": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8"
+    }
+  },
+  "derivation": {
+    "research_question": "PROP-003.scientific_question",
+    "hypothesis_ids": "REV-DEC-005-001.approved_experiment.protocol_hypothesis (H3; agent hypothesis HYP-005)",
+    "population": "PROP-003.population (identical to EXP-001); expected_n from EXP-001 spec",
+    "exposure / outcomes / covariates / method": "PROP-003",
+    "survey design, missingness, uncertainty, confidence level, schema version": "EXP-001 spec (fixed contract)",
+    "interaction": "PROP-003 formal commute_5h x sex test; levels from the engine/data contract (reference male, comparison female)",
+    "sensitivity_analyses / include_unadjusted": "empty / false: not part of the approved proposal"
+  },
+  "interpretation_constraints": [
+    "PROP-003 tests H3: heterogeneity by sex in the commute_5h-sleep_weekday_min association.",
+    "This experiment does NOT resolve the inconclusive ranking across personal-time outcomes.",
+    "The sentence suggesting it could explain the overall ranking uncertainty is not endorsed by the human review.",
+    "The stated reason for deprioritizing PROP-008 is considered weak and is not necessary for approving PROP-003.",
+    "An interaction interval containing zero must be interpreted as INCONCLUSIVE, not as evidence of no difference.",
+    "All interpretations remain observational and non-causal."
+  ],
+  "interpretation_coding": {
+    "interaction < 0 (interval below zero)": "compatible with a more negative commute-sleep association among women",
+    "interaction > 0 (interval above zero)": "compatible with a more negative commute-sleep association among men",
+    "interval includes zero": "INCONCLUSIVE regarding sex heterogeneity (not evidence of no difference)"
+  },
+  "created_at": "2026-10-04T05:36:51.615039+00:00",
+  "created_by": "Claude Code, deterministic translation script (no LLM-generated statistics)",
+  "execution": {
+    "code_version": "e4dd8c4d7c91c00ee4e1fc49b7b09990b069a124",
+    "code_commit": "fix: make experiment outputs interaction-aware",
+    "runner": "scripts/run_experiment.py (deterministic ExperimentRunner, two identical runs)",
+    "engine_code_sha256": "0ff03ce062f722d1604918fae59694b1b678cd53a951fb3d32073ac391644c42",
+    "engine_code_matches_committed_blobs": true,
+    "result": "reports/experiments/EXP-002/result.json",
+    "result_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+    "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+    "regenerated_reason": "output-semantics fix (interaction-aware reporting, single-outcome ranking); scientific estimates bit-identical to the first run (result sha256 5ef634118b4242df64fbea9d0b6f4779d7026ad87a2e8d075e90ef9725492521)",
+    "executed_at": "2026-10-04T05:50:27.274279+00:00"
+  }
+}

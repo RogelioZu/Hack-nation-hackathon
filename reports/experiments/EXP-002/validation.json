@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "identical_spec_identical_result": true,
+  "analytic_sha256_before": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+  "analytic_sha256_after": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+  "result_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+  "schema_roundtrip": true,
+  "sample_size": 2563,
+  "model_count": 1
+}
