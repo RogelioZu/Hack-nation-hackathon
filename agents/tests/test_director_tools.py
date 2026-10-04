@@ -155,7 +155,11 @@ class Validation(unittest.TestCase):
                             "does not exist")
 
     def test_no_experiment_id_and_no_execution(self):
-        self.assertRejected(lambda d: d.update(next_action="Run PROP-003 as EXP-002 after the engine extension "
+        # The next unassigned id (EXP-002 existed after the approved run; never hard-code an id that may exist).
+        existing = [int(p.name.split("-")[1]) for d in ("experiments", "reports/experiments")
+                    for p in (research_state.ROOT / d).glob("EXP-*") if p.is_dir()]
+        new_id = f"EXP-{max(existing, default=0) + 1:03d}"
+        self.assertRejected(lambda d: d.update(next_action=f"Run PROP-003 as {new_id} after the engine extension "
                                                            "is approved by the team."), "new experiment id")
         self.assertRejected(lambda d: d.update(experiment_id="EXP-002"), "decides only")
         self.assertRejected(lambda d: d.update(next_action="PROP-005 was executed already so we can compare "

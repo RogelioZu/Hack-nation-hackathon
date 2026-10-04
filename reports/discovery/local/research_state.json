@@ -66,6 +66,102 @@
       "pointer": "/evidence_summary/5"
     },
     {
+      "evidence_id": "CRIT-EXP-002-002/evidence/1",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.reference_group_slope",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/0"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/10",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "hypotheses_evaluated_by_engine",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/9"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/11",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "prior_scientific_state.experiments[0].ranking_status",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/10"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/12",
+      "kind": "critique_inference",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.interaction_comparison_minus_reference",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/11"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/2",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.comparison_group_slope",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/1"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/3",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "estimates[0].ci95_pointwise, estimates[0].bonferroni_outcome_interval",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/2"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/4",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "ranking.status",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/3"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/5",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "sensitivity",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/4"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/6",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "sample_size, weighted_population",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/5"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/7",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "diagnostics_adjusted.adjusted:sleep_weekday_min",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/6"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/8",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "ranking.paired_comparisons",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/7"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/9",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "limitations[0]",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/8"
+    },
+    {
       "evidence_id": "EXP-001/estimates/adjusted:household_conversation_weekday_min",
       "kind": "experiment_estimate",
       "experiment_id": "EXP-001",
@@ -258,6 +354,33 @@
       "status": "INCONCLUSIVE_RANKING",
       "artifact": "reports/experiments/EXP-001/result.json",
       "pointer": "/sensitivity_results/0"
+    },
+    {
+      "evidence_id": "EXP-002/estimates/adjusted:sleep_weekday_min",
+      "kind": "experiment_estimate",
+      "experiment_id": "EXP-002",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/estimates/0"
+    },
+    {
+      "evidence_id": "EXP-002/hypotheses/H3",
+      "kind": "engine_hypothesis_assessment",
+      "experiment_id": "EXP-002",
+      "hypothesis_id": "H3",
+      "assessment": "inconclusive",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/inconclusive_hypotheses/0"
+    },
+    {
+      "evidence_id": "EXP-002/ranking",
+      "kind": "experiment_ranking",
+      "experiment_id": "EXP-002",
+      "status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/ranking"
     }
   ],
   "critiques": [
@@ -271,6 +394,29 @@
           "to": "EXP-001",
           "relation": "interprets",
           "field": "experiment_id"
+        }
+      ]
+    },
+    {
+      "critique_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "sha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+      "scientific_status": "UNCERTAIN",
+      "references": [
+        {
+          "to": "EXP-002",
+          "relation": "interprets",
+          "field": "experiment_id"
+        },
+        {
+          "to": "HYP-005",
+          "relation": "assesses",
+          "field": "hypothesis_assessments[].hypothesis_id"
+        },
+        {
+          "to": "H3",
+          "relation": "assesses",
+          "field": "hypothesis_assessments[].protocol_hypothesis_id"
         }
       ]
     }
@@ -304,8 +450,13 @@
       "title": "Sex Heterogeneity",
       "artifact": "docs/EXPERIMENT_PROTOCOL.md",
       "pointer": "#H3",
-      "evaluated_in": [],
-      "references": []
+      "evaluated_in": [
+        "EXP-002/hypotheses/H3"
+      ],
+      "references": [],
+      "assessed_in": [
+        "CRIT-EXP-002-002"
+      ]
     },
     {
       "hypothesis_id": "H4",
@@ -330,6 +481,9 @@
       "source": "agent",
       "approved_in": [
         "REV-001"
+      ],
+      "assessed_in": [
+        "CRIT-EXP-002-002"
       ]
     },
     {
@@ -447,6 +601,35 @@
       "selected_by": [],
       "critiques": [
         "CRIT-EXP-001-001"
+      ]
+    },
+    {
+      "experiment_id": "EXP-002",
+      "status": "EXPERIMENT_COMPLETED",
+      "review_status": "REQUIRES_HUMAN_REVIEW",
+      "dataset_version": "analytic_v1",
+      "method": "weighted_linear_regression",
+      "hypothesis_ids": [
+        "H3"
+      ],
+      "ranking_status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+      "quality_flags": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED",
+        "REQUIRES_HUMAN_REVIEW"
+      ],
+      "artifacts": {
+        "spec": "reports/experiments/EXP-002/spec.json",
+        "result": "reports/experiments/EXP-002/result.json",
+        "validation": "reports/experiments/EXP-002/validation.json"
+      },
+      "result_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+      "selected_by": [],
+      "critiques": [
+        "CRIT-EXP-002-002"
+      ],
+      "authorized_by": [
+        "REV-DEC-005-001"
       ]
     }
   ],
@@ -718,6 +901,11 @@
           "to": "DEC-005",
           "relation": "approves",
           "field": "approved_decision_id"
+        },
+        {
+          "to": "EXP-002",
+          "relation": "authorizes",
+          "field": "approved_experiment.experiment_id_to_assign"
         }
       ]
     }
@@ -784,6 +972,108 @@
       "text": "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
     },
     {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/0",
+      "text": "Observational associations; no identification of mechanisms or intervention effects."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/2",
+      "text": "EST_DIS identifies nested PSUs and is reported, but covariance does not center scores within strata or apply stratification gains."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/3",
+      "text": "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/4",
+      "text": "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/5",
+      "text": "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/6",
+      "text": "Pointwise 95% intervals are descriptive. With one primary outcome there are no Bonferroni outcome or pairwise-difference families; no joint guarantee across sensitivity models."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/7",
+      "text": "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/8",
+      "text": "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/9",
+      "text": "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/10",
+      "text": "Observational, cross-sectional association; the interaction does not identify a causal effect or mechanism."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/11",
+      "text": "The interaction coefficient is the formal estimand for the difference in exposure slopes between the two moderator groups."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/12",
+      "text": "An interval that includes zero is inconclusive about heterogeneity; it is not evidence of no difference."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/13",
+      "text": "No equivalence margin has been approved, so equivalence is not assessed."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/14",
+      "text": "CR1 PSU-cluster uncertainty is an approximation, not full ENUT complex-survey variance."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/15",
+      "text": "Rows missing the moderator are excluded under the model-specific complete-case policy, never assigned to a group."
+    },
+    {
+      "source_id": "EXP-002",
+      "artifact": "reports/experiments/EXP-002/result.json",
+      "pointer": "/limitations/16",
+      "text": "In moderated models the Estimate coefficient refers to the reference-group exposure slope; heterogeneity is assessed only through the interaction coefficient."
+    },
+    {
       "source_id": "CRIT-EXP-001-001",
       "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
       "pointer": "/limitations/0",
@@ -836,12 +1126,72 @@
       "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
       "pointer": "/uncertainties/4",
       "text": "Linear specification assumes a constant slope across the commuting exposure range."
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/0",
+      "text": "Observational cross‑sectional design; associations do not imply causation"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER‑weighted point estimates; variance method is an approximation"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/2",
+      "text": "Linear specification of commute exposure may miss non‑linear patterns"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/3",
+      "text": "Intervals that include zero are inconclusive and do not establish equivalence (no equivalence margin exists)"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/4",
+      "text": "CR1 PSU-cluster sandwich approximation, not full ENUT complex-survey variance"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/uncertainties/1",
+      "text": "High leverage observations retained (183), possibly influencing estimates"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/uncertainties/2",
+      "text": "Limited power to detect interaction effects with sample size 2563"
     }
   ],
   "links": [
     {
       "from": "CRIT-EXP-001-001",
       "to": "EXP-001",
+      "relation": "interprets",
+      "field": "experiment_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "H3",
+      "relation": "assesses",
+      "field": "hypothesis_assessments[].protocol_hypothesis_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "HYP-005",
+      "relation": "assesses",
+      "field": "hypothesis_assessments[].hypothesis_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "EXP-002",
       "relation": "interprets",
       "field": "experiment_id"
     },
@@ -1120,30 +1470,33 @@
       "to": "DEC-005",
       "relation": "approves",
       "field": "approved_decision_id"
+    },
+    {
+      "from": "REV-DEC-005-001",
+      "to": "EXP-002",
+      "relation": "authorizes",
+      "field": "approved_experiment.experiment_id_to_assign"
     }
   ],
   "next_action": {
     "derived": true,
-    "latest_experiment_id": "EXP-001",
+    "latest_experiment_id": "EXP-002",
     "pending_human_review": [
-      "EXP-001"
+      "EXP-001",
+      "EXP-002"
     ],
-    "stage": "run_experiment",
-    "agent": "experiment_runner",
+    "stage": "hypotheses",
+    "agent": "hypothesis_agent",
     "inputs": [
-      "DEC-005"
-    ],
-    "decision_status": "READY_TO_EXECUTE",
-    "approved_in": [
-      "REV-DEC-005-001"
-    ],
-    "requires": "assign the next experiment id and build its ExperimentSpec from the approved proposal"
+      "CRIT-EXP-002-002"
+    ]
   },
   "provenance": {
     "workspace": "reports/discovery/local",
     "inputs": {
       "docs/EXPERIMENT_PROTOCOL.md": "32eda44226c54c75fb5442a338bc489dbedfb904c3e78c836b71a9970239d0ed",
       "experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+      "experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
       "initial_state.json": "09aba526198f1a7837b03b61ff28e7787eaf1b84e8919ecb9f5535561c370755",
       "metadata/analytic_v1_experiment_approval.json": "0844f5f5cb0a4c936e3e0551542055961c5e6293e8305e2c5c181a0620186081",
       "metadata/analytic_v1_manifest.json": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
@@ -1152,6 +1505,7 @@
       "reports/discovery/local/candidates/PROP-008.json": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
       "reports/discovery/local/candidates/PROP-009.json": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
       "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+      "reports/discovery/local/critiques/CRIT-EXP-002-002.json": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
       "reports/discovery/local/decisions/DEC-001.json": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
       "reports/discovery/local/decisions/DEC-002.json": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
       "reports/discovery/local/decisions/DEC-003.json": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
@@ -1164,10 +1518,13 @@
       "reports/discovery/local/reviews/REV-DEC-005-001.json": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
       "reports/experiments/EXP-001/result.json": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
       "reports/experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
-      "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d"
+      "reports/experiments/EXP-001/validation.json": "a401f6eef92dd5dc9ce91e0e4e7307d81e4babf445e25a5689bfed3ba5fb425d",
+      "reports/experiments/EXP-002/result.json": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+      "reports/experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+      "reports/experiments/EXP-002/validation.json": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee"
     },
-    "inputs_sha256": "bb0295ec8d18ae5c18564fbd73af6605d0baff445706dee4698cbd8e2239e140",
-    "generator_sha256": "c900a5e2b77004551281fedbc16ceef3fc5bc883fae0780a4a2ad4d3ff6f36e0",
+    "inputs_sha256": "b640466410b4e0f3cc4c06a55287605f213cea66c5aa95c865b34168b22c8190",
+    "generator_sha256": "a942004b7d9ef6ee6a169f229d4e049f65e2dda2984cf4d18c1aaf575c400685",
     "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
   },
   "validation": {

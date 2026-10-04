@@ -49,6 +49,7 @@ Una referencia es un campo con un ID. Las listas pueden tener IDs o objetos con 
 | Artefacto | Campos | Relación | Debe apuntar a |
 |---|---|---|---|
 | critique | `experiment_id`, `provenance.source_experiment_id` | `interprets` | experimento |
+| critique | `hypothesis_assessments[].hypothesis_id`, `hypothesis_assessments[].protocol_hypothesis_id` | `assesses` | hipótesis (el estado lo expone como `hypotheses[].assessed_in`) |
 | hypothesis | `motivated_by_critique_id`, `source_critique_id(s)`, `critique_id(s)` | `motivated_by` | crítica |
 | hypothesis, candidate | `evidence_ids`, `supporting_evidence_ids`, `opposing_evidence_ids`, `evidence_refs`, `existing_evidence[].evidence_id` | `cites` | evidencia, crítica o experimento |
 | hypothesis | `protocol_hypothesis`, `protocol_hypothesis_ids`, `parent_hypothesis_ids` | `refines` | hipótesis (p. ej. `H3`) |

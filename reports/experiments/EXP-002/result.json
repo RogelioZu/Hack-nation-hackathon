@@ -1,0 +1,734 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "EXP-002",
+  "status": "EXPERIMENT_COMPLETED",
+  "dataset_version": "analytic_v1",
+  "sample_size": 2563,
+  "weighted_population": 12737236.0,
+  "estimates": [
+    {
+      "model_id": "adjusted:sleep_weekday_min",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "coefficient": -41.596257972823324,
+      "standard_error": 8.899047790455166,
+      "direction": "negative",
+      "interval": {
+        "lower": -59.098593725900415,
+        "upper": -24.093922219746236,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "simultaneous_outcome_interval": {
+        "lower": -59.098593725900415,
+        "upper": -24.093922219746236,
+        "confidence_level": 0.95,
+        "adjustment": "none"
+      },
+      "units": "minutes of outcome associated with an additional 300 minutes of weekday commuting",
+      "n": 2563,
+      "weighted_population": 12737236.0,
+      "coefficients": [
+        {
+          "term": "intercept",
+          "estimate": 2300.132716853301,
+          "standard_error": 43.206576757787026,
+          "interval": {
+            "lower": 2215.1555337925497,
+            "upper": 2385.1098999140527,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h",
+          "estimate": -41.596257972823324,
+          "standard_error": 8.899047790455166,
+          "interval": {
+            "lower": -59.098593725900415,
+            "upper": -24.093922219746236,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "work_weekday_min",
+          "estimate": -0.05226553875788653,
+          "standard_error": 0.01267990173106108,
+          "interval": {
+            "lower": -0.07720392572228593,
+            "upper": -0.02732715179348713,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "age",
+          "estimate": -1.4698623575161855,
+          "standard_error": 0.6241609479986328,
+          "interval": {
+            "lower": -2.6974402661940093,
+            "upper": -0.24228444883836198,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "state[15]",
+          "estimate": 62.69929694951167,
+          "standard_error": 17.69513296817836,
+          "interval": {
+            "lower": 27.897128706682125,
+            "upper": 97.50146519234121,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "sex[female]",
+          "estimate": -5.001522345638323,
+          "standard_error": 21.649304275892312,
+          "interval": {
+            "lower": -47.580616331806716,
+            "upper": 37.577571640530074,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        },
+        {
+          "term": "commute_5h:sex[female]",
+          "estimate": -17.715437633178386,
+          "standard_error": 15.160238054100674,
+          "interval": {
+            "lower": -47.53206327306323,
+            "upper": 12.101188006706455,
+            "confidence_level": 0.95,
+            "adjustment": "none"
+          }
+        }
+      ],
+      "covariance": [
+        [
+          1866.808275126542,
+          -78.79116232686037,
+          -0.36410529033384265,
+          -16.256187208047344,
+          -101.2662578363648,
+          -351.30042977118916,
+          119.41239553295271
+        ],
+        [
+          -78.79116232686037,
+          79.19305157680498,
+          -0.01328577502212969,
+          0.40541643385875276,
+          13.806766937010307,
+          75.1753857793237,
+          -76.77174815027062
+        ],
+        [
+          -0.36410529033384265,
+          -0.01328577502212969,
+          0.00016077990790936577,
+          -0.00018251887865463235,
+          -0.02208138606438123,
+          0.06677007900310813,
+          -0.022252657496063394
+        ],
+        [
+          -16.256187208047344,
+          0.40541643385875276,
+          -0.00018251887865463235,
+          0.3895768890065519,
+          -0.48166717813951804,
+          0.21591995494864705,
+          0.28807550332663756
+        ],
+        [
+          -101.2662578363648,
+          13.806766937010307,
+          -0.02208138606438123,
+          -0.48166717813951804,
+          313.11773076151275,
+          -11.455722665427444,
+          -15.465740311694367
+        ],
+        [
+          -351.30042977118916,
+          75.1753857793237,
+          0.06677007900310813,
+          0.21591995494864705,
+          -11.455722665427444,
+          468.6923756301692,
+          -229.20535090796136
+        ],
+        [
+          119.41239553295271,
+          -76.77174815027062,
+          -0.022252657496063394,
+          0.28807550332663756,
+          -15.465740311694367,
+          -229.20535090796136,
+          229.83281785700217
+        ]
+      ],
+      "provenance": {
+        "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+        "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+        "spec_sha256": "843e74a4da2a59b43810b008798581971085de887e34ce64eada987cac214e72",
+        "code_sha256": "0ff03ce062f722d1604918fae59694b1b678cd53a951fb3d32073ac391644c42",
+        "source_variables": [
+          "sleep_weekday_min",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "sex",
+          "state",
+          "weight",
+          "cluster",
+          "stratum"
+        ],
+        "formula": "sleep_weekday_min ~ commute_5h + work_weekday_min + age + state + sex[female] + commute_5h:sex[female]",
+        "terms": [
+          "intercept",
+          "commute_5h",
+          "work_weekday_min",
+          "age",
+          "state[15]",
+          "sex[female]",
+          "commute_5h:sex[female]"
+        ],
+        "categorical_references": {
+          "state": "09"
+        },
+        "sample_ids_sha256": "9f88a7b718b7a7091ceb28798f6f11d07a60cea27da63985689850777844aa74",
+        "covariance_method": "PSU cluster CR1, t(G-1), no stratum centering",
+        "interaction": {
+          "type": "binary_moderator",
+          "moderator": "sex",
+          "reference_level": "male",
+          "comparison_level": "female",
+          "moderator_term": "sex[female]",
+          "interaction_term": "commute_5h:sex[female]",
+          "moderator_removed_from_covariates": true
+        }
+      }
+    }
+  ],
+  "confidence_intervals": {
+    "adjusted:sleep_weekday_min": {
+      "lower": -59.098593725900415,
+      "upper": -24.093922219746236,
+      "confidence_level": 0.95,
+      "adjustment": "none"
+    }
+  },
+  "model_diagnostics": {
+    "adjusted:sleep_weekday_min": {
+      "n_before_missingness": 2563,
+      "n_model": 2563,
+      "n_missing_excluded": 0,
+      "missingness": {
+        "sleep_weekday_min": 0,
+        "commute_5h": 0,
+        "work_weekday_min": 0,
+        "age": 0,
+        "sex": 0,
+        "state": 0,
+        "weight": 0,
+        "cluster": 0,
+        "stratum": 0
+      },
+      "weighted_population_before_missingness": 12737236.0,
+      "weighted_population_model": 12737236.0,
+      "parameters": 7,
+      "rank": 7,
+      "clusters": 351,
+      "strata": 19,
+      "psus_per_stratum": {
+        "0073": 73,
+        "0074": 70,
+        "0075": 4,
+        "0076": 36,
+        "0077": 2,
+        "0137": 38,
+        "0138": 20,
+        "0139": 48,
+        "0140": 7,
+        "0141": 2,
+        "0142": 5,
+        "0143": 9,
+        "0144": 5,
+        "0145": 9,
+        "0146": 3,
+        "0147": 7,
+        "0148": 8,
+        "0149": 2,
+        "0150": 3
+      },
+      "singleton_strata": 0,
+      "inference_df": 350,
+      "CR1_correction": 1.005211267605634,
+      "weighted_design_condition_number": 12822.021562905527,
+      "weighted_r_squared": 0.058928761063717694,
+      "weighted_rmse": 360.3267785208951,
+      "max_weighted_leverage": 0.04606328273808319,
+      "high_leverage_count_above_2p_over_n": 183,
+      "negative_fitted_count": 0,
+      "kish_weight_effective_n": 2130.070482682828,
+      "kish_note": "Weight-only diagnostic; not a cluster/design effective sample size",
+      "weight_min": 7.0,
+      "weight_max": 13155.0,
+      "stratification_in_covariance": false,
+      "full_survey_domain_variance": false,
+      "warnings": [
+        "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+        "HIGH_LEVERAGE_RETAINED"
+      ],
+      "interaction_groups": [
+        {
+          "role": "reference",
+          "level": "male",
+          "n": 1407,
+          "weighted_population": 7126906.0
+        },
+        {
+          "role": "comparison",
+          "level": "female",
+          "n": 1156,
+          "weighted_population": 5610330.0
+        }
+      ]
+    }
+  },
+  "sensitivity_results": [],
+  "quality_flags": [
+    "CLUSTER_APPROXIMATION_NOT_FULL_SURVEY_VARIANCE",
+    "HIGH_LEVERAGE_RETAINED",
+    "REQUIRES_HUMAN_REVIEW"
+  ],
+  "limitations": [
+    "Observational associations; no identification of mechanisms or intervention effects.",
+    "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance.",
+    "EST_DIS identifies nested PSUs and is reported, but covariance does not center scores within strata or apply stratification gains.",
+    "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed.",
+    "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow.",
+    "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models.",
+    "Pointwise 95% intervals are descriptive. With one primary outcome there are no Bonferroni outcome or pairwise-difference families; no joint guarantee across sensitivity models.",
+    "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence.",
+    "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs.",
+    "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred.",
+    "Observational, cross-sectional association; the interaction does not identify a causal effect or mechanism.",
+    "The interaction coefficient is the formal estimand for the difference in exposure slopes between the two moderator groups.",
+    "An interval that includes zero is inconclusive about heterogeneity; it is not evidence of no difference.",
+    "No equivalence margin has been approved, so equivalence is not assessed.",
+    "CR1 PSU-cluster uncertainty is an approximation, not full ENUT complex-survey variance.",
+    "Rows missing the moderator are excluded under the model-specific complete-case policy, never assigned to a group.",
+    "In moderated models the Estimate coefficient refers to the reference-group exposure slope; heterogeneity is assessed only through the interaction coefficient."
+  ],
+  "scientific_interpretation": [
+    "Adjusted sleep_weekday_min, reference group sex = male: -41.596 minutes associated with an additional 300 minutes of weekday commuting; 95% interval [-59.099, -24.094].",
+    "Ranking status: NOT_APPLICABLE_SINGLE_OUTCOME; one primary outcome, so no cross-outcome ranking was evaluated.",
+    "Moderated model: the 'Adjusted' slopes above are for the reference group sex = male; see interactions for both groups.",
+    "adjusted:sleep_weekday_min: sex = female slope -59.312, 95% interval [-83.836, -34.788]; interaction (female - male) -17.715, 95% interval [-47.532, 12.101]; INCONCLUSIVE_INTERVAL_INCLUDES_ZERO."
+  ],
+  "supported_hypotheses": [],
+  "unsupported_hypotheses": [],
+  "inconclusive_hypotheses": [
+    {
+      "id": "H3",
+      "assessment": "Interaction interval includes zero: inconclusive about heterogeneity; not evidence of no difference",
+      "evidence": "sleep_weekday_min: commute_5h x sex (female vs reference male) INCONCLUSIVE_INTERVAL_INCLUDES_ZERO"
+    }
+  ],
+  "candidate_next_experiments": [
+    {
+      "question": "Is the commuting association nonlinear?",
+      "hypothesis": "Linear slope may conceal variation over the exposure range",
+      "expected_information": "Assess adequacy of a common linear slope",
+      "required_variables": [
+        "commute_5h",
+        "sleep_weekday_min",
+        "work_weekday_min",
+        "age",
+        "sex",
+        "state"
+      ],
+      "feasibility": "Variables available; method and specification require review",
+      "cost": "Low",
+      "limitations": "Additional modeling choices and comparisons",
+      "decision_relevance": "Could change interpretation of a single coefficient",
+      "selected": false
+    }
+  ],
+  "ranking": {
+    "status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+    "point_estimate_order": [
+      {
+        "rank": 1,
+        "outcome": "sleep_weekday_min",
+        "coefficient": -41.596257972823324,
+        "direction": "negative",
+        "interval": {
+          "lower": -59.098593725900415,
+          "upper": -24.093922219746236,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      }
+    ],
+    "paired_comparisons": [],
+    "comparison_count": 0,
+    "same_complete_case_persons": null,
+    "rule": "A cross-outcome ranking requires at least two primary outcomes; not evaluated",
+    "limitation": "Not evaluated: a single outcome has no cross-outcome order"
+  },
+  "population_counts": [
+    {
+      "step": "approved_analytic_v1",
+      "n": 2563,
+      "weighted_population": 12737236.0
+    },
+    {
+      "step": "states",
+      "n": 2563,
+      "excluded": 0,
+      "weighted_population": 12737236.0
+    },
+    {
+      "step": "age_inclusive",
+      "n": 2563,
+      "excluded": 0,
+      "weighted_population": 12737236.0
+    },
+    {
+      "step": "sexes",
+      "n": 2563,
+      "excluded": 0,
+      "weighted_population": 12737236.0
+    }
+  ],
+  "missingness": {
+    "person_id": 0,
+    "household_id": 0,
+    "state": 0,
+    "sex": 0,
+    "age": 0,
+    "active_worker": 0,
+    "employment_reference_week_absent": 0,
+    "work_modality": 957,
+    "commute_weekday_min": 0,
+    "commute_5h": 0,
+    "commute_structural_zero": 0,
+    "sleep_weekday_min": 0,
+    "personal_hygiene_weekday_min": 0,
+    "household_conversation_weekday_min": 0,
+    "work_weekday_min": 0,
+    "has_child_u15": 3,
+    "has_minor_u18": 3,
+    "household_size": 0,
+    "weight": 0,
+    "stratum": 0,
+    "cluster": 0,
+    "leisure_weekday_min": 0
+  },
+  "transformations": [
+    "Verify approved dataset SHA256 and historical manifest; read analytic_v1 only",
+    "Sort by exact person_id; apply explicit state, inclusive age and sex filters in order",
+    "Retain original FAC_PER weights; use constant mean scaling only in numerical equations",
+    "Add intercept; sex female dummy (male reference), state 15 dummy (09 reference) when requested",
+    "Complete cases separately for each model, without zero imputation or unrelated-feature exclusions",
+    "Fit requested outcomes with approved covariates and unadjusted variants if requested",
+    "Group weighted scores by (stratum, cluster), apply CR1 and t(G-1) intervals",
+    "Single primary outcome: no cross-outcome contrasts or ranking",
+    "Execute only listed sensitivity rules; primary population remains unchanged",
+    "Binary moderator sex: indicator = 1 for female, 0 for reference male; main effect and exposure x moderator term added once; rows missing the moderator excluded, never assigned to a group"
+  ],
+  "provenance": {
+    "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+    "manifest_sha256": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+    "approval_sha256": "0844f5f5cb0a4c936e3e0551542055961c5e6293e8305e2c5c181a0620186081",
+    "spec_sha256": "843e74a4da2a59b43810b008798581971085de887e34ce64eada987cac214e72",
+    "code_sha256": "0ff03ce062f722d1604918fae59694b1b678cd53a951fb3d32073ac391644c42",
+    "code_fingerprints": {
+      "docs/EXPERIMENT_ENGINE.md": "caad67d255135a7193d79c9df86c2a9b756e458d4cf15d832662ad5bb1865ed1",
+      "metadata/experiment_contract.schema.json": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+      "requirements-experiments.txt": "6ac5deaaa7163e68970d224eb6c884bfa6fe269a1e5b67739b93d2ba9f116d8c",
+      "scripts/run_experiment.py": "664a71297ec005a17dcf57ca9fca89fcb487715bfa8e74f5f314ac77dcbec641",
+      "src/experiments/__init__.py": "e0cde96030e19a16b11bf950c6eb096e2b79a4be02a16d2cd180516aa044ff82",
+      "src/experiments/capabilities.py": "8df8b9c8bd1ec5435ebf7e7775095105779b7f586df8bb1b98243d6508bb8d68",
+      "src/experiments/methods/__init__.py": "2780765c1d8f9b314cbd2fcf8a26b203e13ca3e549c2d77c6187737166eea42c",
+      "src/experiments/methods/weighted_linear_regression.py": "d4720be6ff79530c0e27ac3b7363146548bcfa260f6ee049551c9ba37aa4986b",
+      "src/experiments/models.py": "15432bc0b2443297da537819c77943840b312b149d27a324f9577741d2c586e1",
+      "src/experiments/report.py": "a3a9c01897fb0c8fa92afc9835a4a1cf0852c64e5de3bf35aa8b12baacede9a2",
+      "src/experiments/runner.py": "66a092b21b2b7b8d09ae4176184966f8422d2c330b3968e9b22c65a55dc80260",
+      "src/experiments/schemas.py": "034ad7274822d5c5eee9c7264edc44ae501fc349e4810f12c04c755149506dea"
+    },
+    "protocol_fingerprints": {
+      "AGENTS.md": "b31290cd86b24edeee2031e8f85ba502edf0a20de56ae36f0846106d34a6b558",
+      "docs/DATA_CONTRACT.md": "3bcf128d76cb5f76e7d61f9d67230c040fd82807d36912c0f5ac73c7664b7f40",
+      "docs/SCIENTIFIC_PROTOCOL.md": "b22b427e0b55c0164fc649c700a3abf1a282642a07661fc0a594890b8f401330",
+      "docs/EXPERIMENT_PROTOCOL.md": "32eda44226c54c75fb5442a338bc489dbedfb904c3e78c836b71a9970239d0ed"
+    },
+    "runtime": {
+      "python": "3.12.10",
+      "numpy": "2.3.5",
+      "pandas": "3.0.1",
+      "pyarrow": "23.0.1",
+      "scipy": "1.16.3",
+      "pydantic": "2.13.5"
+    },
+    "feature_definitions": {
+      "age": {
+        "table": "TMODULO",
+        "columns": [
+          "EDAD_V"
+        ],
+        "transformation": "Exact integer age 00..96; 97 is retained as lower bound 97+; 98/99 are unknown, not ages",
+        "units": "completed years; 97 top-coded",
+        "missing": "null for special/invalid/empty; outside primary domain",
+        "approval": "Human-approved Phase 2B"
+      },
+      "cluster": {
+        "table": "TMODULO",
+        "columns": [
+          "UPM_DIS"
+        ],
+        "transformation": "Exact string alias, retaining leading zeros",
+        "units": "primary sampling unit",
+        "missing": "fail",
+        "approval": "Human-approved Phase 2B"
+      },
+      "commute_5h": {
+        "table": "TMODULO",
+        "columns": [
+          "P5_9_1",
+          "P5_9_2",
+          "P5_7",
+          "P5_1",
+          "P5_2",
+          "P5_5",
+          "P5_8_1_1",
+          "P5_8_1_2",
+          "P5_8_1_3",
+          "P5_8_1_4",
+          "P5_8_2_1",
+          "P5_8_2_2",
+          "P5_8_2_3",
+          "P5_8_2_4"
+        ],
+        "transformation": "commute_weekday_min / 300; inherits all commute dependencies",
+        "units": "300-minute units",
+        "missing": "propagate commute null",
+        "approval": "Human-approved Phase 2B"
+      },
+      "sex": {
+        "table": "TMODULO",
+        "columns": [
+          "SEXO"
+        ],
+        "transformation": "1=male, 2=female; original SEXO retained",
+        "units": "category",
+        "missing": "unknown code becomes null and is counted",
+        "approval": "Human-approved Phase 2B"
+      },
+      "sleep_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P6_1_1_1",
+          "P6_1_1_2"
+        ],
+        "transformation": "60*hours+minutes; exclusive sleep including naps",
+        "units": "total minutes Monday-Friday",
+        "missing": "99 in either field means No sabe: null; preserve pair and special_code status",
+        "evidence": "questionnaire p14; DDI V3544/V3545",
+        "approval": "Human-approved Phase 2B"
+      },
+      "state": {
+        "table": "TMODULO",
+        "columns": [
+          "CVE_ENT"
+        ],
+        "transformation": "Exact string; analytic domain 09/15",
+        "units": "state code",
+        "missing": "fail",
+        "approval": "Human-approved Phase 2B"
+      },
+      "stratum": {
+        "table": "TMODULO",
+        "columns": [
+          "EST_DIS"
+        ],
+        "transformation": "Exact string alias, retaining leading zeros",
+        "units": "survey stratum",
+        "missing": "fail",
+        "approval": "Human-approved Phase 2B"
+      },
+      "weight": {
+        "table": "TMODULO",
+        "columns": [
+          "FAC_PER"
+        ],
+        "transformation": "Numeric alias; raw FAC_PER retained",
+        "units": "person expansion factor",
+        "missing": "missing/nonfinite/nonpositive fails",
+        "approval": "Human-approved Phase 2B"
+      },
+      "work_weekday_min": {
+        "table": "TMODULO",
+        "columns": [
+          "P5_8_1_1",
+          "P5_8_1_2",
+          "P5_8_2_1",
+          "P5_8_2_2",
+          "P5_1",
+          "P5_2",
+          "P5_5",
+          "P5_7"
+        ],
+        "transformation": "Sum required weekday branches: P5_7=1 first, =2 second, =3 both. P5_5=2..6 with P5_7 blank: first branch holds all work without modality distinction. Includes all jobs and meal time during work; excludes home-work commuting",
+        "units": "total minutes Monday-Friday",
+        "missing": "inactive/absent structural null; unused branches remain structural blanks, not generic zeros; required missing component makes sum null",
+        "evidence": "questionnaire p12; DDI V3525..V3530 interview instructions",
+        "approval": "Human-approved Phase 2B"
+      }
+    },
+    "spec": {
+      "schema_version": "1.0",
+      "experiment_id": "EXP-002",
+      "research_question": "Does the association between commuting time and sleep time differ between women and men?",
+      "hypothesis_ids": [
+        "H3"
+      ],
+      "dataset_version": "analytic_v1",
+      "population": {
+        "source": "approved_analytic_v1",
+        "states": [
+          "09",
+          "15"
+        ],
+        "age_min": 18,
+        "age_max": 65,
+        "sexes": [
+          "male",
+          "female"
+        ],
+        "expected_n": 2563
+      },
+      "exposure": "commute_5h",
+      "outcomes": [
+        "sleep_weekday_min"
+      ],
+      "covariates": [
+        "work_weekday_min",
+        "age",
+        "sex",
+        "state"
+      ],
+      "method": "weighted_linear_regression",
+      "survey_weight": "weight",
+      "cluster": "cluster",
+      "stratum": "stratum",
+      "sensitivity_analyses": [],
+      "missingness_policy": "model_specific_complete_case",
+      "uncertainty": "psu_cluster_CR1_t",
+      "confidence_level": 0.95,
+      "include_unadjusted": false,
+      "interaction": {
+        "type": "binary_moderator",
+        "moderator": "sex",
+        "reference_level": "male",
+        "comparison_level": "female"
+      }
+    },
+    "dataset_path": "data/processed/analytic_v1.parquet",
+    "dataset_hash_unchanged": true
+  },
+  "review_status": "REQUIRES_HUMAN_REVIEW",
+  "interactions": [
+    {
+      "model_id": "adjusted:sleep_weekday_min",
+      "variant": "adjusted",
+      "outcome": "sleep_weekday_min",
+      "exposure": "commute_5h",
+      "moderator": "sex",
+      "reference_level": "male",
+      "comparison_level": "female",
+      "coding": "sex[female] = 1 if sex == female, 0 if male (reference)",
+      "moderator_term": "sex[female]",
+      "interaction_term": "commute_5h:sex[female]",
+      "reference_group_slope": {
+        "estimate": -41.596257972823324,
+        "standard_error": 8.899047790455166,
+        "interval": {
+          "lower": -59.098593725900415,
+          "upper": -24.093922219746236,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      "comparison_group_slope": {
+        "estimate": -59.311695606001706,
+        "standard_error": 12.469257120344656,
+        "interval": {
+          "lower": -83.83579412200223,
+          "upper": -34.78759709000118,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      "comparison_slope_method": "b_exposure + b_interaction; variance V_ee + V_ii + 2 V_ei from the CR1 covariance",
+      "moderator_main_effect": {
+        "estimate": -5.001522345638323,
+        "standard_error": 21.649304275892312,
+        "interval": {
+          "lower": -47.580616331806716,
+          "upper": 37.577571640530074,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      "interaction": {
+        "estimate": -17.715437633178386,
+        "standard_error": 15.160238054100674,
+        "interval": {
+          "lower": -47.53206327306323,
+          "upper": 12.101188006706455,
+          "confidence_level": 0.95,
+          "adjustment": "none"
+        }
+      },
+      "interpretation_status": "INCONCLUSIVE_INTERVAL_INCLUDES_ZERO",
+      "interpretation": "The 95% interval of the interaction includes zero: inconclusive about a difference in the exposure association between the moderator groups; not evidence of no difference.",
+      "equivalence_assessed": false,
+      "input_n": 2563,
+      "analysis_n": 2563,
+      "excluded_n": 0,
+      "missing_moderator_n": 0,
+      "excluded_only_for_missing_moderator_n": 0,
+      "groups": [
+        {
+          "role": "reference",
+          "level": "male",
+          "n": 1407,
+          "weighted_population": 7126906.0
+        },
+        {
+          "role": "comparison",
+          "level": "female",
+          "n": 1156,
+          "weighted_population": 5610330.0
+        }
+      ],
+      "limitations": [
+        "Observational, cross-sectional association; the interaction does not identify a causal effect or mechanism.",
+        "The interaction coefficient is the formal estimand for the difference in exposure slopes between the two moderator groups.",
+        "An interval that includes zero is inconclusive about heterogeneity; it is not evidence of no difference.",
+        "No equivalence margin has been approved, so equivalence is not assessed.",
+        "CR1 PSU-cluster uncertainty is an approximation, not full ENUT complex-survey variance.",
+        "Rows missing the moderator are excluded under the model-specific complete-case policy, never assigned to a group."
+      ]
+    }
+  ]
+}

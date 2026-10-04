@@ -62,3 +62,19 @@ class EXP001Tests(unittest.TestCase):
             np.testing.assert_allclose([c.estimate for c in e.coefficients], reference.params, rtol=1e-8, atol=1e-7)
             np.testing.assert_allclose(e.covariance, covariance, rtol=1e-8, atol=1e-7)
 
+    def test_output_semantics_backwards_compatible(self):
+        """Multi-outcome, non-moderated EXP-001 keeps its ranking status, candidate text and summary bytes."""
+        committed = ExperimentResult.model_validate_json((ROOT / "reports/experiments/EXP-001/result.json").read_text(encoding="utf-8"))
+        # Working copies may carry CRLF (core.autocrlf); the published bytes are LF.
+        summary = (ROOT / "reports/experiments/EXP-001/summary.md").read_bytes().decode("utf-8").replace("\r\n", "\n")
+        self.assertEqual(render_summary(committed), summary)
+        for r in (committed, self.result):
+            self.assertEqual(r.ranking["status"], "INCONCLUSIVE_RANKING")
+            self.assertIn("INCONCLUSIVE_RANKING", r.quality_flags)
+            self.assertIn("MULTIPLE_COMPARISON_FAMILIES", r.quality_flags)
+            sex = [c for c in r.candidate_next_experiments if c["question"] == "Does the association differ by sex?"]
+            self.assertEqual(sex[0]["hypothesis"], "H3, not evaluated in EXP-001")
+            self.assertEqual(sex[0]["feasibility"], "Variables available; interactions require a new approved specification")
+        fresh = render_summary(self.result).splitlines()
+        self.assertEqual([l for l in fresh if not l.startswith("Código SHA256")],
+                         [l for l in summary.splitlines() if not l.startswith("Código SHA256")])

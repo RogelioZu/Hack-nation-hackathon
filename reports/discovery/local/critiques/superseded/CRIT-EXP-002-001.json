@@ -1,0 +1,168 @@
+{
+  "critique_id": "CRIT-EXP-002-001",
+  "experiment_id": "EXP-002",
+  "scientific_status": "UNCERTAIN",
+  "status_rationale": "The experiment provides an adjusted association for sleep and an interaction test for sex heterogeneity, but the interaction confidence interval includes zero, leaving the hypothesis H3 inconclusive and the overall ranking of personal-time outcomes still unresolved.",
+  "evidence_summary": [
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "The adjusted association between an additional 300 weekday commuting minutes and sleep_weekday_min is estimated as -41.596 minutes (95% CI [-59.099, -24.094]).",
+      "source": "result.estimates[0].coefficient"
+    },
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "In the reference (male) group, the estimated slope is -41.596 (95% CI [-59.099, -24.094]); in the comparison (female) group, the estimated slope is -59.312 (95% CI [-83.836, -34.788]).",
+      "source": "interactions[0].reference_group_slope, interactions[0].comparison_group_slope"
+    },
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "The interaction term comparing female to male slopes is -17.715 (95% CI [-47.532, 12.101]).",
+      "source": "interactions[0].interaction_comparison_minus_reference.estimate"
+    },
+    {
+      "kind": "OBSERVED_EVIDENCE",
+      "statement": "Ranking status is NOT_APPLICABLE_SINGLE_OUTCOME.",
+      "source": "ranking.status"
+    },
+    {
+      "kind": "INFERENCE",
+      "statement": "More commuting time is associated with fewer weekday sleep minutes, but the relationship is observational and cannot be interpreted as causal.",
+      "source": "result.estimates[0].coefficient"
+    },
+    {
+      "kind": "INFERENCE",
+      "statement": "The interaction test for sex heterogeneity is inconclusive because its confidence interval includes zero; therefore no evidence of a difference between women and men can be claimed.",
+      "source": "interactions[0].interpretation_status"
+    }
+  ],
+  "hypothesis_assessments": [
+    {
+      "hypothesis_id": "HYP-005",
+      "protocol_hypothesis_id": "H3",
+      "previous_status": "UNTESTED",
+      "new_status": "INCONCLUSIVE",
+      "reason": "Interaction confidence interval includes zero, so heterogeneity by sex is inconclusive.",
+      "status_source": "engine hypothesis assessment in result.json"
+    }
+  ],
+  "point_estimate_observations": [
+    "Reference (male) group slope estimate: -41.596 (95% CI [-59.099, -24.094]).",
+    "Comparison (female) group slope estimate: -59.312 (95% CI [-83.836, -34.788]).",
+    "Interaction (female minus male) estimate: -17.715 (95% CI [-47.532, 12.101])."
+  ],
+  "formal_inference": [
+    "Interaction estimate -17.715, 95% CI [-47.532, 12.101], interpretation_status INCONCLUSIVE_INTERVAL_INCLUDES_ZERO."
+  ],
+  "uncertainties": [
+    "Cluster approximation (CR1) is used for variance, not the full ENUT complex-survey variance.",
+    "High leverage observations are retained, which may affect standard errors."
+  ],
+  "limitations": [
+    "Observational cross‑sectional design; associations do not imply causation (CR1).",
+    "The confidence interval for the interaction includes zero, providing no evidence of heterogeneity and no equivalence assessment (no equivalence margin).",
+    "PSU‑clustered uncertainty is an approximation, not a full survey‑design variance estimate (CR1).",
+    "Linear specification may miss nonlinear patterns in the commuting‑sleep relationship."
+  ],
+  "unsupported_claims": [
+    "Any claim that commuting time *causes* changes in sleep time.",
+    "A definitive statement that the sex difference is present or absent.",
+    "Interpretation that the ranking of personal‑time outcomes is resolved by this experiment."
+  ],
+  "untested_questions": [
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "Does commuting time affect other personal‑time dimensions such as leisure, household conversation, or personal hygiene?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "Is the relationship between commuting and sleep non‑linear across the exposure range?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "Does the presence of children in the household moderate the commuting‑sleep association (Hypothesis H4)?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "Are there age‑specific heterogeneities in the commuting‑sleep relationship?"
+    },
+    {
+      "kind": "UNTESTED_QUESTION",
+      "question": "Would alternative model specifications (e.g., spline, interaction with work time) change the association?"
+    }
+  ],
+  "scientific_update": {
+    "what_was_known_before": "Prior experiments left the ranking of personal‑time outcomes inconclusive (INCONCLUSIVE_RANKING) and hypothesis H3 (sex heterogeneity) was UNTESTED.",
+    "what_was_tested": "A formal heterogeneity test of the commute_5h–sleep_weekday_min association by sex (interaction term).",
+    "what_changed": "Hypothesis H3 status changed from UNTESTED to INCONCLUSIVE because the interaction interval includes zero.",
+    "what_remains_unresolved": "The cross‑outcome ranking remains INCONCLUSIVE_RANKING; sex heterogeneity remains unresolved; other personal‑time dimensions and other moderators are still untested."
+  },
+  "provenance": {
+    "source_experiment_id": "EXP-002",
+    "source_artifact": "reports/experiments/EXP-002/result.json",
+    "source_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
+    "dataset_version": "analytic_v1",
+    "dataset_sha256": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+    "engine_review_status": "REQUIRES_HUMAN_REVIEW",
+    "engine_ranking_status": "NOT_APPLICABLE_SINGLE_OUTCOME",
+    "agent": "scientific_critic",
+    "declared_executor": {
+      "harness": "openai-agents",
+      "model": "databricks-gpt-oss-120b"
+    },
+    "code_version": "affccdfb97693c3501fdd55983f6c3ebbb495699",
+    "created_at": "2026-10-04T06:08:21.397263+00:00",
+    "numbers_policy": "decimal numbers checked against the source artifact before saving",
+    "source_spec_sha256": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
+    "source_validation_sha256": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee",
+    "experiment_provenance": "experiments/EXP-002/provenance.json",
+    "experiment_provenance_sha256": "ff36db5964d00c75079bb15c2e6c1fff1b52cae16c38a6ba05e577ab11a4f903",
+    "experiment_code_version": "e4dd8c4d7c91c00ee4e1fc49b7b09990b069a124",
+    "lineage_verified": true,
+    "lineage": {
+      "decision_id": "DEC-005",
+      "decision_approval_id": "REV-DEC-005-001",
+      "proposal_id": "PROP-003",
+      "hypothesis_ids": {
+        "agent": [
+          "HYP-005"
+        ],
+        "protocol": [
+          "H3"
+        ]
+      },
+      "hypothesis_approval_id": "REV-001",
+      "source_experiment_id": "EXP-001",
+      "source_critique_id": "CRIT-EXP-001-001"
+    },
+    "lineage_artifacts_sha256": {
+      "reports/discovery/local/decisions/DEC-005.json": "45175d0b3a05ccbc4e88362205ddbe1f539dcabf4029d0d26050fb84760d2d9d",
+      "reports/discovery/local/reviews/REV-DEC-005-001.json": "14ad0e94e1946f57c162e79e8f623fccd19315736f1dcc8e192f7ff4c271e445",
+      "reports/discovery/local/candidates/PROP-003.json": "2bb68f3bbe15dbdcc1f5e0f4e9bd0b772a4ff68c281d3ddbf4d37a3b700284bb",
+      "reports/discovery/local/hypotheses/HYP-005.json": "6115505ea3c65008c528dde7385f4f508034d341002c685e5d42035517c8c07f",
+      "reports/discovery/local/reviews/REV-001.json": "4ebd5c8ffaeaa689d938539ce76bcb3e27204126c1d88925840233eb2b6b5560",
+      "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+      "experiments/EXP-001/spec.json": "693855f6cbb769eae48ea7a2498d32f4a3eb2b40b0d41c7b2a12d5cafdab32e2",
+      "reports/experiments/EXP-001/result.json": "5e4084a346049a31091d887a803248a4497f1f542ab68498dd6f5dae04b56b28",
+      "data/processed/analytic_v1.parquet": "973f2c010940da06048eb12ade53fa271525d82f68d3a157ad78e429d687dd94",
+      "metadata/analytic_v1_manifest.json": "f800513bc200281462de2992333fda42798d7bda807a3e9b94ac0a6ad43df759",
+      "metadata/experiment_engine_capabilities.json": "30dc82dadab903502c52a9f69473f140e71a3b2a4acb11755cca181860e6d5c2",
+      "metadata/experiment_contract.schema.json": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8"
+    },
+    "hypothesis_status_before": {
+      "H3": {
+        "previous_status": "UNTESTED",
+        "assessed_in": null
+      }
+    },
+    "engine_interaction_status": {
+      "adjusted:sleep_weekday_min": "INCONCLUSIVE_INTERVAL_INCLUDES_ZERO"
+    },
+    "critic_code_sha256": {
+      "agents/commute_lab/critic_tools.py": "5db4173748f7608f6e22fa6bbec441ff1abe04223d0c8935fe26203f6f1fb173",
+      "agents/commute_lab/experiment_views.py": "f2fb51acbbd1027b716236d6877809a908042c96155970849604593e1f1c7623",
+      "agents/scientific_critic.yaml": "7d51f4b1ec2603f36a983b5072dea79af3da48f26c511b76cb4f231f62f05a25"
+    },
+    "critic_code_committed": false,
+    "interpretation_rules": "interval-includes-zero, heterogeneity, ranking, intervention and next-experiment rules checked deterministically before saving"
+  }
+}

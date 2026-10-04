@@ -18,6 +18,7 @@ from .models import ExperimentError, direction, require
 from .schemas import ExperimentResult, ExperimentSpec
 
 ROOT = Path(__file__).resolve().parents[2]
+RANKING_NOT_APPLICABLE = "NOT_APPLICABLE_SINGLE_OUTCOME"
 
 
 def sha(path):
@@ -89,6 +90,12 @@ def ranking(fits):
               "direction": f.estimate.direction, "interval": f.estimate.interval.model_dump()}
              for i, f in enumerate(ordered)]
     pairs = list(itertools.combinations(ordered, 2))
+    if not pairs:
+        # One outcome: no cross-outcome order exists, so none is attempted (not an uncertain ranking).
+        return {"status": RANKING_NOT_APPLICABLE, "point_estimate_order": order, "paired_comparisons": [],
+                "comparison_count": 0, "same_complete_case_persons": None,
+                "rule": "A cross-outcome ranking requires at least two primary outcomes; not evaluated",
+                "limitation": "Not evaluated: a single outcome has no cross-outcome order"}
     comparable = all(a.sample_ids == b.sample_ids for a, b in pairs)
     contrasts = []
     if comparable:
@@ -207,6 +214,7 @@ def _run(spec, root):
         else:
             inconclusive.append({"id": hypothesis_id, "assessment": "Interaction interval includes zero: inconclusive "
                                  "about heterogeneity; not evidence of no difference", "evidence": evidence})
+    ranked = primary_rank["status"] != RANKING_NOT_APPLICABLE
     limitations = [
         "Observational associations; no identification of mechanisms or intervention effects.",
         "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance.",
@@ -214,23 +222,31 @@ def _run(spec, root):
         "Only approved analytic persons are loaded. PSUs outside this domain are unavailable; full survey-domain variance is not reconstructed.",
         "No finite-population correction, replicate weights or calibration uncertainty adjustment. Approximate intervals may be too wide or too narrow.",
         "Linear specification, recalled time, possible temporal overlap and unmeasured differences limit interpretation. Extremes and zeros retained in primary models.",
-        "Pointwise 95% intervals are descriptive. Separate Bonferroni families cover primary outcomes and pairwise differences; no joint guarantee across both families or sensitivity models.",
+        ("Pointwise 95% intervals are descriptive. Separate Bonferroni families cover primary outcomes and pairwise differences; no joint guarantee across both families or sensitivity models." if ranked else
+         "Pointwise 95% intervals are descriptive. With one primary outcome there are no Bonferroni outcome or pairwise-difference families; no joint guarantee across sensitivity models."),
         "Sensitivity and unadjusted models are comparisons, not additional confirmatory findings. Absence of resolved differences is not equivalence.",
         "No domain-specific minimum sample size has been scientifically approved; computational checks enforce n > p, full rank and at least two PSUs.",
         "Numerical completion awaits human scientific review; no Scientific Critic assessment or follow-up selection has occurred.",
     ]
-    interpretation = [f"Adjusted {f.estimate.outcome}: {f.estimate.coefficient:.3f} minutes associated with an additional 300 minutes of weekday commuting; 95% interval [{f.estimate.interval.lower:.3f}, {f.estimate.interval.upper:.3f}]." for f in primary]
-    interpretation.append(f"Ranking status: {primary_rank['status']}; point-estimate order is descriptive.")
+    # In a moderated model the exposure coefficient is the reference-group slope, never a pooled slope.
+    group = ("" if spec.interaction is None else
+             f", reference group {spec.interaction.moderator} = {spec.interaction.reference_level!s}")
+    interpretation = [f"Adjusted {f.estimate.outcome}{group}: {f.estimate.coefficient:.3f} minutes associated with an additional 300 minutes of weekday commuting; 95% interval [{f.estimate.interval.lower:.3f}, {f.estimate.interval.upper:.3f}]." for f in primary]
+    interpretation.append(f"Ranking status: {primary_rank['status']}; point-estimate order is descriptive." if ranked else
+                          f"Ranking status: {primary_rank['status']}; one primary outcome, so no cross-outcome ranking was evaluated.")
     if spec.interaction is not None:
         inter = spec.interaction
         interpretation.append(f"Moderated model: the 'Adjusted' slopes above are for the reference group "
                               f"{inter.moderator} = {inter.reference_level!s}; see interactions for both groups.")
-        interpretation += [f"{r.model_id}: interaction {r.interaction.estimate:.3f}, 95% interval "
+        interpretation += [f"{r.model_id}: {r.moderator} = {r.comparison_level!s} slope {r.comparison_group_slope.estimate:.3f}, "
+                           f"95% interval [{r.comparison_group_slope.interval.lower:.3f}, {r.comparison_group_slope.interval.upper:.3f}]; "
+                           f"interaction ({r.comparison_level!s} - {r.reference_level!s}) {r.interaction.estimate:.3f}, 95% interval "
                            f"[{r.interaction.interval.lower:.3f}, {r.interaction.interval.upper:.3f}]; "
                            f"{r.interpretation_status}." for r in primary_interactions]
         limitations += [line for line in primary_interactions[0].limitations if line not in limitations]
-        limitations.append("In moderated models the ranking and the Estimate coefficient refer to the reference-group "
-                           "exposure slope; heterogeneity is assessed only through the interaction coefficient.")
+        limitations.append(f"In moderated models the {'ranking and the ' if ranked else ''}Estimate coefficient "
+                           f"{'refer' if ranked else 'refers'} to the reference-group exposure slope; "
+                           "heterogeneity is assessed only through the interaction coefficient.")
     for s in sensitivity:
         interpretation.append(f"Sensitivity excludes {s['n_excluded']} zero-work records; n={s['n_after']}; ranking status {s['ranking']['status']}.")
     # Alternatives are candidates only; none receives an experiment ID or execution authorization.
@@ -239,12 +255,17 @@ def _run(spec, root):
          "expected_information": "Assess adequacy of a common linear slope", "required_variables": [spec.exposure, *spec.outcomes, *spec.covariates],
          "feasibility": "Variables available; method and specification require review", "cost": "Low",
          "limitations": "Additional modeling choices and comparisons", "decision_relevance": "Could change interpretation of a single coefficient", "selected": False},
-        {"question": "Does the association differ by sex?", "hypothesis": "H3, not evaluated in EXP-001",
-         "expected_information": "Assess whether an overall association masks subgroup differences", "required_variables": [spec.exposure, "sex", *spec.outcomes],
-         "feasibility": "Variables available; interactions require a new approved specification", "cost": "Low",
-         "limitations": "Subgroup uncertainty and multiple comparisons", "decision_relevance": "Could qualify interpretation of the pooled association", "selected": False},
     ]
-    flags = sorted({"REQUIRES_HUMAN_REVIEW", primary_rank["status"], "MULTIPLE_COMPARISON_FAMILIES",
+    # A sex-difference candidate only when this experiment did not itself fit the commute x sex interaction.
+    if spec.interaction is None or spec.interaction.moderator != "sex":
+        candidates.append(
+            {"question": "Does the association differ by sex?", "hypothesis": f"H3, not evaluated in {spec.experiment_id}",
+             "expected_information": "Assess whether an overall association masks subgroup differences", "required_variables": [spec.exposure, "sex", *spec.outcomes],
+             "feasibility": ("Variables available; interactions require a new approved specification" if spec.interaction is None else
+                             "Variables available; a commute x sex interaction is not part of this experiment's approved specification"),
+             "cost": "Low", "limitations": "Subgroup uncertainty and multiple comparisons",
+             "decision_relevance": "Could qualify interpretation of the pooled association", "selected": False})
+    flags = sorted({"REQUIRES_HUMAN_REVIEW", *([primary_rank["status"], "MULTIPLE_COMPARISON_FAMILIES"] if ranked else []),
                     *(warning for f in fits for warning in f.diagnostics["warnings"])})
     provenance["dataset_hash_unchanged"] = sha(root / "data/processed/analytic_v1.parquet") == digest
     require(provenance["dataset_hash_unchanged"], "DATASET_CHANGED", "Analytic hash changed during execution")
@@ -264,7 +285,8 @@ def _run(spec, root):
             "Complete cases separately for each model, without zero imputation or unrelated-feature exclusions",
             "Fit requested outcomes with approved covariates and unadjusted variants if requested",
             "Group weighted scores by (stratum, cluster), apply CR1 and t(G-1) intervals",
-            "Use paired cluster influences for Bonferroni outcome contrasts on identical model samples",
+            ("Use paired cluster influences for Bonferroni outcome contrasts on identical model samples" if ranked else
+             "Single primary outcome: no cross-outcome contrasts or ranking"),
             "Execute only listed sensitivity rules; primary population remains unchanged",
             *([f"Binary moderator {spec.interaction.moderator}: indicator = 1 for {spec.interaction.comparison_level!s}, "
                f"0 for reference {spec.interaction.reference_level!s}; main effect and exposure x moderator term added "
