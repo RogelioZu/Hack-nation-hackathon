@@ -245,6 +245,13 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - PROP-005: HYP-005, modelo exploratorio solo de mujeres, `EXECUTABLE_NOW`, declarado insuficiente para establecer heterogeneidad.
   - Esperan revisión humana. No se eligió ninguna ni se asignó EXP-002.
 
+- **Extensión del motor: interacción con moderador binario (rama `feat/interaction-engine`, 2026-10-04):**
+  - Campo opcional `interaction` en `ExperimentSpec`; resultados en `ExperimentResult.interactions`; capacidades en `metadata/experiment_engine_capabilities.json`, que el validador compara con `src/experiments/capabilities.py`.
+  - Usa la misma WLS + CR1 que EXP-001. La pendiente del grupo de comparación sale de la covarianza completa. El moderador entra una sola vez, aunque también esté en las covariables. Los faltantes del moderador se excluyen y se cuentan, nunca se rellenan.
+  - Validación: 29 tests del motor (13 sintéticos nuevos, sin resultados reales); validador PASS; EXP-001 sin diferencias no ambientales, ni siquiera de 1 bit; `analytic_v1` y el `result.json` de EXP-001 conservan sus hashes.
+  - El auditor del Planner (sin cambios) detecta `interaction_terms = True` por el campo `interaction`. `formal_between_group_comparison` sigue en `False` en su auditoría, porque busca otros nombres de campo.
+  - PROP-003, PROP-008 y PROP-009 traducidas a `ExperimentSpec` validan contra el esquema; no se ejecutaron. No hay EXP-002.
+
 ### Vercel
 - Cuenta Hobby. El proyecto `commute-time-lab` está en el scope `roger-1592` (`team_37NrEuZAkgRsRYTKpMCwC5j9`).
   - El MCP de Vercel da **403 si se pasa `teamId`**. Funciona sin `teamId` (usa el scope por defecto).
@@ -262,7 +269,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 7. Próximos pasos
 
-1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): revisión humana de PROP-003, PROP-005, PROP-008 y PROP-009. El Shared Research State ya marca `next_action.stage = decision` (Discovery Director). Las pruebas formales requieren una extensión del motor (interacciones y `has_child_u15` como covariable), que debe pasar por aprobación humana (`AGENTS.md` §7.4). Para el ciclo completo: `--with supabase`, un PAT en `DATABRICKS_TOKEN` y la receta de §5.
+1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): el motor ya soporta interacciones con moderador binario. Falta la decisión del Discovery Director y la revisión humana de PROP-003, PROP-005, PROP-008 y PROP-009 antes de ejecutar cualquier `ExperimentSpec`. Para el ciclo completo: `--with supabase`, un PAT en `DATABRICKS_TOKEN` y la receta de §5.
 2. Probar `search_web` con `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE` reales.
 3. Panel web: mostrar críticas (veredicto), candidatos A/B con su factibilidad y la decisión actualizada; hoy salen como filas genéricas de `decisions`/`experiment_proposals`.
 4. Borrar `audit/` y `metadata/provenance.json` (§5).

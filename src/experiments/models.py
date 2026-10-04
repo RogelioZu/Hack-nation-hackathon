@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .schemas import Estimate
+from .schemas import Estimate, InteractionResult
 
 
 class ExperimentError(ValueError):
@@ -23,6 +23,8 @@ class ModelFit:
     cluster_influence: dict[tuple[str, str], float]
     sample_ids: tuple[str, ...]
     df: int
+    # Present only when the spec requests an exposure x binary-moderator interaction.
+    interaction: InteractionResult | None = None
 
 
 def require(condition, code, message):
