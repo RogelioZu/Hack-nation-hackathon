@@ -14,7 +14,8 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Migraciones Supabase (extensiones, tablas, RAG, RLS) | ✅ Aplicadas en remoto |
 | Seed demo | ✅ Cargado en remoto |
 | Ingesta RAG (3 PDFs INEGI ENUT 2024) | ✅ 535 pasajes limpios con embedding: cuestionario por pregunta (88), diseño conceptual (402), diseño muestral (45). FTS en español |
-| Web (`/` y `/research/[id]`) leyendo Supabase real | ✅ Verificado con `next dev`; `npm run build` pasa |
+| Web: espina de descubrimiento (`/`) | ✅ 2026-10-03. Nombre en la web: **tiemPO** (wordmark Inter 900); polish "menos saturado": banner blanco, controles en texto, etiquetas de tipo como muestra de color. Sistema Education2025. Lee artefactos del repo: REPLAY (snapshot `web/data/discovery-snapshot.json`, solo archivos versionados) y LIVE (`/?mode=live`, solo local). Etapas 1–4 reales; 5–9 se muestran como pendientes hasta que los agentes escriban sus artefactos. Probado con un fixture sintético fuera del repo. `npm run build` pasa |
+| Web: auditoría Supabase (`/audit`, `/research/[id]`) | ✅ Restilizada; misma lógica |
 | Pipeline ENUT → `analytic_v1` | ✅ Construido y validado fuera del repo (fases 1 → 2A → 2B). **`APPROVED_FOR_EXPERIMENTS`**. ENUT 2024, n = 2,563. Documentación en `docs/` y `metadata/analytic_v1_manifest.json` (commit `805b7c2`) |
 | Motor de experimentos (`src/experiments/`) | ✅ Determinista, `ExperimentSpec` → `ExperimentResult`, solo `weighted_linear_regression` con CR1 por UPM. Tests en `tests/` |
 | EXP-001 | ✅ `EXPERIMENT_COMPLETED`, `REQUIRES_HUMAN_REVIEW`, `INCONCLUSIVE_RANKING`. Resultados en `reports/experiments/EXP-001/` (ver §4) |
@@ -191,6 +192,15 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 - **Motor en Windows:** `.venv-experiments` creado con `uv venv -p 3.12` + `requirements-experiments.txt`; el validador da PASS. `tools.py` ahora usa por defecto `.venv-experiments/Scripts/python.exe` en Windows (y `bin/python` en el resto); `EXPERIMENT_PYTHON` sigue teniendo prioridad.
 - **Bootstrap anterior con `OPENAI_API_KEY`:** la llave es válida, pero su organización **no tiene créditos** ("You have no credits remaining"). El harness `codex` descarta `OPENAI_API_KEY` y necesita la CLI `codex`, que no está instalada (la app de escritorio de Codex no la expone).
 
+### Web: espina de descubrimiento (2026-10-03)
+- `web/lib/discovery/collect.mjs` es JS plano (lo usan el servidor y `scripts/snapshot-discovery.mjs`); `model.ts` es puro y se puede probar con `node --input-type=module -e 'await import("./lib/discovery/model.ts")'` desde `web/`.
+- Los lectores toleran los dos formatos de crítica (`critic_tools.py` local y `tools.py` con Supabase) y nombres alternativos en hipótesis/candidatos/decisiones. Un campo ausente se muestra como "Not stated in the artifact", nunca se rellena.
+- Vínculos sin Supabase: candidato → experimento comparando el spec (sin `experiment_id`); selección → candidato por `proposal_id`; crítica → experimento por `experiment_id`. Una decisión actualizada solo cita `experiment_run_id` (UUID de Supabase), así que no se enlaza a un `EXP-NNN`.
+- LIVE usa `DISCOVERY_REPO_ROOT` si está definida (por defecto, el padre de `web/`). Así se probó con un fixture sintético en el scratchpad.
+- **Next 16 no permite dos `next dev` en el mismo directorio.** Para un segundo servidor: `npm run build && npx next start -p 3100`.
+- `reports/experiments/EXP-001/result.json` en este checkout Linux tiene SHA-256 `3113a9ee…` (LF), distinto del `result_sha256` de `validation.json` (`5e4084a3…`, CRLF). El UI no afirma que coincidan.
+- La cuenta de Gemini (`GEMINI_API_KEY`) tiene cuota 0 para `gemini-3-pro-image` y no hay `OPENAI_API_KEY`: no hay generación de imágenes. El build de diseño fue code-first aunque `.impeccable/config.json` guarda `comp`.
+
 ### Vercel
 - Cuenta Hobby. El proyecto `commute-time-lab` está en el scope `roger-1592` (`team_37NrEuZAkgRsRYTKpMCwC5j9`).
   - El MCP de Vercel da **403 si se pasa `teamId`**. Funciona sin `teamId` (usa el scope por defecto).
@@ -210,7 +220,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 1. **Siguiente paso del ciclo** (sin elegir EXP-002 a mano): revisión humana de `CRIT-EXP-001-001`; luego conectar el Hypothesis Agent a esa crítica. Para el ciclo completo: `--with supabase` en el entorno de Omnigent, un PAT en `DATABRICKS_TOKEN` y la receta de §5. Comprobar que el ASK salta cuando un sub-agente llama a `run_experiment`.
 2. Probar `search_web` con `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE` reales.
-3. Panel web: mostrar críticas (veredicto), candidatos A/B con su factibilidad y la decisión actualizada; hoy salen como filas genéricas de `decisions`/`experiment_proposals`.
+3. Panel web: ✅ la espina (`/`) ya muestra críticas, hipótesis, candidatos, selección, nueva evidencia y decisión desde los JSON de `reports/discovery/`. Cada vez que se commiteen artefactos nuevos: `cd web && npm run snapshot` y commitear `web/data/discovery-snapshot.json` (si no, el REPLAY de Vercel no los muestra).
 4. Borrar `audit/` y `metadata/provenance.json` (§5).
 5. Confirmar con el equipo si el track exige Omnigent administrado por Databricks; hoy el executor usa Databricks Free Edition desde Omnigent de código abierto.
 6. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).

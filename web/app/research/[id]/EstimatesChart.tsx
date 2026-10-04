@@ -38,7 +38,7 @@ export default function EstimatesChart({ estimates, units }: { estimates: Estima
         viewBox={`0 0 ${labelW + plotW + 10} ${height}`}
         className="w-full max-w-3xl"
         role="img"
-        aria-label="Estimated weekly minutes per activity by sex"
+        aria-label="Estimated minutes per activity by sex"
       >
         <line x1={x(0)} x2={x(0)} y1={0} y2={height - 20} stroke="var(--line)" />
         {rows.map(({ e, cy }, i) => {
@@ -66,7 +66,7 @@ export default function EstimatesChart({ estimates, units }: { estimates: Estima
         </text>
       </svg>
       <figcaption className="text-xs text-muted">
-        {units ?? "Weekly minutes"} associated with +60 weekly commute minutes. Lines show the reported interval.
+        {units ?? "Minutes (Mon–Fri totals)"}. Lines show the reported interval.
       </figcaption>
     </figure>
   );

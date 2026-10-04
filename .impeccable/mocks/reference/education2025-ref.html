@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--blue-50:#EBF1FF;--blue-100:#D6E3FF;--blue-200:#ADC7FF;--blue-400:#3D7BFF;--blue-500:#0055FF;--blue-600:#0047D6;--blue-700:#0039AD;--blue-800:#002B85;--gray-0:#fff;--gray-50:#F5F7FA;--gray-100:#E9ECF1;--gray-200:#DDE2EA;--gray-300:#C4CBD6;--gray-400:#9AA3B2;--gray-500:#6B7385;--gray-700:#363D4A;--gray-900:#121722;--green-500:#22C55E;--yellow-400:#FFC83D;--yellow-600:#D99A00}
+*{box-sizing:border-box;margin:0}
+body{font-family:Inter,sans-serif;background:#cfd5de;padding:24px;color:var(--gray-900)}
+.app{width:1392px;height:852px;border-radius:24px;overflow:hidden;display:flex;background:var(--gray-100)}
+.side{width:240px;background:var(--blue-500);padding:24px 16px;display:flex;flex-direction:column;gap:8px;color:#fff}
+.logo{height:56px;background:#fff;border-radius:0 999px 999px 0;margin-left:-16px;width:150px;display:flex;align-items:center;gap:8px;padding-left:24px;color:var(--blue-500);font-weight:800;margin-bottom:24px}
+.bars{display:flex;gap:3px;align-items:flex-end}.bars i{display:block;width:5px;background:var(--blue-500);border-radius:2px}
+.nav{height:40px;border-radius:999px;padding:0 12px;display:flex;align-items:center;gap:12px;font-weight:500;font-size:14px}
+.nav.on{background:#fff;color:var(--blue-500)}
+.ico{width:20px;height:20px;border:1.75px solid currentColor;border-radius:6px}
+.main{flex:1;display:flex;flex-direction:column}
+.top{height:80px;padding:0 32px;display:flex;align-items:center;justify-content:space-between}
+.top h2{font-size:20px;font-weight:700;letter-spacing:.02em}
+.acts{display:flex;gap:12px;align-items:center}
+.ib{width:36px;height:36px;border-radius:50%;background:var(--blue-500)}
+.um{height:36px;border-radius:999px;background:#fff;padding:0 12px 0 6px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500}
+.av{width:24px;height:24px;border-radius:50%;background:var(--blue-50)}
+.content{padding:0 32px 32px;display:grid;grid-template-columns:2fr 1fr;gap:24px}
+.card{background:#fff;border-radius:16px;padding:16px}
+.banner{grid-column:1/-1;background:var(--blue-500);border-radius:20px;height:140px;padding:24px 32px;display:flex;align-items:center;gap:32px;color:#fff}
+.banner b{font-size:64px;font-weight:800;line-height:60px}
+.banner .panel{margin-left:auto;background:#fff;border-radius:16px;padding:16px;color:var(--blue-600);font-size:13px;display:flex;gap:16px;align-items:center;width:280px}
+.h1{font-size:28px;font-weight:700;line-height:36px}
+.h4{font-size:16px;font-weight:600;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--blue-500);color:var(--blue-600);font-size:12px;font-weight:500;display:flex;align-items:center;background:#fff}
+.chip.on{background:var(--blue-500);color:#fff}
+.badge{height:18px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:600;display:inline-flex;align-items:center;color:#fff}
+.btn{height:40px;padding:0 20px;border-radius:999px;background:var(--blue-500);color:#fff;font-size:14px;font-weight:500;display:inline-flex;align-items:center}
+.btn.sec{background:#fff;color:var(--blue-600);border:1px solid var(--blue-500)}
+.btn.dis{background:var(--gray-50);color:var(--gray-400);height:32px}
+.pb{height:6px;border-radius:999px;background:var(--gray-200);overflow:hidden}.pb i{display:block;height:100%;background:var(--blue-500)}
+.lc{display:flex;gap:16px;align-items:center}
+.thumb{width:64px;height:64px;border-radius:12px;background:var(--blue-50)}
+.title{font-size:15px;font-weight:600}
+.cap{font-size:12px;color:var(--gray-500)}
+.acc{background:var(--gray-50);border-radius:12px;height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:14px;font-weight:600}
+.num{width:28px;height:28px;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px}
+.ck{width:16px;height:16px;border-radius:50%;background:var(--green-500);margin-left:auto}
+.ck.p{background:var(--gray-300)}
+.day{width:56px;height:72px;background:#fff;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px}
+.day.today{outline:1.5px solid var(--blue-500)}
+.stack{display:flex;flex-direction:column;gap:16px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><span class="bars"><i style="height:18px"></i><i style="height:22px"></i><i style="height:14px"></i><i style="height:8px"></i></span>BRAND</div>
+    <div class="nav on"><span class="ico"></span>Overview</div>
+    <div class="nav"><span class="ico"></span>Library</div>
+    <div class="nav"><span class="ico"></span>Workspace</div>
+    <div class="nav"><span class="ico"></span>Settings</div>
+    <div class="nav"><span class="ico"></span>Records</div>
+    <div style="flex:1"></div>
+    <div class="nav"><span class="ico"></span>Sign out</div>
+  </aside>
+  <section class="main">
+    <header class="top"><h2>PRODUCT NAME</h2><div class="acts"><span class="ib"></span><span class="ib"></span><span class="um"><span class="av"></span>User name ▾</span></div></header>
+    <div class="content">
+      <div class="banner"><b>00%</b><div style="font-size:13px;max-width:220px">Short supporting sentence on solid blue, never a gradient.</div><div class="panel">Secondary panel on white <span class="ib" style="width:40px;height:40px;flex:none"></span></div></div>
+      <div class="stack">
+        <div class="card stack">
+          <div class="h1">Section heading</div>
+          <div class="row"><span class="chip on">Selected</span><span class="chip">Option</span><span class="chip">Option</span></div>
+          <div class="row"><div class="day"><span class="ck" style="margin:0"></span>Mon</div><div class="day"><span class="ck" style="margin:0"></span>Tue</div><div class="day today"><span class="ck p" style="margin:0"></span>Wed</div><div class="day"><span class="ck p" style="margin:0"></span>Thu</div></div>
+        </div>
+        <div class="card"><div class="h4">List title</div>
+          <div class="stack" style="gap:8px">
+            <div class="acc"><span class="num">1</span>Row title<span class="ck"></span></div>
+            <div class="acc"><span class="num">2</span>Row title<span class="ck"></span></div>
+            <div class="acc"><span class="num">3</span>Row title<span class="ck p"></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="card lc"><span class="thumb"></span><div style="flex:1"><div class="row" style="gap:4px;margin-bottom:6px"><span class="badge" style="background:var(--green-500)">BADGE</span><span class="badge" style="background:var(--blue-800)">BADGE</span></div><div class="title">Card title</div><div class="pb" style="margin-top:10px"><i style="width:56%"></i></div><div class="cap" style="margin-top:6px">18 of 32</div></div></div>
+        <div class="card stack"><div class="h4" style="margin:0">Actions</div><div class="row"><span class="btn">Primary</span><span class="btn sec">Secondary</span></div><div class="row" style="align-items:center"><span class="btn dis">Disabled</span><span class="badge" style="background:var(--yellow-400);color:var(--gray-900)">BADGE</span><span class="badge" style="background:var(--blue-500)">BADGE</span></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

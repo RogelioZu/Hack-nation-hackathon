@@ -1,40 +1,29 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter, Montserrat } from "next/font/google";
+import Sidebar from "./_components/Sidebar";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const montserrat = Montserrat({ variable: "--font-montserrat", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Commute & Time Lab",
-  description: "Agentic research on work commuting and time use in Mexico City and Estado de México.",
+  title: "tiemPO",
+  description:
+    "An agentic scientific lab on ENUT 2024: agents examine evidence, name the uncertainty, choose the next experiment and update the decision.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
-        <header className="border-b border-line">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-            <Link href="/" className="font-semibold tracking-tight">
-              Commute &amp; Time Lab
-            </Link>
-            <span className="text-xs text-muted">ENUT · INEGI · agentic research loop</span>
-          </div>
-        </header>
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
-      </body>
+    <html lang="en" className={`${inter.variable} ${geistMono.variable} ${montserrat.variable}`}>
+      <body className="min-h-dvh">
+        <div aria-hidden className="app-frame hidden lg:block" />
+        <Sidebar />
+        <div className="pb-20 md:pb-0 md:pl-[72px] lg:py-3 lg:pr-3 lg:pl-[calc(var(--sidebar)+var(--frame))]">{children}</div>
+      {/* impeccable-live-start */}
+<script src="http://localhost:8400/live.js?token=a4aa66f0-1159-4391-b7ec-6c29bba3ae3c"></script>
+{/* impeccable-live-end */}
+</body>
     </html>
   );
 }

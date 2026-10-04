@@ -1,44 +1,213 @@
 @import "tailwindcss";
 
+/* Education2025 design system (web/education2025-design-system.md): solid electric blue, no gradients,
+   gray canvas, flat white cards, Inter, hierarchical radii. Light only: the screen is projected for judges. */
+
+@theme {
+  --color-blue-50: #ebf1ff;
+  --color-blue-100: #d6e3ff;
+  --color-blue-200: #adc7ff;
+  --color-blue-300: #7aa5ff;
+  --color-blue-400: #3d7bff;
+  --color-blue-500: #0055ff;
+  --color-blue-600: #0047d6;
+  --color-blue-700: #0039ad;
+  --color-blue-800: #002b85;
+  --color-blue-900: #001d5c;
+
+  --color-gray-0: #ffffff;
+  --color-gray-50: #f5f7fa;
+  --color-gray-100: #e9ecf1;
+  --color-gray-200: #dde2ea;
+  --color-gray-300: #c4cbd6;
+  --color-gray-400: #9aa3b2;
+  --color-gray-500: #6b7385;
+  --color-gray-700: #363d4a;
+  --color-gray-900: #121722;
+
+  --color-green-500: #22c55e;
+  --color-green-600: #16a34a;
+  --color-yellow-400: #ffc83d;
+  --color-yellow-600: #d99a00;
+  --color-red-500: #ef4444;
+
+  /* Artifact roles */
+  --color-evidence: var(--color-blue-500);
+  --color-experiment: var(--color-blue-800);
+  --color-uncertainty: var(--color-yellow-400);
+  --color-hypothesis: var(--color-blue-500);
+  --color-decision: var(--color-gray-900);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  --font-sans: var(--font-inter), "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* The tiemPO wordmark only; everything else stays in Inter. */
+  --font-wordmark: var(--font-montserrat), "Montserrat", sans-serif;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Older audit pages (/audit, /research/[id]) keep their token names, mapped onto the system. */
+@theme inline {
+  --color-background: var(--color-gray-100);
+  --color-foreground: var(--color-gray-900);
+  --color-muted: var(--color-gray-700);
+  --color-line: var(--color-gray-200);
+  --color-panel: var(--color-gray-50);
+  --color-accent: var(--color-blue-600);
+  --color-women: #c2410c;
+  --color-men: #0f766e;
+}
+
+@utility text-display {
+  font-size: 64px;
+  line-height: 60px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+@utility text-h1 {
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+@utility text-h2 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+}
+@utility text-h3 {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 700;
+}
+@utility text-h4 {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 600;
+}
+@utility text-title-card {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+}
+@utility text-body {
+  font-size: 14px;
+  line-height: 20px;
+}
+@utility text-body-sm {
+  font-size: 13px;
+  line-height: 18px;
+}
+@utility text-caption {
+  font-size: 12px;
+  line-height: 16px;
+}
+@utility text-micro {
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --panel: #f9fafb;
-  --accent: #2563eb;
+  --frame: 12px;
+  --sidebar: 240px;
+  color-scheme: light;
+  accent-color: var(--color-blue-500);
+  caret-color: var(--color-blue-500);
+
+  /* Plain variables the older audit chart (research/[id]/EstimatesChart.tsx) reads in SVG attributes. */
+  --foreground: var(--color-gray-900);
+  --muted: var(--color-gray-700);
+  --line: var(--color-gray-200);
+  --accent: var(--color-blue-600);
   --women: #c2410c;
   --men: #0f766e;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-panel: var(--panel);
-  --color-accent: var(--accent);
-  --color-women: var(--women);
-  --color-men: var(--men);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --muted: #9ca3af;
-    --line: #262626;
-    --panel: #141414;
-    --accent: #60a5fa;
-    --women: #fb923c;
-    --men: #2dd4bf;
-  }
+html {
+  background: var(--color-gray-100);
+  scrollbar-color: var(--color-gray-300) transparent;
+  scrollbar-width: thin;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--color-gray-100);
+  color: var(--color-gray-900);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-blue-100);
+  color: var(--color-blue-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue-400);
+  outline-offset: 2px;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The rounded app frame of the system, painted over the scrolling page so the page itself scrolls normally. */
+.app-frame {
+  position: fixed;
+  inset: var(--frame);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 0 0 calc(var(--frame) + 2px) var(--color-gray-200);
+  pointer-events: none;
+  z-index: 60;
+}
+
+/* One authored motion: a stage arriving on the spine. */
+@keyframes stage-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fresh-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(0 85 255 / 0);
+  }
+  40% {
+    box-shadow: 0 0 0 6px rgb(0 85 255 / 0.18);
+  }
+}
+.stage-enter {
+  animation: stage-in 420ms var(--ease-out-expo) both;
+}
+.fresh {
+  animation: fresh-pulse 1.6s var(--ease-standard) 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-enter,
+  .fresh {
+    animation: none;
+  }
+  * {
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
 }

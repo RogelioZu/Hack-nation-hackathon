@@ -1,0 +1,625 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T05:31:28+00:00",
+  "title": "Design System: tiemPO",
+  "extensions": {
+    "colorMeta": {
+      "electric-blue": {
+        "role": "primary",
+        "displayName": "Electric Blue",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "electric-blue-hover": {
+        "role": "primary",
+        "displayName": "Electric Blue, hover",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "electric-blue-press": {
+        "role": "primary",
+        "displayName": "Electric Blue, press",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "experiment-navy": {
+        "role": "primary",
+        "displayName": "Experiment Navy",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "selection-ink": {
+        "role": "primary",
+        "displayName": "Selection Ink",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "blue-wash": {
+        "role": "primary",
+        "displayName": "Blue Wash",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "blue-tint": {
+        "role": "primary",
+        "displayName": "Blue Tint",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "blue-halo": {
+        "role": "primary",
+        "displayName": "Blue Halo",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "blue-select-ring": {
+        "role": "primary",
+        "displayName": "Blue Select Ring",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "focus-blue": {
+        "role": "primary",
+        "displayName": "Focus Blue",
+        "tonalRamp": [
+          "#001d5c",
+          "#002b85",
+          "#0039ad",
+          "#0047d6",
+          "#0055ff",
+          "#3d7bff",
+          "#7aa5ff",
+          "#d6e3ff"
+        ]
+      },
+      "uncertainty-yellow": {
+        "role": "secondary",
+        "displayName": "Uncertainty Yellow",
+        "tonalRamp": [
+          "#3d2c00",
+          "#6b4d00",
+          "#996e00",
+          "#d99a00",
+          "#ffc83d",
+          "#ffd76e",
+          "#ffe6a3",
+          "#fff5d6"
+        ]
+      },
+      "uncertainty-yellow-ink": {
+        "role": "secondary",
+        "displayName": "Uncertainty Yellow, icon ink",
+        "tonalRamp": [
+          "#3d2c00",
+          "#6b4d00",
+          "#996e00",
+          "#d99a00",
+          "#ffc83d",
+          "#ffd76e",
+          "#ffe6a3",
+          "#fff5d6"
+        ]
+      },
+      "live-green": {
+        "role": "tertiary",
+        "displayName": "Live Green",
+        "tonalRamp": [
+          "#0a3d1f",
+          "#0f5c2e",
+          "#15803d",
+          "#16a34a",
+          "#22c55e",
+          "#4ade80",
+          "#86efac",
+          "#dcfce7"
+        ]
+      },
+      "live-green-ink": {
+        "role": "tertiary",
+        "displayName": "Live Green, icon ink",
+        "tonalRamp": [
+          "#0a3d1f",
+          "#0f5c2e",
+          "#15803d",
+          "#16a34a",
+          "#22c55e",
+          "#4ade80",
+          "#86efac",
+          "#dcfce7"
+        ]
+      },
+      "card-white": {
+        "role": "neutral",
+        "displayName": "Card White",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "panel-gray": {
+        "role": "neutral",
+        "displayName": "Panel Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "canvas-gray": {
+        "role": "neutral",
+        "displayName": "Canvas Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "hairline-gray": {
+        "role": "neutral",
+        "displayName": "Hairline Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "divider-gray": {
+        "role": "neutral",
+        "displayName": "Divider Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "dash-gray": {
+        "role": "neutral",
+        "displayName": "Dash Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "quiet-gray": {
+        "role": "neutral",
+        "displayName": "Quiet Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "body-gray": {
+        "role": "neutral",
+        "displayName": "Body Gray",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      },
+      "decision-ink": {
+        "role": "neutral",
+        "displayName": "Decision Ink",
+        "tonalRamp": [
+          "#121722",
+          "#363d4a",
+          "#6b7385",
+          "#9aa3b2",
+          "#c4cbd6",
+          "#dde2ea",
+          "#e9ecf1",
+          "#f5f7fa"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Montserrat Black 900, -0.04em: the rendered product name tiemPO only (sidebar logo, topbar, PageHeader). No other text uses Montserrat."
+      },
+      "display": {
+        "displayName": "Display",
+        "purpose": "The thesis headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Audit-page H1."
+      },
+      "title-lg": {
+        "displayName": "Title large",
+        "purpose": "Inspector heading."
+      },
+      "title-md": {
+        "displayName": "Title medium",
+        "purpose": "Stage card title at 640px and up; a stage's lead sentence."
+      },
+      "title-sm": {
+        "displayName": "Title small",
+        "purpose": "Stage title on phones, page name beside the wordmark, block headings, Awaiting line."
+      },
+      "title-card": {
+        "displayName": "Card title",
+        "purpose": "Candidate, project and Discovery loop titles."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Thesis and audit intro paragraph, max ~64ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "General text, navigation, tabs, Play, forest plot rows."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Inline facts, verbatim artifact lists, inspector values."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Axes, method notes, definition labels, role word, counts, sidebar dataset note."
+      },
+      "micro": {
+        "displayName": "Micro",
+        "purpose": "Uppercase status marks only: New, Demo data."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Artifact IDs, SHA-256 hashes, file paths, status codes."
+      }
+    },
+    "shadows": [
+      {
+        "name": "active-halo",
+        "value": "0 0 0 4px var(--color-blue-200)",
+        "purpose": "Active stage marker in replay (3px on tracker cells); the active card uses a 2px ring of the same tint."
+      },
+      {
+        "name": "fresh-pulse",
+        "value": "0 0 0 6px rgb(0 85 255 / 0.18)",
+        "purpose": "LIVE only: keyframed pulse, 1.6s x3, on a newly arrived artifact."
+      },
+      {
+        "name": "app-frame",
+        "value": "0 0 0 calc(var(--frame) + 2px) var(--color-gray-200)",
+        "purpose": "Fixed, pointer-events:none overlay that paints the 24px rounded app frame at 1024px and up."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "purpose": "All state transitions."
+      },
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The stage-in arrival only."
+      },
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "purpose": "Hover on buttons, chips, nav and rows."
+      },
+      {
+        "name": "duration-base",
+        "value": "200ms",
+        "purpose": "Active halo on the stage marker."
+      },
+      {
+        "name": "stage-in",
+        "value": "420ms ease-out-expo; opacity 0 to 1, translateY 14px to 0",
+        "purpose": "The one authored motion: a stage arriving on the spine."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animations off; transitions 0ms",
+        "purpose": "prefers-reduced-motion: reduce."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1536px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Topbar Transport",
+      "kind": "button",
+      "refersTo": "button-play",
+      "description": "Wordmark link to the replay start, ghost prev/next around the Start discovery pill, then the stage counter and clock. No mode switch.",
+      "html": "<header class=\"ds-topbar\"><a class=\"ds-wordmark\" href=\"#\">tiemPO</a><button class=\"ds-ghost\" aria-label=\"Previous stage\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m15 18-6-6 6-6\"/></svg></button><button class=\"ds-play\"><svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"6 3 20 12 6 21 6 3\"/></svg>Start discovery</button><button class=\"ds-ghost\" aria-label=\"Next stage\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m9 18 6-6-6-6\"/></svg></button><span class=\"ds-count\">Stage 4 of 9<small>1:00 / 2:00</small></span></header>",
+      "css": ".ds-topbar{font-family:var(--font-sans, Inter, sans-serif);display:flex;align-items:center;gap:4px;height:80px;padding:0 32px;background:#e9ecf1;} .ds-wordmark{margin-right:auto;border-radius:6px;font-size:30px;line-height:1;font-weight:900;letter-spacing:-0.045em;color:#121722;text-decoration:none;} .ds-ghost{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:none;border-radius:9999px;background:transparent;color:#121722;cursor:pointer;transition:background-color 120ms cubic-bezier(0.2,0,0,1);} .ds-ghost:hover{background:#fff;} .ds-ghost:active{background:#dde2ea;} .ds-play{display:flex;align-items:center;gap:8px;height:40px;padding:0 20px 0 16px;border:none;border-radius:9999px;background:#0055ff;color:#fff;font:inherit;font-size:14px;line-height:20px;font-weight:600;white-space:nowrap;cursor:pointer;transition:background-color 120ms cubic-bezier(0.2,0,0,1);} .ds-play:hover{background:#0047d6;} .ds-play:active{background:#0039ad;} .ds-count{margin-left:12px;min-width:9.5rem;text-align:right;font-size:13px;line-height:18px;font-weight:600;color:#121722;font-variant-numeric:tabular-nums;} .ds-count small{display:block;font-size:12px;line-height:16px;font-weight:500;color:#363d4a;} .ds-wordmark:focus-visible,.ds-ghost:focus-visible,.ds-play:focus-visible{outline:2px solid #3d7bff;outline-offset:2px;}"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Solid blue sidebar: text-only white wordmark, pill nav items (Discovery, Reading guide, Audit trail), white focus ring.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-logo\" href=\"#\">tiemPO</a><a class=\"ds-nav-item ds-nav-active\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\"><circle cx=\"5\" cy=\"12\" r=\"2\"/><circle cx=\"19\" cy=\"12\" r=\"2\"/><path d=\"M7 12h10\"/></svg>Discovery</a><a class=\"ds-nav-item\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/></svg>Reading guide</a><a class=\"ds-nav-item\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"><ellipse cx=\"12\" cy=\"5\" rx=\"8\" ry=\"3\"/><path d=\"M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5\"/></svg>Audit trail</a></nav>",
+      "css": ".ds-nav{font-family:var(--font-sans, Inter, sans-serif);display:flex;flex-direction:column;gap:8px;width:208px;padding:24px 16px;background:#0055ff;} .ds-logo{display:block;margin-bottom:24px;padding:8px 12px 0;border-radius:6px;color:#fff;font-size:30px;line-height:1;font-weight:900;letter-spacing:-0.045em;text-decoration:none;} .ds-nav-item{display:flex;align-items:center;gap:12px;height:40px;padding:0 12px;border-radius:9999px;color:#fff;font-size:14px;line-height:20px;font-weight:500;text-decoration:none;transition:background-color 120ms cubic-bezier(0.2,0,0,1);} .ds-nav-item:hover{background:#0039ad;} .ds-nav-active,.ds-nav-active:hover{background:#fff;color:#0055ff;} .ds-logo:focus-visible,.ds-nav-item:focus-visible{outline:2px solid #fff;outline-offset:2px;}"
+    },
+    {
+      "name": "Artifact Tag",
+      "kind": "chip",
+      "refersTo": "artifact-tag",
+      "description": "A real artifact ID as a quiet code tag; selecting it opens the inspector.",
+      "html": "<button class=\"ds-artifact\">EXP-001</button> <button class=\"ds-artifact ds-artifact-selected\">CRIT-EXP-001-001</button>",
+      "css": ".ds-artifact{display:inline-flex;align-items:center;height:28px;padding:0 8px;border:none;border-radius:6px;background:#f5f7fa;color:#363d4a;font-family:var(--font-mono, 'Geist Mono', ui-monospace, monospace);font-size:12px;line-height:16px;cursor:pointer;transition:background-color 120ms cubic-bezier(0.2,0,0,1),color 120ms cubic-bezier(0.2,0,0,1);} .ds-artifact:hover{background:#ebf1ff;color:#0039ad;} .ds-artifact-selected{background:#ebf1ff;color:#0039ad;box-shadow:0 0 0 1px #7aa5ff;} .ds-artifact:focus-visible{outline:2px solid #3d7bff;outline-offset:2px;}"
+    },
+    {
+      "name": "Role Tags",
+      "kind": "chip",
+      "refersTo": "role-tag",
+      "description": "10px role swatch plus the word in caption 600, placed after a stage title.",
+      "html": "<div class=\"ds-roles\"><span class=\"ds-role\"><i class=\"ds-sw ds-q\"></i>Question</span><span class=\"ds-role\"><i class=\"ds-sw ds-ev\"></i>Evidence</span><span class=\"ds-role\"><i class=\"ds-sw ds-un\"></i>Uncertainty</span><span class=\"ds-role\"><i class=\"ds-sw ds-hy\"></i>Hypothesis</span><span class=\"ds-role\"><i class=\"ds-sw ds-ex\"></i>Experiment</span><span class=\"ds-role\"><i class=\"ds-sw ds-de\"></i>Decision</span></div>",
+      "css": ".ds-roles{font-family:var(--font-sans, Inter, sans-serif);display:flex;flex-wrap:wrap;gap:16px;} .ds-role{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:16px;font-weight:600;color:#363d4a;} .ds-sw{display:inline-block;width:10px;height:10px;border-radius:3px;} .ds-q{background:#fff;box-shadow:inset 0 0 0 1px #c4cbd6;} .ds-ev{background:#0055ff;} .ds-un{background:#ffc83d;} .ds-hy{background:#fff;outline:1.5px dashed #0055ff;outline-offset:-1.5px;} .ds-ex{background:#002b85;} .ds-de{background:#121722;}"
+    },
+    {
+      "name": "Stage Card with Marker",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "One spine stage: square role marker, title then role tag, flat white card; the awaiting variant is dashed.",
+      "html": "<div class=\"ds-stage\"><span class=\"ds-marker ds-marker-un\">4</span><article class=\"ds-card\"><p class=\"ds-card-head\"><span class=\"ds-card-title\">Scientific critique</span><span class=\"ds-role\"><i class=\"ds-sw\"></i>Uncertainty</span></p><p class=\"ds-card-body\">What the critic says the evidence cannot settle.</p></article></div><div class=\"ds-stage\"><span class=\"ds-marker ds-marker-wait\">5</span><article class=\"ds-card ds-card-wait\"><p class=\"ds-card-title\">Awaiting hypotheses</p><p class=\"ds-card-body\">Produced by <b>hypothesis_agent</b></p></article></div>",
+      "css": ".ds-stage{font-family:var(--font-sans, Inter, sans-serif);display:grid;grid-template-columns:32px minmax(0,1fr);gap:20px;margin-bottom:20px;max-width:560px;} .ds-marker{display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin-top:26px;border-radius:6px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;} .ds-marker-un{background:#ffc83d;color:#121722;} .ds-marker-wait{background:#e9ecf1;color:#6b7385;outline:1.5px dashed #9aa3b2;outline-offset:-1.5px;} .ds-card{background:#fff;border-radius:16px;padding:28px;transition:box-shadow 200ms cubic-bezier(0.2,0,0,1);} .ds-card:hover{box-shadow:0 0 0 2px #adc7ff;} .ds-card-wait{background:#f5f7fa;outline:1.5px dashed #c4cbd6;outline-offset:-1.5px;} .ds-card-wait:hover{box-shadow:none;} .ds-card-head{display:flex;align-items:baseline;gap:12px;margin:0;} .ds-card-title{margin:0;font-size:18px;line-height:26px;font-weight:700;color:#121722;} .ds-role{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#363d4a;} .ds-sw{display:inline-block;width:10px;height:10px;border-radius:3px;background:#ffc83d;} .ds-card-body{margin:20px 0 0;font-size:13px;line-height:18px;color:#363d4a;}"
+    },
+    {
+      "name": "Thesis Surface with Tracker",
+      "kind": "custom",
+      "refersTo": "thesis-surface",
+      "description": "White thesis surface; beside it, behind a hairline, only the Discovery loop title, the N of 9 count and the nine-cell tracker (no caption).",
+      "html": "<section class=\"ds-thesis\"><div><h1 class=\"ds-thesis-h\">A discovery loop that turns uncertainty into the next experiment.</h1><p class=\"ds-thesis-p\">Every recorded stage is read from a real artifact.</p></div><div class=\"ds-loop\"><p class=\"ds-loop-h\">Discovery loop <span>4 of 9 stages</span></p><div class=\"ds-track\"><span class=\"ds-cell ds-c-q\">1</span><span class=\"ds-cell ds-c-ex\">2</span><span class=\"ds-cell ds-c-ev\">3</span><span class=\"ds-cell ds-c-un\">4</span><span class=\"ds-cell ds-c-w\">5</span><span class=\"ds-cell ds-c-w\">6</span><span class=\"ds-cell ds-c-w\">7</span><span class=\"ds-cell ds-c-w\">8</span><span class=\"ds-cell ds-c-w\">9</span></div></div></section>",
+      "css": ".ds-thesis{font-family:var(--font-sans, Inter, sans-serif);display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;align-items:center;padding:32px;background:#fff;border-radius:20px;} .ds-thesis-h{margin:0;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-0.02em;color:#121722;} .ds-thesis-p{margin:12px 0 0;font-size:15px;line-height:24px;color:#363d4a;} .ds-loop{border-left:1px solid #dde2ea;padding-left:40px;} .ds-loop-h{display:flex;justify-content:space-between;margin:0;font-size:15px;line-height:20px;font-weight:600;color:#121722;} .ds-loop-h span{font-size:13px;font-variant-numeric:tabular-nums;} .ds-track{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-top:12px;} .ds-cell{display:flex;align-items:center;justify-content:center;height:28px;border-radius:6px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;transition:transform 120ms cubic-bezier(0.2,0,0,1);} .ds-cell:hover{transform:translateY(-2px);} .ds-c-q{background:#fff;color:#121722;box-shadow:inset 0 0 0 1px #c4cbd6;} .ds-c-ex{background:#002b85;color:#fff;} .ds-c-ev{background:#0055ff;color:#fff;} .ds-c-un{background:#ffc83d;color:#121722;box-shadow:0 0 0 3px #adc7ff;} .ds-c-w{background:#f5f7fa;color:#6b7385;outline:1px dashed #9aa3b2;outline-offset:-1px;}"
+    },
+    {
+      "name": "Reading Guide",
+      "kind": "card",
+      "refersTo": "guide-card",
+      "description": "The /guide card: 28px role marks with the bold role name and its meaning, closed by the observational note.",
+      "html": "<section class=\"ds-guide\"><h1 class=\"ds-guide-h\">Reading the spine</h1><ul class=\"ds-guide-l\"><li><span class=\"ds-mark ds-m-ev\"></span><span><b>Evidence.</b> Figures computed by the deterministic engine.</span></li><li><span class=\"ds-mark ds-m-un\"></span><span><b>Uncertainty.</b> What the critic says the evidence cannot settle.</span></li><li><span class=\"ds-mark ds-m-hy\"></span><span><b>Hypothesis.</b> A falsifiable explanation, proposed and not yet tested.</span></li><li><span class=\"ds-mark ds-m-ex\"></span><span><b>Experiment.</b> An ExperimentSpec, proposed or run on analytic_v1.</span></li><li><span class=\"ds-mark ds-m-de\"></span><span><b>Decision.</b> A recorded choice of what to investigate next.</span></li></ul><p class=\"ds-guide-f\">ENUT 2024 is observational and cross-sectional. Every figure here is an association, never a cause.</p></section>",
+      "css": ".ds-guide{font-family:var(--font-sans, Inter, sans-serif);max-width:720px;padding:32px;background:#fff;border-radius:16px;} .ds-guide-h{margin:0;font-size:20px;line-height:28px;font-weight:700;color:#121722;} .ds-guide-l{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:16px;} .ds-guide-l li{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:20px;color:#363d4a;} .ds-guide-l b{font-weight:600;color:#121722;} .ds-mark{flex:none;width:28px;height:28px;border-radius:6px;} .ds-m-ev{background:#0055ff;} .ds-m-un{background:#ffc83d;} .ds-m-hy{background:#fff;outline:1.5px dashed #0055ff;outline-offset:-1.5px;} .ds-m-ex{background:#002b85;} .ds-m-de{background:#121722;} .ds-guide-f{margin:24px 0 0;border-top:1px solid #dde2ea;padding-top:16px;font-size:14px;line-height:20px;color:#363d4a;}"
+    },
+    {
+      "name": "Inline Facts",
+      "kind": "custom",
+      "refersTo": "inline-fact",
+      "description": "Container-free facts separated by gray-300 middots; tone colours only the icon.",
+      "html": "<p class=\"ds-facts\"><span>Workers aged 18–65</span><i>·</i><span>CDMX + Edomex</span><i>·</i><span>n = 2,563</span><i>·</i><span class=\"ds-mono\">analytic_v1</span></p>",
+      "css": ".ds-facts{font-family:var(--font-sans, Inter, sans-serif);margin:0;font-size:13px;line-height:18px;color:#363d4a;} .ds-facts i{font-style:normal;margin:0 8px;color:#c4cbd6;} .ds-mono{font-family:var(--font-mono, 'Geist Mono', ui-monospace, monospace);}"
+    },
+    {
+      "name": "Verdict Block and Finding Group",
+      "kind": "custom",
+      "refersTo": "verdict-block",
+      "description": "The critic's verdict as a yellow 6px block, then a hairline-topped finding group with a plain count.",
+      "html": "<div class=\"ds-crit\"><span class=\"ds-verdict\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg>UNCERTAIN</span><section class=\"ds-group\"><p class=\"ds-group-h\">Limitations <span>4</span></p><p class=\"ds-group-b\">Observational, cross-sectional design; associations cannot be interpreted as causal.</p><button class=\"ds-more\">Show all 4</button></section></div>",
+      "css": ".ds-crit{font-family:var(--font-sans, Inter, sans-serif);max-width:480px;} .ds-verdict{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:6px;background:#ffc83d;color:#121722;font-size:14px;font-weight:700;letter-spacing:0.04em;} .ds-group{margin-top:20px;border-top:1px solid #dde2ea;padding-top:16px;} .ds-group-h{display:flex;align-items:baseline;gap:8px;margin:0 0 8px;font-size:13px;font-weight:600;color:#121722;} .ds-group-h span{font-size:12px;font-weight:500;color:#363d4a;font-variant-numeric:tabular-nums;} .ds-group-b{margin:0;font-size:13px;line-height:18px;color:#363d4a;} .ds-more{margin-top:8px;padding:0;border:none;background:none;font:inherit;font-size:12px;font-weight:600;color:#0047d6;cursor:pointer;} .ds-more:hover{color:#0039ad;} .ds-more:focus-visible{outline:2px solid #3d7bff;outline-offset:2px;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El curso que el laboratorio completa en público",
+    "overview": "El sistema es Education2025 (fijado por el usuario en `web/education2025-design-system.md`) adaptado a un laboratorio científico y llevado a un registro más sereno. El shell de plataforma educativa se mantiene: sidebar azul sólido, canvas gris, superficies blancas planas, Inter y píldoras en la navegación. Dentro aloja un ciclo de descubrimiento leído como un temario de nueve módulos numerados. Cada módulo es un artefacto real con ID; lo que todavía no existe se muestra como un hueco honesto, con contorno discontinuo, que nombra al agente y la ruta que lo llenará. La incertidumbre tiene el mismo peso que la evidencia: es el único amarillo de la pantalla.\n\nLa saturación está contenida a propósito: el azul sólido vive en el sidebar, la píldora \"Start discovery\", las marcas de evidencia y los estados seleccionados. La tesis se apoya en una superficie blanca, no en un banner azul. Las etiquetas son discretas: el rol es una muestra de color de 10 px con una palabra, los IDs son etiquetas de código de esquinas suaves y los hechos van en línea sin contenedor. La densidad es de lectura a distancia, porque la pantalla se proyecta para jueces: el cuerpo nunca baja de 12 px y los números van en cifras tabulares. El sistema es solo claro (`color-scheme: light`) y rechaza explícitamente la transcripción de chat y el tablero de KPIs.\n\nEl build adapta la fuente en puntos concretos:\n- un logo que es solo el wordmark \"tiemPO\";\n- cinco colores de rol de artefacto;\n- marcadores de etapa cuadrados (el ModuleNumber del sistema, rellenos con el color del rol);\n- un rastreador de 9 celdas junto a la tesis;\n- un forest plot como única visualización;\n- contornos discontinuos para \"awaiting\";\n- un inspector de procedencia fijo a la derecha;\n- el marco redondeado de la app pintado como overlay fijo en vez de un contenedor con `overflow: hidden`.",
+    "keyCharacteristics": [
+      "Azul eléctrico sólido y escaso, sin degradados ni transparencias.",
+      "Superficies blancas planas sobre canvas gris, sin sombras en reposo.",
+      "Cinco roles de artefacto con relleno propio. La hipótesis se distingue por contorno discontinuo, no por color.",
+      "Lo pendiente lleva línea discontinua gris y lo registrado, relleno sólido.",
+      "Geist Mono solo para IDs, hashes y rutas.",
+      "Un solo movimiento autoral: la llegada de una etapa al espinazo."
+    ],
+    "rules": [
+      {
+        "name": "The Solid Blue Rule",
+        "body": "El azul es plano: ningún `linear-gradient`, `radial-gradient`, blur ni opacidad sobre `electric-blue`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Scarce Blue Rule",
+        "body": "El azul sólido es para navegación, la acción principal, la evidencia y lo seleccionado. Las superficies de lectura, incluida la tesis, son blancas.",
+        "section": "colors"
+      },
+      {
+        "name": "The Five Roles Rule",
+        "body": "Cada artefacto lleva uno de cinco roles con relleno fijo:\n- EVIDENCE: azul eléctrico;\n- EXPERIMENT: navy;\n- UNCERTAINTY: amarillo con texto en tinta;\n- HYPOTHESIS: blanco con contorno azul discontinuo;\n- DECISION: tinta.\n\nQUESTION es blanco con anillo gris. Un color de rol no se usa como decoración fuera de su rol.",
+        "section": "colors"
+      },
+      {
+        "name": "The Yellow Means Uncertain Rule",
+        "body": "El amarillo solo marca incertidumbre o datos de demostración que no son hallazgos. Nunca un estado de éxito ni un acento decorativo.",
+        "section": "colors"
+      },
+      {
+        "name": "The Wordmark Rule",
+        "body": "El nombre del producto es \"tiemPO\": Montserrat 900 con −0.04em y la capitalización exacta del usuario. Montserrat no se usa en ningún otro texto. El logo es solo texto: sin símbolo, pastilla ni punto de estado. No se escribe en mayúsculas, no se traduce y no se compone en otro peso.",
+        "section": "typography"
+      },
+      {
+        "name": "The Literal Mono Rule",
+        "body": "Geist Mono solo para valores que existen tal cual en un archivo: IDs, hashes, rutas, claves y códigos. Nunca para prosa ni títulos.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Títulos, botones y etiquetas de rol van en *sentence case*. Las mayúsculas quedan para las marcas de estado de 10 px (\"New\", \"Demo data\") y para los códigos literales del artefacto.",
+        "section": "typography"
+      },
+      {
+        "name": "The True Minus Rule",
+        "body": "Las cifras van en `tabular-nums`, con signo menos tipográfico (−) y con `+` explícito en positivos, para que la dirección nunca dependa solo del color.",
+        "section": "typography"
+      },
+      {
+        "name": "The Spine Rule",
+        "body": "El ciclo se lee de arriba abajo, una etapa por fila, numeradas del 1 al 9. No se reordena en carriles, pestañas ni carrusel.",
+        "section": "layout"
+      },
+      {
+        "name": "The Hairline Section Rule",
+        "body": "Dentro de una tarjeta, los grupos se separan con una línea superior de 1 px en `hairline-gray` y 16 px de aire, no con cajas grises anidadas. `panel-gray` queda para los avisos (ranking inconcluso) y las alternativas no elegidas.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-At-Rest Rule",
+        "body": "Nada proyecta sombra en reposo. Un anillo aparece solo como respuesta a estado: activo, seleccionado, recién llegado o foco.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Dashed Means Absent Rule",
+        "body": "Un contorno discontinuo gris es un hueco honesto: etapa, celda o tarjeta sin artefacto. No se usa como decoración ni como borde de agrupación.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** rellenar cada artefacto con su color de rol (The Five Roles Rule) y repetir esa gramática en muestra, marcador, celda del rastreador y marca de rol.",
+      "**Do** poner el título primero y la etiqueta de rol después, y dejar solo la muestra cuando el título ya nombra el rol (ninguna para QUESTION).",
+      "**Do** dibujar lo que falta como contorno discontinuo gris que nombra al agente productor y la ruta del archivo.",
+      "**Do** mostrar cada ID, hash y ruta en Geist Mono, como etiqueta de 6 px clicable o con botón de copiar.",
+      "**Do** escribir cifras con `tabular-nums`, menos tipográfico (−) y `+` explícito.",
+      "**Do** separar grupos dentro de una tarjeta con líneas finas, no con cajas anidadas.",
+      "**Do** respetar `prefers-reduced-motion` en cualquier movimiento nuevo."
+    ],
+    "donts": [
+      "**Don't** usar degradados, blur ni transparencias sobre el azul (The Solid Blue Rule).",
+      "**Don't** pintar de azul sólido una superficie de lectura. El azul es para navegación, la acción principal, la evidencia y lo seleccionado.",
+      "**Don't** usar amarillo para algo que no sea incertidumbre o datos de demostración.",
+      "**Don't** escribir el nombre del producto de otra forma que \"tiemPO\".",
+      "**Don't** usar sombras en reposo ni sombras desenfocadas para separar tarjetas.",
+      "**Don't** presentar el ciclo como chat (burbujas, avatares) ni como tablero de KPIs.",
+      "**Don't** usar contornos discontinuos como decoración: significan ausencia o hipótesis no probada.",
+      "**Don't** añadir un modo oscuro: el sistema es solo claro.",
+      "**Don't** usar Geist Mono para prosa o títulos.",
+      "**Don't** usar Montserrat fuera del wordmark: el resto de la interfaz es Inter."
+    ]
+  }
+}

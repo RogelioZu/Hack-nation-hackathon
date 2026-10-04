@@ -85,6 +85,7 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 ```
 AGENTS.md / CLAUDE.md      este archivo (CLAUDE.md lo importa junto con MEMORY.md)
 MEMORY.md                  estado actual, decisiones y trampas; leer antes de tocar nada
+PRODUCT.md                 contexto de producto para el diseño del UI (audiencia: jueces del demo)
 CONTEXT.md                 especificación original (larga)
 README.md                  presentación pública del proyecto (inglés)
 omnigent.yaml              spec Omnigent: Discovery Director (raíz) + 6 sub-agentes, tools y políticas
@@ -118,6 +119,7 @@ docs/
   SCIENTIFIC_PROTOCOL.md   decisiones científicas aprobadas por fase (2A, 2B)
   EXPERIMENT_PROTOCOL.md   ciclo de descubrimiento, hipótesis H1–H4, ramas, crítico, aprobación humana
   EXPERIMENT_ENGINE.md     contrato del motor: método, varianza CR1, ranking, sensibilidad, reproducción
+  DEMO_STORYBOARD.md       guion del demo de 2 min, sincronizado con el reloj del replay
 src/experiments/           motor determinista (sin LLM): run_experiment(ExperimentSpec) -> ExperimentResult
   schemas.py               modelos Pydantic estrictos (rechazan campos, variables y métodos desconocidos)
   runner.py                carga y verifica analytic_v1, filtra población, ajusta, ranking, sensibilidad, procedencia
@@ -140,11 +142,18 @@ agents/
   commute_lab/tools.py     15 tools que persisten en Supabase y llaman al motor por subproceso (create_project … record_decision)
   commute_lab/policies.py  ask_before_run: pide aprobación humana para run_experiment y record_decision
 web/
+  education2025-design-system.md  sistema visual vinculante del UI (azul #0055FF sólido, sin degradados)
   lib/supabase.ts          cliente de solo lectura (clave publishable, solo servidor)
   lib/data.ts              getProjects(), getResearch(id)
   lib/types.ts             tipos de filas + contrato de resultados
-  app/page.tsx             portada + lista de casos de investigación
-  app/research/[id]/       panel del ciclo completo (consulta cada 5 s)
+  lib/discovery/           collect.mjs (lee artefactos del repo) → model.ts (9 etapas) → load.ts (REPLAY/LIVE)
+  data/discovery-snapshot.json  bundle de REPLAY: solo artefactos versionados en git (`npm run snapshot`)
+  scripts/snapshot-discovery.mjs  regenera el bundle de REPLAY
+  app/page.tsx             espina de descubrimiento (REPLAY por defecto, `?mode=live`, `?stage=N`)
+  app/_components/discovery/  espina, forest plot, inspector de artefactos, controles de replay
+  app/guide/               "Reading guide": cómo leer la espina (los cinco roles de artefacto)
+  app/audit/               lista de casos en Supabase (antes la portada)
+  app/research/[id]/       panel de auditoría del ciclo en Supabase (consulta cada 5 s)
   AGENTS.md                aviso autogenerado de Next.js 16: leer node_modules/next/dist/docs antes de escribir código Next
 ```
 
@@ -500,6 +509,8 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | Tool `search_web` con Bright Data (opcional) para el Literature Agent | Evidencia externa en vivo además de OpenAlex y el RAG de INEGI; si no está configurada, devuelve error y el agente sigue con OpenAlex |
 | 2026-10-03 | Los sub-agentes declaran sus tools directamente (anclas YAML), no con `inherit` | Omnigent 0.16 descarta `InheritedTool` al traducir sub-agentes inline: con `inherit` los especialistas no tenían tools |
 | 2026-10-03 | Executor `openai-agents` + `databricks-gpt-oss-120b` (Databricks Free Edition) con el provider `databricks-serving` (`/serving-endpoints`, `wire_api: chat`, `DATABRICKS_TOKEN`). Reemplaza `codex` + `gpt-5.6-terra` | Decisión del usuario: cuenta gratuita de Databricks. El workspace no tiene Claude ni GPT-5.x; la ruta por defecto de Omnigent (`/ai-gateway`, Unity Catalog model services) devuelve 403 para estos endpoints; `gpt-oss-120b`, `llama-3-3-70b`, `qwen3-next-80b` y `llama-4-maverick` pasaron un smoke test con function tool; se eligió el más grande de la familia OpenAI |
+| 2026-10-03 | UI rediseñado con el sistema Education2025: la portada es la espina de descubrimiento (9 etapas + inspector de artefactos). Lee artefactos JSON del repo, no Supabase: REPLAY = snapshot de archivos versionados en git (funciona en Vercel); LIVE = el servidor local lee `reports/` y `experiments/` cada 3 s. El panel de Supabase pasa a `/audit` | Decisión del usuario: el demo debe funcionar sin agentes y mostrar artefactos nuevos sin rediseño; cada tarjeta se rastrea a un archivo con ID y SHA-256 |
+| 2026-10-03 | El nombre visible del producto en la web y el demo es **tiemPO** (esa capitalización). Los prompts de `omnigent.yaml` siguen con "Time Poverty Lab" | Decisión del usuario |
 | 2026-10-03 | Primera corrida real: solo el Scientific Critic (`agents/scientific_critic.yaml`) con dos tools de librería estándar (`commute_lab/critic_tools.py`) que leen el artefacto commiteado y guardan la crítica en `reports/discovery/local/critiques/`. Se excluyen las tools de Supabase, RAG y del motor. `db.py` importa `supabase` de forma diferida | Probar el primer traspaso científico real sin dependencias ajenas. Al guardar se rechazan cifras ausentes del artefacto, lenguaje causal y otros `EXP-*` |
 
 ## Decisiones abiertas

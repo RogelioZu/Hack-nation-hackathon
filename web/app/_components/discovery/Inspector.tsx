@@ -1,0 +1,130 @@
+"use client";
+
+import { useState } from "react";
+import { Check, Copy } from "lucide-react";
+import { ArtifactChip, TypeMark, useDiscoveryUi } from "./primitives";
+
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [done, setDone] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+          setDone(true);
+          setTimeout(() => setDone(false), 2000);
+        } catch {}
+      }}
+      aria-label={done ? `${label} copied` : `Copy ${label}`}
+      className="flex size-7 shrink-0 items-center justify-center rounded-full text-gray-700 transition-colors duration-[120ms] hover:bg-blue-50 hover:text-blue-600"
+    >
+      {done ? <Check aria-hidden size={14} strokeWidth={2.5} className="text-green-600" /> : <Copy aria-hidden size={14} strokeWidth={1.75} />}
+    </button>
+  );
+}
+
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 border-t border-gray-200 py-2.5 first:border-t-0">
+      <dt className="text-caption font-semibold text-gray-700">{label}</dt>
+      <dd className="min-w-0 text-body-sm text-gray-900">{children}</dd>
+    </div>
+  );
+}
+
+/** Lets long repo paths wrap at their slashes instead of mid-word. */
+function PathText({ path }: { path: string }) {
+  const parts = path.split("/");
+  return (
+    <>
+      {parts.map((p, i) => (
+        <span key={i}>
+          {p}
+          {i < parts.length - 1 && (
+            <>
+              /<wbr />
+            </>
+          )}
+        </span>
+      ))}
+    </>
+  );
+}
+
+const HASH = /^[0-9a-f]{40,64}$/i;
+
+function when(iso: string | null): string | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : d.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }) + " UTC";
+}
+
+/** Provenance of the selected artifact: where it lives, its bytes, who produced it, what it links to. */
+export default function Inspector() {
+  const { selectedKey, artifacts } = useDiscoveryUi();
+  const a = selectedKey ? artifacts[selectedKey] : null;
+
+  return (
+    <aside aria-label="Artifact inspector" className="space-y-4">
+      <section className="rounded-lg bg-white p-5" aria-live="polite">
+        {a ? (
+          <>
+            <h2 className="flex items-center gap-2.5 text-h2 text-gray-900">
+              <TypeMark type={a.type} />
+              {a.label}
+            </h2>
+            <p className="mt-1 font-mono text-body font-semibold [overflow-wrap:anywhere] text-gray-900">{a.id}</p>
+            {a.fullId && <p className="mt-1 font-mono text-caption break-all text-gray-700">{a.fullId}</p>}
+            <dl className="mt-4">
+              <Row label="File">
+                <span className="flex items-start gap-1">
+                  <span className="min-w-0 font-mono text-caption [overflow-wrap:anywhere]">
+                    <PathText path={a.path} />
+                  </span>
+                  <CopyButton value={a.path} label="path" />
+                </span>
+              </Row>
+              <Row label="SHA-256">
+                <span className="flex items-start gap-1">
+                  <span className="min-w-0 font-mono text-caption break-all" title={a.sha256}>
+                    {a.sha256.slice(0, 16)}…
+                  </span>
+                  <CopyButton value={a.sha256} label="SHA-256" />
+                </span>
+              </Row>
+              {a.producer && <Row label="Produced by">{a.producer}</Row>}
+              {when(a.createdAt) && <Row label="Created">{when(a.createdAt)}</Row>}
+              {!a.createdAt && when(a.modifiedAt) && <Row label="Written">{when(a.modifiedAt)}</Row>}
+              {a.session && (
+                <Row label="Session">
+                  <span className="font-mono text-caption">{a.session}</span>
+                </Row>
+              )}
+              {a.facts.map((f) => (
+                <Row key={f.label} label={f.label}>
+                  <span className={f.mono ? "font-mono text-caption [overflow-wrap:anywhere]" : ""} title={HASH.test(f.value) ? f.value : undefined}>
+                    {HASH.test(f.value) ? `${f.value.slice(0, 16)}…` : f.value}
+                  </span>
+                </Row>
+              ))}
+            </dl>
+            {a.links.length > 0 && (
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <p className="mb-2 text-caption font-semibold text-gray-700">Linked artifacts</p>
+                <div className="flex flex-wrap gap-2">
+                  {a.links.map((k) => (
+                    <ArtifactChip key={k} artifactKey={k} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <p className="text-body-sm text-gray-700">Select an artifact id on the spine to see where it lives and what produced it.</p>
+        )}
+      </section>
+
+    </aside>
+  );
+}
