@@ -167,7 +167,10 @@ const run = bundle.run;
 
 // Rendered page (optional): the story reads end to end.
 if (process.env.CHECK_URL) {
-  const html = await (await fetch(process.env.CHECK_URL)).text();
+  // The default view starts from the question composer; ?view=full renders the whole record server-side.
+  const url = new URL(process.env.CHECK_URL);
+  url.searchParams.set("view", "full");
+  const html = await (await fetch(url)).text();
   const text = html.replace(/<script[\s\S]*?<\/script>/g, "").replace(/<!-- -->/g, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   const u = run.updates.at(-1);
   const want = [run.baselineEvidence?.rankingStatus?.code, run.followUps[0]?.evidence?.rankingStatus?.code, "Formal test · interaction", u?.previous.code, u?.next.code, ...run.reviews.map((r) => r.decision.code)].filter(Boolean);

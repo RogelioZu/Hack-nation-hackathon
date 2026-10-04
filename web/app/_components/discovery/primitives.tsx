@@ -26,6 +26,8 @@ interface DiscoveryUi {
   fresh: Set<string>;
   artifacts: Record<string, ArtifactRef>;
   commit: string | null; // REPLAY snapshot commit, for "open at commit" links
+  // Console replay: whether an artifact (key, id or experiment id) has appeared yet. Later results stay hidden until then.
+  isRevealed: (idOrKey: string) => boolean;
 }
 
 export const DiscoveryUiContext = createContext<DiscoveryUi>({
@@ -34,6 +36,7 @@ export const DiscoveryUiContext = createContext<DiscoveryUi>({
   fresh: new Set(),
   artifacts: {},
   commit: null,
+  isRevealed: () => true,
 });
 
 export const useDiscoveryUi = () => useContext(DiscoveryUiContext);

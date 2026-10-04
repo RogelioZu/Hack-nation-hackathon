@@ -946,19 +946,54 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
     awaiting,
   });
   // What each stage answers, in a researcher's terms; the short title feeds the section navigation.
-  const STAGE_COPY: Record<Stage["key"], { short: string; purpose: string }> = {
-    question: { short: "Question", purpose: "What the lab set out to learn, for whom, and with which data." },
-    baseline: { short: baseline?.experimentId ?? "Evidence", purpose: "What the first experiment estimated, and how certain it is." },
-    critique: { short: "Critique", purpose: "Is that result reliable, and what does it leave open?" },
-    planning: { short: "Planning", purpose: "Which falsifiable explanations are worth testing, and which experiments could test them?" },
-    decision: { short: "Decision", purpose: "Which experiment teaches the most next, and can the engine run it?" },
-    followup: { short: followUps[0]?.experiment.experimentId ?? "New experiment", purpose: "What the chosen experiment found, and what the critic makes of it." },
-    update: { short: "Update", purpose: "How the lab's scientific state changed because of the new result." },
+  const STAGE_COPY: Record<Stage["key"], { short: string; purpose: string; agent: string; working: string }> = {
+    question: {
+      short: "Question",
+      purpose: "What the lab set out to learn, for whom, and with which data.",
+      agent: "Discovery Director",
+      working: "Registering the question, the population and the pre-registered hypotheses",
+    },
+    baseline: {
+      short: baseline?.experimentId ?? "Evidence",
+      purpose: "What the first experiment estimated, and how certain it is.",
+      agent: "Experiment Runner · deterministic engine",
+      working: "Running the first experiment twice on the hash-checked dataset",
+    },
+    critique: {
+      short: "Critique",
+      purpose: "Is that result reliable, and what does it leave open?",
+      agent: "Scientific Critic",
+      working: "Checking uncertainty, diagnostics and claims the evidence does not support",
+    },
+    planning: {
+      short: "Planning",
+      purpose: "Which falsifiable explanations are worth testing, and which experiments could test them?",
+      agent: "Hypothesis Agent · Experiment Planner",
+      working: "Proposing falsifiable hypotheses and competing experiments",
+    },
+    decision: {
+      short: "Decision",
+      purpose: "Which experiment teaches the most next, and can the engine run it?",
+      agent: "Discovery Director",
+      working: "Weighing the candidates by expected learning and engine capability",
+    },
+    followup: {
+      short: followUps[0]?.experiment.experimentId ?? "New experiment",
+      purpose: "What the chosen experiment found, and what the critic makes of it.",
+      agent: "Experiment Runner · Scientific Critic",
+      working: "Running the approved experiment and critiquing its result",
+    },
+    update: {
+      short: "Update",
+      purpose: "How the lab's scientific state changed because of the new result.",
+      agent: "Scientific Critic",
+      working: "Updating hypothesis statuses from the new evidence",
+    },
   };
   const stage = (number: number, key: Stage["key"], title: string, type: ArtifactType, awaiting: Awaiting, own: string[], parts: StagePart[] = []): Stage => {
     const artifactKeys = [...new Set([...own, ...parts.flatMap((p) => p.artifactKeys)])];
     const copy = STAGE_COPY[key];
-    return { key, number, title, shortTitle: copy.short, purpose: copy.purpose, type, recorded: artifactKeys.length > 0, artifactKeys, awaiting, parts };
+    return { key, number, title, shortTitle: copy.short, purpose: copy.purpose, agent: copy.agent, working: copy.working, type, recorded: artifactKeys.length > 0, artifactKeys, awaiting, parts };
   };
 
   const planningParts = [

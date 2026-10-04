@@ -18,7 +18,7 @@ import type {
 } from "@/lib/discovery/types";
 import ForestPlot from "./ForestPlot";
 import InteractionPlot from "./InteractionPlot";
-import { ArtifactChip, Awaiting, Inline, Pill, plain, signed, StatusTag, TypeMark, VerbatimList } from "./primitives";
+import { ArtifactChip, Awaiting, Inline, Pill, plain, signed, StatusTag, TypeMark, useDiscoveryUi, VerbatimList } from "./primitives";
 
 // Every value below comes from the DiscoveryRunViewModel; components carry layout and connective copy only.
 
@@ -89,6 +89,7 @@ export function StagePartSection({
 // --- 1 · Research question ---------------------------------------------------
 
 export function QuestionBody({ q }: { q: DiscoveryRunViewModel["question"] }) {
+  const { isRevealed } = useDiscoveryUi();
   return (
     <>
       <p className="max-w-[68ch] text-[18px] leading-7 font-medium text-gray-900">{q.text ?? "The research question is missing from the artifacts."}</p>
@@ -110,9 +111,16 @@ export function QuestionBody({ q }: { q: DiscoveryRunViewModel["question"] }) {
                   <span className="text-body text-gray-900">{h.title ? `${h.title}: ` : ""}{h.claim}</span>
                 </span>
                 <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-gray-700">
-                  <StatusTag status={h.status} />
-                  {h.statusSource && <span>in {h.statusSource}</span>}
-                  {h.assessment && <span className="basis-full">{h.assessment}</span>}
+                  {/* A status set by a later artifact appears only once that artifact has. */}
+                  {!h.statusSource || isRevealed(h.statusSource) ? (
+                    <>
+                      <StatusTag status={h.status} />
+                      {h.statusSource && <span>in {h.statusSource}</span>}
+                      {h.assessment && <span className="basis-full">{h.assessment}</span>}
+                    </>
+                  ) : (
+                    <span className="italic">Pre-registered · not yet evaluated in this run</span>
+                  )}
                 </span>
               </dd>
             </div>
@@ -456,12 +464,15 @@ export function HypothesesBody({ hs, reviews }: { hs: HypothesisView[]; reviews:
 // --- 5 · Candidate experiments --------------------------------------------------
 
 function ProposalCard({ p }: { p: ProposalView }) {
+  const { isRevealed } = useDiscoveryUi();
+  const ranAs = p.ranAs && isRevealed(p.ranAs) ? p.ranAs : null;
+  const current = p.current && isRevealed(p.current.asOf) ? p.current : null;
   return (
     <li className={`flex flex-col rounded-md p-4 ${p.formal ? "bg-white ring-1 ring-blue-800 ring-inset" : "bg-gray-50 ring-1 ring-gray-200 ring-inset"}`}>
       <div className="flex flex-wrap items-center gap-2">
         <ArtifactChip artifactKey={p.artifact.key} />
         <StatusTag status={p.role} />
-        {p.ranAs && <span className="text-caption font-semibold text-blue-800">Ran as {p.ranAs}</span>}
+        {ranAs && <span className="text-caption font-semibold text-blue-800">Ran as {ranAs}</span>}
       </div>
       {p.question && <p className="mt-3 text-title-card text-gray-900">{p.question}</p>}
       {p.estimand && (
@@ -480,17 +491,17 @@ function ProposalCard({ p }: { p: ProposalView }) {
           <span className="flex flex-wrap items-center gap-2 text-body-sm">
             <span className="text-gray-700">At planning</span>
             <StatusTag status={p.feasibilityAtPlanning} />
-            {p.current && (
+            {current && (
               <>
                 <ArrowRight aria-hidden size={14} className="text-gray-500" />
-                <span className="text-gray-700">{p.current.asOf} audit</span>
+                <span className="text-gray-700">{current.asOf} audit</span>
                 <span className="inline-flex items-center gap-1 font-semibold text-gray-900">
-                  {p.current.executable ? (
+                  {current.executable ? (
                     <CircleCheck aria-hidden size={14} className="text-green-600" />
                   ) : (
                     <TriangleAlert aria-hidden size={14} className="text-yellow-700" />
                   )}
-                  {p.current.executable ? "executable" : `missing ${p.current.missing.join(", ")}`}
+                  {current.executable ? "executable" : `missing ${current.missing.join(", ")}`}
                 </span>
               </>
             )}

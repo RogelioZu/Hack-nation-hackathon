@@ -346,6 +346,8 @@ export interface Stage {
   title: string;
   shortTitle: string; // for the section navigation
   purpose: string; // the scientific question this stage answers
+  agent: string; // who produced the stage, as the run's console names it
+  working: string; // what that agent was doing, shown while the stage is being revealed
   type: ArtifactType;
   recorded: boolean;
   artifactKeys: string[]; // primary artifact first

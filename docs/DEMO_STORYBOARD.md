@@ -24,7 +24,7 @@ artefactos del repo ──> research_state.json (índice: IDs, relaciones, hashe
 
 ## Cómo se maneja la pantalla
 
-- `Walkthrough` (o `Space`) revela las **7 etapas** con el reloj de abajo (antes se llamaba `Start discovery`; desde 2026-10-04 la portada abre con el resumen "Where the investigation stands" y la barra de secciones, y el replay es secundario). La pantalla hace scroll sola y el inspector sigue a la etapa activa.
+- Desde 2026-10-04 la portada es una **consola**: la pregunta aprobada aparece cargada en un compositor y `Run discovery` reproduce la sesión grabada agente por agente (indicador de trabajo + artefactos guardados → resultado de la etapa). La conclusión (H3 → INCONCLUSIVE y el resumen "Where the investigation stands now") solo aparece al final; los estados fijados por artefactos posteriores se ocultan hasta que su etapa aparece. `Space` pausa, `Esc` o `Skip to end` muestran todo, `/?view=full` abre el registro completo y `/?stage=N` abre la corrida pausada tras la etapa N. Dura unos 45 s. La pantalla hace scroll sola y el inspector sigue a la etapa activa.
 - `→` / `←` avanzan o retroceden una etapa y pausan el reloj. `Home` reinicia. `Esc` muestra la cadena completa. Los atajos no se muestran en pantalla: cada botón los nombra en su tooltip.
 - `/?stage=N` abre el replay detenido en la etapa N; por ejemplo, `/?stage=7` va directo al estado científico actualizado.
 - Las etapas 4, 5 y 6 agrupan varios artefactos como secciones dentro de la misma tarjeta. Una sección sin artefacto se muestra como pendiente ("Not generated yet", "Awaiting human review" o "Experiment not executed"), con su agente y su ruta.

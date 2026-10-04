@@ -14,9 +14,9 @@ function useKeyForId() {
   };
 }
 
-function Panel({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
+function Panel({ title, count, wide = false, children }: { title: string; count?: number; wide?: boolean; children: React.ReactNode }) {
   return (
-    <section className="min-w-0 border-t border-gray-200 pt-4">
+    <section className={`min-w-0 border-t border-gray-200 pt-4 ${wide ? "md:col-span-2" : ""}`}>
       <h2 className="flex items-baseline gap-2 text-body font-semibold text-gray-900">
         {title}
         {count != null && <span className="text-caption font-medium text-gray-700 tabular">{count}</span>}
@@ -60,7 +60,7 @@ export default function Overview({
 
   return (
     <section id="overview" aria-labelledby="overview-title" className="scroll-mt-28 rounded-xl bg-white p-6 md:p-8">
-      <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Where the investigation stands</p>
+      <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Where the investigation stands now</p>
       <h1 id="overview-title" className="mt-2 max-w-[48ch] text-[24px] leading-[30px] font-extrabold tracking-[-0.02em] text-balance text-gray-900 sm:text-[28px] sm:leading-[34px]">
         {headline?.text ?? "No research question has been recorded yet."}
       </h1>
@@ -81,7 +81,7 @@ export default function Overview({
         </p>
       )}
 
-      <div className="mt-6 grid gap-x-8 gap-y-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,0.9fr)]">
+      <div className="mt-6 grid gap-x-8 gap-y-6 md:grid-cols-2">
         <Panel title="Hypotheses" count={d.question.hypotheses.length}>
           <ul className="divide-y divide-gray-100">
             {d.question.hypotheses.map((h) => (
@@ -124,9 +124,9 @@ export default function Overview({
           </ul>
         </Panel>
 
-        <Panel title="Still open" count={open.length || undefined}>
+        <Panel title="Still open" count={open.length || undefined} wide>
           {open.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="grid gap-x-8 gap-y-2 md:grid-cols-3">
               {open.slice(0, 3).map((q, i) => (
                 <li key={i} className="text-body-sm text-gray-900">
                   <Inline text={q} />

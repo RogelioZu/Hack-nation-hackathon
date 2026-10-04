@@ -8,7 +8,7 @@ web
 
 ## Users
 
-- **Primarios (desde 2026-10-04): investigadores** que leen la corrida a su ritmo: necesitan ver de un vistazo en qué estado está cada hipótesis y experimento, saltar a cualquier etapa, entender cada código de estado sin glosario y llegar al archivo fuente de cada cifra. Por eso la portada abre con el resumen "Where the investigation stands" y una barra de secciones; el replay cronometrado es secundario (botón "Walkthrough").
+- **Primarios (desde 2026-10-04): investigadores** que leen la corrida a su ritmo: necesitan ver de un vistazo en qué estado está cada hipótesis y experimento, saltar a cualquier etapa, entender cada código de estado sin glosario y llegar al archivo fuente de cada cifra. La portada es una consola: el usuario "envía" la pregunta aprobada y los agentes responden por turnos (replay etiquetado de la sesión grabada, nunca presentado como generación en vivo); la conclusión llega al final, seguida del resumen de estado. La barra de secciones permite volver a cualquier etapa y `/?view=full` abre todo el registro.
 - **Jueces del Hack-Nation 7th Global AI Hackathon (Challenge 03, Databricks · Agentic Scientific Discovery)** viendo el demo de 2 minutos, proyectado o grabado. Lo ven de lejos, una sola vez y con narración; la pantalla tiene que avanzar por etapas y leerse sin acercarse.
 - Secundarios: quien abre la URL pública (`https://commute-time-lab.vercel.app`) después del demo, sin narrador, y el equipo que sigue una sesión de Omnigent mientras corre.
 
