@@ -112,6 +112,8 @@ def _run(spec, root):
     data, manifest, digest, approved = load_approved(root)
     requested = {spec.exposure, *spec.outcomes, *spec.covariates,
                  spec.survey_weight, spec.cluster, spec.stratum}
+    if spec.interaction is not None:
+        requested.add(spec.interaction.moderator)
     require(requested <= approved, "UNKNOWN_VARIABLE", str(sorted(requested-approved)))
     require(spec.method in METHODS, "UNKNOWN_METHOD", spec.method)
     fingerprints = code_fingerprints(root)
@@ -192,6 +194,19 @@ def _run(spec, root):
         target = supported if differences else inconclusive
         target.append({"id": "H2", "assessment": "Evidence of at least one difference" if differences else "Uncertain differences",
                        "evidence": f"{len(differences)} of {primary_rank['comparison_count']} paired simultaneous intervals exclude zero; this does not establish a full ranking"})
+    # Heterogeneity hypotheses are assessed only through the formal interaction estimand.
+    interactions = [f.interaction for f in fits if f.interaction is not None]
+    primary_interactions = [f.interaction for f in primary if f.interaction is not None]
+    for hypothesis_id in [h for h in spec.hypothesis_ids if h in ("H3", "H4")]:
+        evidence = "; ".join(f"{r.outcome}: commute_5h x {r.moderator} ({r.comparison_level!s} vs reference "
+                             f"{r.reference_level!s}) {r.interpretation_status}" for r in primary_interactions)
+        if any(r.interpretation_status == "INTERVAL_EXCLUDES_ZERO" for r in primary_interactions):
+            supported.append({"id": hypothesis_id, "assessment": "Interaction interval excludes zero: compatible with "
+                              "a difference in the exposure association between moderator groups (observational)",
+                              "evidence": evidence})
+        else:
+            inconclusive.append({"id": hypothesis_id, "assessment": "Interaction interval includes zero: inconclusive "
+                                 "about heterogeneity; not evidence of no difference", "evidence": evidence})
     limitations = [
         "Observational associations; no identification of mechanisms or intervention effects.",
         "FAC_PER-weighted point estimates; CR1 PSU-cluster sandwich is an approximation, not full ENUT complex-survey variance.",
@@ -206,6 +221,16 @@ def _run(spec, root):
     ]
     interpretation = [f"Adjusted {f.estimate.outcome}: {f.estimate.coefficient:.3f} minutes associated with an additional 300 minutes of weekday commuting; 95% interval [{f.estimate.interval.lower:.3f}, {f.estimate.interval.upper:.3f}]." for f in primary]
     interpretation.append(f"Ranking status: {primary_rank['status']}; point-estimate order is descriptive.")
+    if spec.interaction is not None:
+        inter = spec.interaction
+        interpretation.append(f"Moderated model: the 'Adjusted' slopes above are for the reference group "
+                              f"{inter.moderator} = {inter.reference_level!s}; see interactions for both groups.")
+        interpretation += [f"{r.model_id}: interaction {r.interaction.estimate:.3f}, 95% interval "
+                           f"[{r.interaction.interval.lower:.3f}, {r.interaction.interval.upper:.3f}]; "
+                           f"{r.interpretation_status}." for r in primary_interactions]
+        limitations += [line for line in primary_interactions[0].limitations if line not in limitations]
+        limitations.append("In moderated models the ranking and the Estimate coefficient refer to the reference-group "
+                           "exposure slope; heterogeneity is assessed only through the interaction coefficient.")
     for s in sensitivity:
         interpretation.append(f"Sensitivity excludes {s['n_excluded']} zero-work records; n={s['n_after']}; ranking status {s['ranking']['status']}.")
     # Alternatives are candidates only; none receives an experiment ID or execution authorization.
@@ -240,8 +265,13 @@ def _run(spec, root):
             "Fit requested outcomes with approved covariates and unadjusted variants if requested",
             "Group weighted scores by (stratum, cluster), apply CR1 and t(G-1) intervals",
             "Use paired cluster influences for Bonferroni outcome contrasts on identical model samples",
-            "Execute only listed sensitivity rules; primary population remains unchanged"],
-        provenance=provenance, review_status="REQUIRES_HUMAN_REVIEW")
+            "Execute only listed sensitivity rules; primary population remains unchanged",
+            *([f"Binary moderator {spec.interaction.moderator}: indicator = 1 for {spec.interaction.comparison_level!s}, "
+               f"0 for reference {spec.interaction.reference_level!s}; main effect and exposure x moderator term added "
+               f"once; rows missing the moderator excluded, never assigned to a group"]
+              if spec.interaction is not None else [])],
+        provenance=provenance, review_status="REQUIRES_HUMAN_REVIEW",
+        interactions=interactions or None)
 
 
 def run_experiment(spec: ExperimentSpec, *, root: Path = ROOT) -> ExperimentResult:

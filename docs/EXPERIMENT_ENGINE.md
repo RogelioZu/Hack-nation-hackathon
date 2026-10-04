@@ -118,6 +118,55 @@ no EXP-002 is assigned, selected or executed. Completion is a technical
 status; results require human review. No Scientific Critic or Omnigent is
 implemented, and no result enters an autonomous discovery decision.
 
+## Binary moderator interaction (approved extension, 2026-10-04)
+
+Human approval added one general capability: a formal exposure x binary-moderator interaction.
+An ExperimentSpec requests it with the optional field
+
+    "interaction": {"type": "binary_moderator", "moderator": "<variable>",
+                    "reference_level": <level>, "comparison_level": <level>}
+
+Moderators and their only admissible levels come from the data contract: sex (male, female),
+state (09, 15), has_child_u15 and has_minor_u18 (false, true). The two levels must differ and keep
+their exact type. A moderator that is also a population field (sex, state) must keep both levels in
+the population. Interaction specs test only the heterogeneity hypotheses H3/H4, and H3/H4 require an
+interaction. Multi-category moderators, several moderators and non-linear terms stay unsupported.
+
+The model is
+
+    Y = b0 + b_exposure X + b_moderator M + b_interaction X*M + covariates,
+    M = 1 if moderator == comparison_level, 0 if moderator == reference_level.
+
+The moderator main effect is always included, once: if the moderator is also a requested covariate,
+its covariate dummy is dropped and the spec's coding is used. Other covariates are unchanged. The
+code is generic (no variable-specific function). Rows missing the moderator are excluded under the
+model-specific complete-case policy and counted; they are never assigned to a group. Unexpected
+non-missing levels (INVALID_MODERATOR_LEVEL) or an empty group (EMPTY_MODERATOR_GROUP) stop the run.
+
+Point estimates and the CR1 PSU-cluster covariance are the same code as above, with FAC_PER weights,
+(EST_DIS, UPM_DIS) groups and t(G-1) intervals. b_interaction is the formal estimand for the
+difference in the exposure slope between the comparison and reference groups. The reference-group
+slope is b_exposure. The comparison-group slope is b_exposure + b_interaction, with variance
+V_ee + V_ii + 2 V_ei taken from the full covariance matrix; intervals are never added. No p-values are
+reported. `ExperimentResult.interactions` (omitted when absent, so EXP-001 is unchanged) gives each
+model's moderator, levels, coding, both group slopes, the moderator main effect, the interaction with
+its interval, counts (input, analysis, excluded, missing moderator, per-group n and FAC_PER total) and
+limitations.
+
+Interpretation is a statistical fact, not a conclusion: INTERVAL_EXCLUDES_ZERO is compatible with a
+difference in the exposure association between the groups; INCONCLUSIVE_INTERVAL_INCLUDES_ZERO is
+inconclusive and is not evidence of no difference. No equivalence is assessed without a
+human-approved margin. The data remain observational and cross-sectional, so an interaction does not
+make causal inference valid, and CR1 remains an approximation, not full ENUT complex-survey variance.
+In moderated models the Estimate coefficient and the ranking refer to the reference-group slope.
+
+Capabilities are published in metadata/experiment_engine_capabilities.json, generated from
+src/experiments/capabilities.py and checked by the validator. Synthetic tests
+(tests/test_interaction_engine.py) cover known and zero interactions, reference recoding, missing
+moderators, invalid specifications, single main effects, the covariance-derived comparison slope and
+agreement with statsmodels WLS + cluster CR1. No experiment has been run with this capability yet:
+HYP-005, HYP-007 and HYP-008 remain untested.
+
 ## Reproduction
 
 Python >=3.11; install requirements-experiments.txt in an isolated runtime.

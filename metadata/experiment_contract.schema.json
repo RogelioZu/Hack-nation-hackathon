@@ -1,6 +1,57 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$defs": {
+    "BinaryModeratorInteraction": {
+      "additionalProperties": false,
+      "description": "One exposure x binary-moderator interaction; the moderator main effect is always included.",
+      "properties": {
+        "type": {
+          "const": "binary_moderator",
+          "title": "Type",
+          "type": "string"
+        },
+        "moderator": {
+          "enum": [
+            "sex",
+            "state",
+            "has_child_u15",
+            "has_minor_u18"
+          ],
+          "title": "Moderator",
+          "type": "string"
+        },
+        "reference_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Reference Level"
+        },
+        "comparison_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Comparison Level"
+        }
+      },
+      "required": [
+        "type",
+        "moderator",
+        "reference_level",
+        "comparison_level"
+      ],
+      "title": "BinaryModeratorInteraction",
+      "type": "object"
+    },
     "Coefficient": {
       "additionalProperties": false,
       "properties": {
@@ -305,6 +356,21 @@
           "const": "REQUIRES_HUMAN_REVIEW",
           "title": "Review Status",
           "type": "string"
+        },
+        "interactions": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/InteractionResult"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Interactions"
         }
       },
       "required": [
@@ -357,7 +423,9 @@
           "items": {
             "enum": [
               "H1",
-              "H2"
+              "H2",
+              "H3",
+              "H4"
             ],
             "type": "string"
           },
@@ -451,6 +519,17 @@
         "include_unadjusted": {
           "title": "Include Unadjusted",
           "type": "boolean"
+        },
+        "interaction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BinaryModeratorInteraction"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -474,6 +553,181 @@
         "include_unadjusted"
       ],
       "title": "ExperimentSpec",
+      "type": "object"
+    },
+    "InteractionResult": {
+      "additionalProperties": false,
+      "description": "Machine-readable binary-moderator interaction for one fitted model.",
+      "properties": {
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "variant": {
+          "title": "Variant",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "sleep_weekday_min",
+            "personal_hygiene_weekday_min",
+            "household_conversation_weekday_min",
+            "leisure_weekday_min"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "exposure": {
+          "const": "commute_5h",
+          "title": "Exposure",
+          "type": "string"
+        },
+        "moderator": {
+          "enum": [
+            "sex",
+            "state",
+            "has_child_u15",
+            "has_minor_u18"
+          ],
+          "title": "Moderator",
+          "type": "string"
+        },
+        "reference_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Reference Level"
+        },
+        "comparison_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Comparison Level"
+        },
+        "coding": {
+          "title": "Coding",
+          "type": "string"
+        },
+        "moderator_term": {
+          "title": "Moderator Term",
+          "type": "string"
+        },
+        "interaction_term": {
+          "title": "Interaction Term",
+          "type": "string"
+        },
+        "reference_group_slope": {
+          "$ref": "#/$defs/SlopeEstimate"
+        },
+        "comparison_group_slope": {
+          "$ref": "#/$defs/SlopeEstimate"
+        },
+        "comparison_slope_method": {
+          "title": "Comparison Slope Method",
+          "type": "string"
+        },
+        "moderator_main_effect": {
+          "$ref": "#/$defs/SlopeEstimate"
+        },
+        "interaction": {
+          "$ref": "#/$defs/SlopeEstimate"
+        },
+        "interpretation_status": {
+          "enum": [
+            "INTERVAL_EXCLUDES_ZERO",
+            "INCONCLUSIVE_INTERVAL_INCLUDES_ZERO"
+          ],
+          "title": "Interpretation Status",
+          "type": "string"
+        },
+        "interpretation": {
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "equivalence_assessed": {
+          "title": "Equivalence Assessed",
+          "type": "boolean"
+        },
+        "input_n": {
+          "minimum": 0,
+          "title": "Input N",
+          "type": "integer"
+        },
+        "analysis_n": {
+          "exclusiveMinimum": 0,
+          "title": "Analysis N",
+          "type": "integer"
+        },
+        "excluded_n": {
+          "minimum": 0,
+          "title": "Excluded N",
+          "type": "integer"
+        },
+        "missing_moderator_n": {
+          "minimum": 0,
+          "title": "Missing Moderator N",
+          "type": "integer"
+        },
+        "excluded_only_for_missing_moderator_n": {
+          "minimum": 0,
+          "title": "Excluded Only For Missing Moderator N",
+          "type": "integer"
+        },
+        "groups": {
+          "items": {
+            "$ref": "#/$defs/ModeratorGroup"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "title": "Groups",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model_id",
+        "variant",
+        "outcome",
+        "exposure",
+        "moderator",
+        "reference_level",
+        "comparison_level",
+        "coding",
+        "moderator_term",
+        "interaction_term",
+        "reference_group_slope",
+        "comparison_group_slope",
+        "comparison_slope_method",
+        "moderator_main_effect",
+        "interaction",
+        "interpretation_status",
+        "interpretation",
+        "equivalence_assessed",
+        "input_n",
+        "analysis_n",
+        "excluded_n",
+        "missing_moderator_n",
+        "excluded_only_for_missing_moderator_n",
+        "groups",
+        "limitations"
+      ],
+      "title": "InteractionResult",
       "type": "object"
     },
     "Interval": {
@@ -508,6 +762,48 @@
       "type": "object"
     },
     "JsonValue": {},
+    "ModeratorGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "reference",
+            "comparison"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ],
+          "title": "Level"
+        },
+        "n": {
+          "minimum": 0,
+          "title": "N",
+          "type": "integer"
+        },
+        "weighted_population": {
+          "minimum": 0,
+          "title": "Weighted Population",
+          "type": "number"
+        }
+      },
+      "required": [
+        "role",
+        "level",
+        "n",
+        "weighted_population"
+      ],
+      "title": "ModeratorGroup",
+      "type": "object"
+    },
     "Population": {
       "additionalProperties": false,
       "properties": {
@@ -574,6 +870,30 @@
         "sexes"
       ],
       "title": "Population",
+      "type": "object"
+    },
+    "SlopeEstimate": {
+      "additionalProperties": false,
+      "properties": {
+        "estimate": {
+          "title": "Estimate",
+          "type": "number"
+        },
+        "standard_error": {
+          "minimum": 0,
+          "title": "Standard Error",
+          "type": "number"
+        },
+        "interval": {
+          "$ref": "#/$defs/Interval"
+        }
+      },
+      "required": [
+        "estimate",
+        "standard_error",
+        "interval"
+      ],
+      "title": "SlopeEstimate",
       "type": "object"
     }
   },

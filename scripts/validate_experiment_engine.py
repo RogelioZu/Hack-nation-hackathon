@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / ".local_deps"))
 
 from pydantic.json_schema import models_json_schema
 
+from src.experiments.capabilities import EXPORT_PATH as CAPABILITIES_PATH, capabilities
 from src.experiments.methods import METHODS
 from src.experiments.models import ExperimentError
 from src.experiments.runner import canonical_json, load_approved, run_experiment, sha
@@ -96,6 +97,9 @@ def main():
     _, generated = models_json_schema([(ExperimentSpec, "validation"), (ExperimentResult, "validation")])
     committed = json.loads((ROOT / "metadata/experiment_contract.schema.json").read_text(encoding="utf-8"))
     check(committed["$defs"] == generated["$defs"], "SCHEMA_DRIFT", "experiment_contract.schema.json differs from schemas.py")
+    # Published capability metadata agents read must equal what the engine actually supports.
+    published = json.loads((ROOT / CAPABILITIES_PATH).read_text(encoding="utf-8"))
+    check(published == capabilities(), "CAPABILITIES_DRIFT", f"{CAPABILITIES_PATH} differs from capabilities.py")
     spec_data = json.loads((ROOT / SPEC).read_text(encoding="utf-8"))
     ExperimentSpec.model_validate(spec_data)
 
@@ -140,6 +144,7 @@ def main():
         "canonical_variables_checked": len(variables),
         "missingness_matches_manifest": True,
         "json_schema_matches_models": True,
+        "capabilities_match_engine": True,
         "supported_methods": sorted(METHODS),
         "experiment_engine_tests_run": tests.testsRun,
         "experiment_engine_test_failures": len(tests.failures) + len(tests.errors),

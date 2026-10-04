@@ -1,0 +1,94 @@
+{
+  "contract": "metadata/experiment_contract.schema.json",
+  "methods": [
+    "weighted_linear_regression"
+  ],
+  "exposure": [
+    "commute_5h"
+  ],
+  "outcomes": [
+    "sleep_weekday_min",
+    "personal_hygiene_weekday_min",
+    "household_conversation_weekday_min",
+    "leisure_weekday_min"
+  ],
+  "covariates": [
+    "work_weekday_min",
+    "age",
+    "sex",
+    "state"
+  ],
+  "population_filters": [
+    "states",
+    "age_min",
+    "age_max",
+    "sexes"
+  ],
+  "hypothesis_ids": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "uncertainty": [
+    "psu_cluster_CR1_t"
+  ],
+  "supported": {
+    "weighted_linear_regression": true,
+    "population_filter_stratification": true,
+    "binary_moderator_main_effect": true,
+    "exposure_x_binary_moderator_interaction": true,
+    "formal_interaction_coefficient_inference": true,
+    "derived_group_slopes_from_full_covariance": true,
+    "nonlinear_terms": false,
+    "multi_category_interactions": false,
+    "multiple_moderators": false,
+    "equivalence_testing": false,
+    "p_values": false,
+    "full_complex_survey_variance": false
+  },
+  "interaction": {
+    "spec_field": "interaction",
+    "type": "binary_moderator",
+    "binary_moderators": {
+      "sex": [
+        "male",
+        "female"
+      ],
+      "state": [
+        "09",
+        "15"
+      ],
+      "has_child_u15": [
+        false,
+        true
+      ],
+      "has_minor_u18": [
+        false,
+        true
+      ]
+    },
+    "moderators_requiring_both_levels_in_population": {
+      "sex": "sexes",
+      "state": "states"
+    },
+    "hypothesis_ids": [
+      "H3",
+      "H4"
+    ],
+    "model": "Y = b0 + b_exposure X + b_moderator M + b_interaction X*M + covariates; M = 1 if moderator == comparison_level, 0 if reference_level",
+    "estimand": "b_interaction: difference in the exposure slope (comparison minus reference group)",
+    "comparison_group_slope": "b_exposure + b_interaction with variance V_ee + V_ii + 2 V_ei",
+    "moderator_in_covariates": "removed from covariates; its main effect enters once via the interaction",
+    "missing_moderator": "excluded by model-specific complete cases, counted, never assigned to a group",
+    "interpretation_statuses": [
+      "INTERVAL_EXCLUDES_ZERO",
+      "INCONCLUSIVE_INTERVAL_INCLUDES_ZERO"
+    ]
+  },
+  "limitations": [
+    "CR1 PSU-cluster uncertainty approximates, and is not, full ENUT complex-survey variance.",
+    "Observational, cross-sectional data: estimates are associations, not causal effects.",
+    "An interaction interval that includes zero is inconclusive; equivalence is not assessed."
+  ]
+}
