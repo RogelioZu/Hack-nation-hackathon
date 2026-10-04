@@ -1902,6 +1902,7 @@
         "lost": [],
         "schemaBefore": "7e3e6ce0a513b902335017f7651842440552bdf4ae0596fce04f7a01c9789dd0",
         "schemaAfter": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+        "engineChanged": true,
         "capabilitiesKey": "metadata/experiment_engine_capabilities.json",
         "supported": [
           {
@@ -1970,6 +1971,7 @@
         "lost": [],
         "schemaBefore": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
         "schemaAfter": "fae00341c1a335e82ce067b86bb7c3c7e210d757ef12ebefea5fc94b8df70ba8",
+        "engineChanged": false,
         "capabilitiesKey": "metadata/experiment_engine_capabilities.json",
         "supported": [
           {

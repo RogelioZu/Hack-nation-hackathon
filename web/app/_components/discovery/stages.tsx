@@ -630,13 +630,19 @@ export function CapabilityBody({ changes }: { changes: CapabilityChangeView[] })
                 schema sha256 {c.schemaBefore.slice(0, 12)}… → {c.schemaAfter.slice(0, 12)}…
               </p>
             )}
+            {!c.engineChanged && (
+              <p className="mt-2 text-body-sm text-gray-900">
+                The engine files hash the same in both audits (schema, method registry, capability export): the capability audit changed,
+                not the engine.
+              </p>
+            )}
             <p className="mt-2 text-body-sm text-gray-700">
               {c.humanReview ? (
                 <>
                   Human review: <ArtifactChip artifactKey={c.humanReview} />
                 </>
               ) : (
-                "No human review artifact records this engine change."
+                `No human review artifact records this ${c.engineChanged ? "engine" : "audit"} change.`
               )}
             </p>
           </li>
@@ -665,7 +671,7 @@ export function CapabilityBody({ changes }: { changes: CapabilityChangeView[] })
 
 // --- 8 · Decision history ---------------------------------------------------------
 
-export function DecisionHistory({ ds, changes }: { ds: DecisionView[]; changes: CapabilityChangeView[] }) {
+export function DecisionHistory({ ds, changes, reviews = [] }: { ds: DecisionView[]; changes: CapabilityChangeView[]; reviews?: ReviewView[] }) {
   return (
     <>
       <p className={`${support} mb-4`}>Every decision is kept. Each re-run is a new artifact; none replaces the one before it.</p>
@@ -677,7 +683,8 @@ export function DecisionHistory({ ds, changes }: { ds: DecisionView[]; changes: 
               {change && (
                 <p className="my-2 ml-[7px] flex flex-wrap items-center gap-2 border-l-2 border-dashed border-blue-300 py-1 pl-5 text-body-sm text-blue-700">
                   <Cpu aria-hidden size={15} />
-                  Engine capability changed: <span className="font-mono">{[...change.gained, ...change.lost].join(", ")}</span>
+                  {change.engineChanged ? "Engine capability changed" : "Capability audit changed (engine unchanged)"}:{" "}
+                  <span className="font-mono">{[...change.gained, ...change.lost].join(", ")}</span>
                 </p>
               )}
               <div className={`grid grid-cols-[1rem_minmax(0,1fr)] gap-x-4 py-2.5 ${i > 0 ? "border-t border-gray-200" : ""}`}>
@@ -706,6 +713,36 @@ export function DecisionHistory({ ds, changes }: { ds: DecisionView[]; changes: 
                       <ArtifactChip artifactKey={k} />
                     </p>
                   ))}
+                  {/* The first decision's rationale is shown in full above; each reassessment keeps its own, in the Director's words. */}
+                  {i > 0 && (d.rationale || d.alternatives.length > 0) && (
+                    <details className="group mt-1.5">
+                      <summary className="cursor-pointer list-none text-body-sm font-semibold text-blue-600 hover:text-blue-700 [&::-webkit-details-marker]:hidden">
+                        <span className="group-open:hidden">Show the Director&rsquo;s rationale</span>
+                        <span className="hidden group-open:inline">Hide the Director&rsquo;s rationale</span>
+                      </summary>
+                      {d.rationale && <p className={`mt-2 ${support}`}>{d.rationale}</p>}
+                      {reviews
+                        .filter((rv) => d.approvedBy.includes(rv.artifact.key) && rv.notEndorsed.length > 0)
+                        .map((rv) => (
+                          <p key={rv.artifact.key} className="mt-2 flex flex-wrap items-center gap-2 text-body-sm font-semibold text-gray-900">
+                            <TriangleAlert aria-hidden size={15} className="text-yellow-700" />
+                            Parts of this rationale are not endorsed by
+                            <ArtifactChip artifactKey={rv.artifact.key} />
+                            (see Human approval below).
+                          </p>
+                        ))}
+                      {d.alternatives.length > 0 && (
+                        <ul className="mt-2 space-y-2">
+                          {d.alternatives.map((a) => (
+                            <li key={a.id} className="text-body-sm text-gray-700">
+                              {a.key ? <ArtifactChip artifactKey={a.key} className="mr-2" /> : <span className="mr-2 font-mono">{a.id}</span>}
+                              {a.reason}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </details>
+                  )}
                 </div>
               </div>
             </li>

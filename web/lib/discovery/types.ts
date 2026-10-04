@@ -279,6 +279,8 @@ export interface CapabilityChangeView {
   lost: string[];
   schemaBefore: string | null;
   schemaAfter: string | null;
+  // False when both audits hash the same engine files (schema, method registry, capability export): only the audit changed.
+  engineChanged: boolean;
   capabilitiesKey: string | null; // metadata/experiment_engine_capabilities.json
   supported: { name: string; supported: boolean }[];
   humanReview: string | null; // review key, when an artifact records one

@@ -790,6 +790,10 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
     const lost = names.filter((n) => sb[n] === true && sa[n] === false);
     if (!gained.length && !lost.length) continue;
     const engineReview = reviews.find((rv) => /CAPABILITY|ENGINE/i.test(rv.type));
+    // The engine changed when any hashed engine file differs between the two audits (a file first hashed later counts).
+    const engineChanged = ["schema_sha256", "registry_sha256", "engine_capabilities_sha256"].some(
+      (k) => str(after[k]) != null && str(before[k]) !== str(after[k]),
+    );
     capabilityChanges.push({
       from: { id: decisions[i - 1].id, key: decisions[i - 1].artifact.key },
       to: { id: decisions[i].id, key: decisions[i].artifact.key },
@@ -797,6 +801,7 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
       lost,
       schemaBefore: str(before.schema_sha256),
       schemaAfter: str(after.schema_sha256),
+      engineChanged,
       capabilitiesKey: capabilitiesRef?.key ?? null,
       supported: Object.entries(obj(obj(capabilitiesRaw?.data).supported)).map(([name, v]) => ({ name, supported: v === true })),
       humanReview: engineReview?.artifact.key ?? null,
@@ -830,8 +835,9 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
     });
 
   // --- Scientific updates: hypothesis status changes recorded by critiques of follow-up experiments.
+  // Oldest critique first (f.critiques is newest first), so the latest critique's assessment is the one that sticks.
   const updates: ScientificUpdateView[] = followUps.flatMap((f) =>
-    f.critiques.flatMap((c) => {
+    [...f.critiques].reverse().flatMap((c) => {
       const d = obj(critiqueRaws.find((x) => x.path === c.artifact.key)?.data);
       const su = obj(d.scientific_update);
       return arr(d.hypothesis_assessments)

@@ -22,7 +22,9 @@ export async function getDiscovery(mode: DiscoveryMode, session?: string): Promi
   await connection();
   const loadedAt = new Date().toISOString();
   const root = repoRoot();
-  const liveReachable = existsSync(path.join(root, "reports", "experiments"));
+  // A deployment can carry stray parts of the repository (seen on Vercel: /?mode=live rendered an empty run), so LIVE
+  // needs the whole layout the agents write into; otherwise it falls back to the replay bundle and says so.
+  const liveReachable = ["initial_state.json", "reports/experiments", "reports/discovery"].every((p) => existsSync(path.join(root, p)));
 
   if (mode === "live" && liveReachable) {
     let raw = (await collectArtifacts(root)) as RawArtifact[];

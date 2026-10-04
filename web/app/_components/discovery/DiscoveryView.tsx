@@ -85,13 +85,18 @@ function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/** Centres a stage once it is laid out (a stage that just revealed has no height on the first frame). */
+/**
+ * Brings a stage into view once it is laid out (a stage that just revealed has no height on the first frame): centred
+ * when it fits, else from its top (below the sticky header, via scroll-margin) so its title and lead are on screen.
+ */
 function scrollToStage(key: string, smooth = true) {
   let tries = 0;
   const attempt = () => {
     const el = document.getElementById(`stage-${key}`);
-    if (el && el.getBoundingClientRect().height > 0) {
-      el.scrollIntoView({ behavior: smooth && !reducedMotion() ? "smooth" : "auto", block: "center" });
+    const height = el?.getBoundingClientRect().height ?? 0;
+    if (el && height > 0) {
+      const fits = height <= window.innerHeight - Number.parseFloat(getComputedStyle(el).scrollMarginTop || "0");
+      el.scrollIntoView({ behavior: smooth && !reducedMotion() ? "smooth" : "auto", block: fits ? "center" : "start" });
     } else if (tries++ < 30) {
       requestAnimationFrame(attempt);
     }
@@ -127,7 +132,7 @@ function PartBody({ part, d }: { part: StagePart; d: Discovery }) {
     case "capability":
       return <CapabilityBody changes={d.capabilityChanges} />;
     case "history":
-      return <DecisionHistory ds={d.decisions} changes={d.capabilityChanges} />;
+      return <DecisionHistory ds={d.decisions} changes={d.capabilityChanges} reviews={d.reviews} />;
     case "approval":
       return <ApprovalBody rvs={reviews} />;
     case "experiment":
