@@ -2,12 +2,33 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { ChevronLeft, ChevronRight, Hourglass, Pause, Play, TriangleAlert } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  ArrowRight,
+  Braces,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Database,
+  FastForward,
+  Hourglass,
+  House,
+  LoaderCircle,
+  Pause,
+  Play,
+  RotateCcw,
+  ShieldCheck,
+  TriangleAlert,
+  UserCheck,
+  Waypoints,
+} from "lucide-react";
+import InteractionPlot from "./InteractionPlot";
 import Wordmark from "../Wordmark";
-import type { DiscoveryPayload, DiscoveryRunViewModel as Discovery, EvidenceView, Stage, StageKey } from "@/lib/discovery/types";
+import type { DiscoveryPayload, DiscoveryRunViewModel as Discovery, EvidenceView, Stage } from "@/lib/discovery/types";
 import Inspector from "./Inspector";
-import { ArtifactChip, Awaiting, DiscoveryUiContext, StageMarker, TYPE, TypeBadge, VerbatimList } from "./primitives";
+import Overview from "./Overview";
+import { ArtifactChip, Awaiting, DiscoveryUiContext, PlainBox, StageMarker, TYPE, TypeBadge, TypeMark, VerbatimList } from "./primitives";
+import ExperimentGuide, { ExperimentCard } from "./Experiments";
 import {
   ApprovalBody,
   BaselineBody,
@@ -15,6 +36,7 @@ import {
   CritiqueBody,
   DecisionBody,
   DecisionHistory,
+  EvidenceBody,
   FollowUpBody,
   HypothesesBody,
   ProposalsBody,
@@ -25,25 +47,16 @@ import {
 } from "./stages";
 import type { StagePart } from "@/lib/discovery/types";
 
-// Replay clock (docs/DEMO_STORYBOARD.md): how long each recorded stage holds, in seconds. Evidence, the new experiment
-// and the scientific update hold longest. Stages still awaiting agents share one beat as the "Next in the loop" band;
-// then the whole chain is shown again before the clock stops. Play is optional: ← → step through the same stages.
-const HOLD: Record<StageKey, number> = {
-  question: 4,
-  baseline: 8,
-  critique: 6,
-  planning: 8,
-  decision: 10,
-  followup: 8,
-  update: 8,
-};
-const LATER_HOLD = 4;
-const BAND_HOLD = 8;
-const OVERVIEW_HOLD = 3;
+// Console pacing (milliseconds): the agent "works" while its saved artifacts are listed one by one, then its stage is
+// revealed and stays alone on screen for a reading beat before the next agent starts. Space pauses, Esc skips to the end.
+const FIRST_LINE_MS = 1100;
+const LINE_MS = 650;
+const REVEAL_MS = 700;
+const READ_MS = 2600;
+const MAX_LINES = 6;
+const HUMAN_MS = 1800; // a human gate stays open a little longer before it closes
 const LIVE_REFRESH_MS = 3000;
 const FRESH_MS = 8000;
-
-const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
 /** Index of the first stage after the last recorded one: from there on, every stage waits for agents. */
 function tailStart(stages: Stage[]): number {
@@ -52,18 +65,6 @@ function tailStart(stages: Stage[]): number {
     if (s.recorded) last = i;
   });
   return last + 1;
-}
-
-function timeline(stages: Stage[]) {
-  const tail = tailStart(stages);
-  const cues: number[] = [];
-  let t = 0;
-  stages.forEach((s, i) => {
-    cues.push(t);
-    if (i < tail) t += HOLD[s.key] ?? LATER_HOLD; // every awaiting stage shares the band's cue
-  });
-  const overview = tail < stages.length ? t + BAND_HOLD : t;
-  return { cues, overview, end: overview + OVERVIEW_HOLD, tail };
 }
 
 /** The evidence the lab currently stands on: the latest follow-up with a result, else the first experiment. */
@@ -136,10 +137,26 @@ function PartBody({ part, d }: { part: StagePart; d: Discovery }) {
     case "approval":
       return <ApprovalBody rvs={reviews} />;
     case "experiment":
-      return <FollowUpBody fus={d.followUps} />;
+      return (
+        <>
+          {d.followUps[0] && (
+            <PlainBox>
+              <p className="font-semibold">{d.followUps[0].experiment.plain.title}</p>
+              <p className="mt-1">{d.followUps[0].experiment.plain.what}</p>
+              {d.followUps[0].experiment.plain.why && <p className="mt-1 text-body-sm text-gray-700">{d.followUps[0].experiment.plain.why}</p>}
+            </PlainBox>
+          )}
+          <FollowUpBody fus={d.followUps} />
+        </>
+      );
     case "critique": {
       const cs = d.followUps.flatMap((f) => f.critiques);
-      return cs[0] ? <CritiqueBody c={cs[0]} earlier={cs.slice(1)} handedOn={false} /> : null;
+      return cs[0] ? (
+        <>
+          <PlainBox>{cs[0].plain}</PlainBox>
+          <CritiqueBody c={cs[0]} earlier={cs.slice(1)} handedOn={false} />
+        </>
+      ) : null;
     }
   }
 }
@@ -160,10 +177,22 @@ function StageBody({ stage, d, listening }: { stage: Stage; d: Discovery; listen
     case "question":
       return <QuestionBody q={d.question} />;
     case "baseline":
-      return d.baseline ? <BaselineBody exp={d.baseline} ev={d.baselineEvidence} /> : null;
+      return d.baseline ? (
+        <>
+          <PlainBox>
+            <p className="font-semibold">{d.baseline.plain.title}</p>
+            <p className="mt-1">{d.baseline.plain.what}</p>
+            {d.baseline.plain.why && <p className="mt-1 text-body-sm text-gray-700">{d.baseline.plain.why}</p>}
+          </PlainBox>
+          <BaselineBody exp={d.baseline} ev={d.baselineEvidence} />
+        </>
+      ) : null;
     case "critique":
       return d.baselineCritiques[0] ? (
-        <CritiqueBody c={d.baselineCritiques[0]} earlier={d.baselineCritiques.slice(1)} handedOn={d.hypotheses.length > 0} />
+        <>
+          <PlainBox>{d.baselineCritiques[0].plain}</PlainBox>
+          <CritiqueBody c={d.baselineCritiques[0]} earlier={d.baselineCritiques.slice(1)} handedOn={d.hypotheses.length > 0} />
+        </>
       ) : null;
     case "update":
       return <UpdateHero us={d.updates} />;
@@ -222,6 +251,7 @@ function StageItem({
             dark ? "bg-blue-900 text-white" : stage.recorded ? "bg-white" : "bg-gray-50 outline-[1.5px] outline-dashed -outline-offset-[1.5px] outline-gray-300"
           } ${animate ? "stage-enter" : ""} ${fresh ? "fresh" : ""} ${active ? "ring-2 ring-blue-300" : ""}`}
         >
+          <p className={`mb-3 text-caption font-semibold tracking-[0.04em] uppercase ${dark ? "text-blue-100" : "text-blue-700"}`}>{stage.agent}</p>
           <header className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-3">
             <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
               <h2 id={`stage-${stage.key}-title`} className={`text-h4 sm:text-h3 ${dark ? "text-white" : "text-gray-900"}`}>
@@ -247,8 +277,10 @@ function StageItem({
                 )}
               </span>
             )}
+            <p className={`w-full max-w-[64ch] text-body-sm ${dark ? "text-blue-100" : "text-gray-700"}`}>{stage.purpose}</p>
           </header>
           {stage.recorded ? <StageBody stage={stage} d={d} listening={listening} /> : <Awaiting {...stage.awaiting} listening={listening} />}
+          {stage.recorded && <HandoffPanel stage={stage} d={d} dark={dark} />}
         </article>
       ) : (
         <div id={`stage-${stage.key}`} className="flex min-h-[68px] items-center gap-3 rounded-lg px-1 sm:min-h-[84px]">
@@ -374,16 +406,325 @@ function NextInLoop({
   );
 }
 
-// --- Top bar -----------------------------------------------------------------
+// --- Console pieces ------------------------------------------------------------
 
-function GhostButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+type WorkLine = { key: string; kind: "check" | "artifact" | "human"; text: string; id?: string; path?: string };
+
+/** What an agent does during its stage, in order: the validations its tools run, then each artifact it saves. */
+function workLines(stage: Stage, d: Discovery): WorkLine[] {
+  const seen = new Set<string>();
+  const saved = stage.artifactKeys
+    .map((k) => d.artifacts[k])
+    .filter((a) => a && !seen.has(a.id) && seen.add(a.id))
+    .slice(0, MAX_LINES)
+    .map((a): WorkLine => ({ key: a.key, kind: a.type === "REVIEW" ? "human" : "artifact", text: a.label, id: a.id, path: a.path }));
+  return [...stage.checks.map((c, i): WorkLine => ({ key: `check-${i}`, kind: "check", text: c })), ...saved];
+}
+
+/** The agent at work: who, what it is doing, each check and artifact as it lands, and human gates as they open and close. */
+function AgentWorking({ stage, d, lines, paused }: { stage: Stage; d: Discovery; lines: number; paused: boolean }) {
+  const all = workLines(stage, d);
+  const shown = all.slice(0, lines);
+  return (
+    <li id="agent-working" className="relative grid scroll-mt-28 grid-cols-[32px_minmax(0,1fr)] gap-x-3 pb-5 sm:gap-x-5">
+      <div className="pt-[18px] sm:pt-[22px]">
+        <span className="relative z-10 flex size-8 items-center justify-center rounded-sm bg-white text-blue-600 ring-1 ring-inset ring-blue-300">
+          <LoaderCircle aria-hidden size={16} strokeWidth={2.25} className={paused ? "" : "animate-spin"} />
+        </span>
+      </div>
+      <div className="stage-enter rounded-lg bg-white p-5 ring-1 ring-blue-200 sm:p-6" aria-live="polite">
+        <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-gray-900">
+          <TypeMark type={stage.type} />
+          {stage.agent}
+          <span className="text-body-sm font-medium text-gray-700">· step {stage.number} of {d.stages.length}</span>
+        </p>
+        <p className="mt-2 text-body text-gray-700">
+          {stage.working}
+          {!paused && <span aria-hidden className="thinking-dots" />}
+          {paused && <span className="ml-2 text-body-sm font-semibold text-gray-900">Paused</span>}
+        </p>
+        {shown.length > 0 && (
+          <ul className="mt-4 space-y-2 border-t border-gray-200 pt-3">
+            {shown.map((l, i) => {
+              const pending = i === shown.length - 1 && !paused;
+              return (
+                <li key={l.key} className="stage-enter flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-body-sm text-gray-700">
+                  {l.kind === "human" ? (
+                    pending ? (
+                      <Hourglass aria-hidden size={15} strokeWidth={2} className="shrink-0 text-yellow-700" />
+                    ) : (
+                      <UserCheck aria-hidden size={15} strokeWidth={2} className="shrink-0 text-gray-900" />
+                    )
+                  ) : pending && l.kind === "check" ? (
+                    <LoaderCircle aria-hidden size={15} strokeWidth={2.25} className="shrink-0 animate-spin text-blue-600" />
+                  ) : (
+                    <Check aria-hidden size={15} strokeWidth={2.5} className="shrink-0 text-green-600" />
+                  )}
+                  {l.kind === "check" && <span>{l.text}</span>}
+                  {l.kind === "artifact" && (
+                    <>
+                      <span className="font-semibold text-gray-900">Saved</span>
+                      <span className="font-mono text-caption text-gray-900">{l.id}</span>
+                      <span className="min-w-0 truncate font-mono text-caption text-gray-500">{l.path}</span>
+                    </>
+                  )}
+                  {l.kind === "human" && (
+                    <>
+                      <span className="font-semibold text-gray-900">{pending ? "Waiting for human approval" : "Approved by the project lead"}</span>
+                      <span className="font-mono text-caption text-gray-900">{l.id}</span>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    </li>
+  );
+}
+
+/** The real JSON each agent handed on, excerpted: agents exchange contracts, not chat. */
+function HandoffPanel({ stage, d, dark }: { stage: Stage; d: Discovery; dark: boolean }) {
+  const [open, setOpen] = useState(false);
+  const refs = stage.artifactKeys.map((k) => d.artifacts[k]).filter(Boolean);
+  const [active, setActive] = useState(refs[0]?.key ?? null);
+  if (!refs.length) return null;
+  const a = refs.find((r) => r.key === active) ?? refs[0];
+  return (
+    <div className={`mt-6 border-t pt-4 ${dark ? "border-blue-700" : "border-gray-200"}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className={`inline-flex items-center gap-2 rounded-full text-body-sm font-semibold ${dark ? "text-blue-100 hover:text-white" : "text-blue-600 hover:text-blue-700"}`}
+      >
+        <Braces aria-hidden size={15} strokeWidth={2.25} />
+        {open ? "Hide agent handoff" : "Inspect agent handoff"}
+      </button>
+      {open && (
+        <div className="stage-enter mt-3 overflow-hidden rounded-md bg-gray-900 text-gray-100">
+          <div className="flex flex-wrap gap-1 border-b border-gray-700 p-2">
+            {refs.map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => setActive(r.key)}
+                aria-pressed={r.key === a.key}
+                className={`rounded-sm px-2 py-1 font-mono text-caption ${r.key === a.key ? "bg-blue-500 text-white" : "text-gray-300 hover:bg-gray-700"}`}
+              >
+                {r.id}
+              </button>
+            ))}
+          </div>
+          <p className="px-4 pt-3 font-mono text-micro text-gray-400">
+            {a.path} · excerpt: long lists and text shortened
+          </p>
+          <pre className="max-h-96 overflow-auto px-4 pt-2 pb-4 font-mono text-caption leading-5 whitespace-pre-wrap [overflow-wrap:anywhere]">
+            {JSON.stringify(a.handoff, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const AGENTS: { name: string; producer: string; role: string }[] = [
+  { name: "Discovery Director", producer: "discovery_director", role: "Chooses what to investigate next" },
+  { name: "Scientific Critic", producer: "scientific_critic", role: "Judges reliability, names what is open" },
+  { name: "Hypothesis Agent", producer: "hypothesis_agent", role: "Proposes falsifiable explanations" },
+  { name: "Experiment Planner", producer: "experiment_planner", role: "Designs competing experiments" },
+  { name: "Experiment Runner", producer: "Deterministic engine", role: "Runs the approved spec on the engine" },
+  { name: "Literature Agent", producer: "literature_agent", role: "Retrieves cited evidence (INEGI, OpenAlex)" },
+  { name: "Data Steward", producer: "data_steward", role: "Checks the data can test the hypothesis" },
+];
+
+/** The landing: what the lab is, where the data comes from, how it works, and the question the agents will take on. */
+function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRun: () => void; onFull: () => void }) {
+  const producers = Object.values(d.artifacts).map((a) => a.producer ?? "");
+  const experiments = [...(d.baseline ? [d.baseline] : []), ...d.followUps.map((f) => f.experiment)];
+  const ran = (p: string) => producers.some((x) => x.includes(p));
+  const n = d.dataset?.populationN ?? d.baselineEvidence?.sampleSize ?? null;
+  const steps: { title: string; text: string }[] = [
+    { title: "The problem", text: "Long weekday commutes compete with the rest of a worker's day. Which part of personal time gives way?" },
+    { title: "Official data", text: "INEGI's National Time-Use Survey (ENUT 2024): Monday–Friday minutes per activity, with survey weights." },
+    { title: "Agents decide", text: "Specialist agents critique results, propose hypotheses and choose the next experiment. They exchange JSON, not chat." },
+    { title: "Deterministic engine", text: "Only a fixed, tested statistics engine computes numbers: every run twice, on a hash-checked dataset." },
+    { title: "Honest findings", text: "Every estimate carries its interval, and a human approves each consequential step. Inconclusive is a valid answer." },
+  ];
+  return (
+    <div className="space-y-6 py-2">
+      <section aria-labelledby="hero-title" className="rounded-xl bg-white p-6 sm:p-10">
+        <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Time Poverty Lab · Agentic scientific discovery</p>
+        <h1 id="hero-title" className="mt-3 max-w-[20ch] text-[34px] leading-[40px] font-extrabold tracking-[-0.025em] text-balance text-gray-900 sm:text-[48px] sm:leading-[54px]">
+          Agentic scientific discovery for urban time poverty
+        </h1>
+        <p className="mt-4 max-w-[62ch] text-[18px] leading-7 text-gray-700">
+          An autonomous lab where specialist AI agents, orchestrated with Omnigent, turn a research question into hypotheses,
+          choose the next experiment and run deterministic statistics on official microdata, with a human approving each
+          consequential step.
+        </p>
+        <ul className="mt-6 flex flex-wrap gap-2">
+          {[
+            { icon: Database, label: "Dataset", value: `INEGI ENUT 2024${n != null ? ` · n = ${n.toLocaleString("en-US")} workers` : ""} · CDMX & Edomex` },
+            { icon: Waypoints, label: "Orchestration", value: "Omnigent · Databricks model serving" },
+            { icon: ShieldCheck, label: "Paradigm", value: "Observational & cross-sectional · no causal claims" },
+          ].map(({ icon: Icon, label, value }) => (
+            <li key={label} className="flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-md bg-gray-50 px-3 py-2 text-body-sm ring-1 ring-gray-200 ring-inset">
+              <Icon aria-hidden size={16} strokeWidth={2} className="shrink-0 text-blue-600" />
+              <span className="font-semibold text-gray-900">{label}</span>
+              <span className="text-gray-700">{value}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <button
+            type="button"
+            onClick={onRun}
+            className="flex h-12 items-center gap-2 rounded-full bg-blue-500 pr-6 pl-5 text-[17px] font-semibold text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+          >
+            <Play aria-hidden size={16} strokeWidth={2.5} />
+            Start investigation
+          </button>
+          <button type="button" onClick={onFull} className="text-body-sm font-semibold text-blue-600 hover:text-blue-700">
+            Skip to the full record <ArrowRight aria-hidden size={14} className="inline" />
+          </button>
+        </div>
+      </section>
+
+      <section aria-labelledby="how-title">
+        <h2 id="how-title" className="px-1 text-h4 text-gray-900">
+          How the lab works
+        </h2>
+        <ol className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {steps.map(({ title, text }, i) => (
+            <li key={title} className="rounded-lg bg-white p-5">
+              <span className="flex size-7 items-center justify-center rounded-sm bg-blue-50 text-caption font-bold text-blue-700 tabular">{i + 1}</span>
+              <p className="mt-3 text-body font-semibold text-gray-900">{title}</p>
+              <p className="mt-2 text-body-sm text-gray-700">{text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <section aria-labelledby="question-title" className="rounded-xl bg-white p-6 sm:p-8">
+          <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">The question the agents will investigate</p>
+          <h2 id="question-title" className="sr-only">
+            Research question
+          </h2>
+          <p className="mt-3 text-[18px] leading-7 font-medium text-gray-900">{d.question.text}</p>
+          <ul className="mt-4 flex flex-wrap gap-1.5">
+            {d.question.population.map((p) => (
+              <li key={p} className="rounded-sm bg-gray-50 px-2 py-1 text-caption text-gray-700">
+                {p}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-body-sm text-gray-700">
+            Times are total Monday–Friday minutes; the exposure is five extra hours of weekday commuting (+300 minutes). The
+            investigation replays the recorded Omnigent session, step by step, from {source}.
+          </p>
+        </section>
+        <section aria-labelledby="agents-title" className="rounded-xl bg-white p-6 sm:p-8">
+          <h2 id="agents-title" className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">
+            The agents
+          </h2>
+          <ul className="mt-3 divide-y divide-gray-100">
+            {AGENTS.map((a) => (
+              <li key={a.name} className="flex items-start justify-between gap-3 py-2">
+                <span className="min-w-0">
+                  <span className="block text-body-sm font-semibold text-gray-900">{a.name}</span>
+                  <span className="block text-caption text-gray-700">{a.role}</span>
+                </span>
+                <span
+                  className={`shrink-0 rounded-sm px-2 py-0.5 text-micro font-semibold ${ran(a.producer) ? "bg-blue-50 text-blue-700" : "bg-gray-50 text-gray-700"}`}
+                >
+                  {ran(a.producer) ? "In this session" : "Implemented, not in this session"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      {experiments.length > 0 && (
+        <section aria-labelledby="experiments-title">
+          <h2 id="experiments-title" className="px-1 text-h4 text-gray-900">
+            The experiments the agents ran
+          </h2>
+          <p className="mt-1 max-w-[72ch] px-1 text-body-sm text-gray-700">
+            An experiment is one fixed statistical model run by the engine on the survey data. Each has an id so every later step can
+            point to it. What each one found appears during the investigation.
+          </p>
+          <div className="mt-3 grid gap-3 lg:grid-cols-2">
+            {experiments.map((e) => (
+              <ExperimentCard key={e.experimentId} exp={e} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+/** After the run: the key estimates with their intervals, and the limits every reading must keep. */
+function KeyResults({ d }: { d: Discovery }) {
+  const f = d.followUps.find((x) => x.interactions.length);
+  const i = f?.interactions[0];
+  return (
+    <section aria-labelledby="results-title" className="rounded-xl bg-white p-6 md:p-8">
+      <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Results and statistical rigor</p>
+      <h2 id="results-title" className="mt-2 text-h3 text-gray-900">
+        What the engine estimated
+      </h2>
+      {d.baseline && d.baselineEvidence && (
+        <div className="mt-5">
+          <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-gray-900">
+            <ArtifactChip artifactKey={d.baselineEvidence.artifact.key} /> Four time-use outcomes
+          </p>
+          <EvidenceBody ev={d.baselineEvidence} />
+        </div>
+      )}
+      {f && i && (
+        <div className="mt-8 border-t border-gray-200 pt-6">
+          <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-gray-900">
+            {f.experiment.result && <ArtifactChip artifactKey={f.experiment.result.key} />} Does the sleep association differ by {i.moderator}?
+          </p>
+          <div className="mt-4">
+            <InteractionPlot i={i} />
+          </div>
+          {i.interpretation && <p className="mt-4 text-body text-gray-900">{i.interpretation}</p>}
+        </div>
+      )}
+      <div className="mt-8 rounded-md border-l-4 border-yellow-400 bg-gray-50 p-5">
+        <p className="flex items-center gap-2 text-body font-semibold text-gray-900">
+          <TriangleAlert aria-hidden size={16} className="text-yellow-700" />
+          How to read these numbers
+        </p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-body-sm text-gray-900">
+          <li>ENUT is observational and cross-sectional: these are associations, never causal effects.</li>
+          <li>
+            Uncertainty uses survey weights (FAC_PER) with PSU-clustered CR1 errors. This approximates, and does not fully reconstruct,
+            ENUT&rsquo;s complex-survey variance.
+          </li>
+          <li>Coverage is Mexico City and the State of Mexico at state level; not a representative sample of the metropolitan area.</li>
+          <li>Both experiments still await expert human review.</li>
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function GhostButton({ label, onClick, children, disabled = false }: { label: string; onClick: () => void; children: ReactNode; disabled?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={label}
       title={label}
-      className="flex size-9 shrink-0 items-center justify-center rounded-full text-gray-900 transition-colors duration-[120ms] hover:bg-white active:bg-gray-200"
+      aria-label={label}
+      disabled={disabled}
+      className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-body-sm font-semibold whitespace-nowrap text-gray-900 transition-colors duration-[120ms] hover:bg-white active:bg-gray-200 disabled:pointer-events-none disabled:text-gray-400"
     >
       {children}
     </button>
@@ -392,37 +733,40 @@ function GhostButton({ label, onClick, children }: { label: string; onClick: () 
 
 // --- View --------------------------------------------------------------------
 
+type Phase = "idle" | "running" | "done";
+type Step = "think" | "read";
+
 export default function DiscoveryView({
   payload,
   session,
   initialStage,
+  full = false,
+  autostart = false,
 }: {
   payload: DiscoveryPayload;
   session?: string;
-  initialStage?: number; // 0-based; opens the replay paused at that stage (?stage=N)
+  initialStage?: number; // 0-based; opens the run paused after that stage (?stage=N)
+  full?: boolean; // ?view=full: the whole record at once
+  autostart?: boolean; // ?start=1: begin the run immediately
 }) {
   const { run: d, mode, liveUnavailable } = payload;
   const router = useRouter();
   const live = mode === "live" && !liveUnavailable;
   const total = d.stages.length;
-  const { cues, overview, end, tail } = useMemo(() => timeline(d.stages), [d.stages]);
-  // The band is one replay step: its cursor is the last stage, so every awaiting stage shows together.
-  const units = useMemo(() => [...Array(tail).keys(), ...(tail < total ? [total - 1] : [])], [tail, total]);
-  const toCursor = useCallback((i: number) => (i >= tail ? total - 1 : i), [tail, total]);
+  const tail = useMemo(() => tailStart(d.stages), [d.stages]);
+  // Console units: each recorded stage, then (when some still await agents) one "Next in the loop" band.
+  const units = tail + (tail < total ? 1 : 0);
 
+  const startDone = full || mode === "live";
+  const [phase, setPhase] = useState<Phase>(startDone ? "done" : initialStage != null || autostart ? "running" : "idle");
+  const [revealed, setRevealed] = useState(startDone ? units : initialStage != null ? Math.min(units, initialStage + 1) : 0);
+  const [step, setStep] = useState<Step>("read");
+  const [lines, setLines] = useState(0);
+  const [paused, setPaused] = useState(initialStage != null && !startDone);
   const [selectedKey, setSelectedKey] = useState<string | null>(() =>
     initialStage != null ? (d.stages[initialStage]?.artifactKeys[0] ?? defaultSelection(d)) : defaultSelection(d),
   );
-  const [cursor, setCursor] = useState<number | null>(initialStage != null ? toCursor(initialStage) : null); // null = whole chain
-  const [playing, setPlaying] = useState(false);
-  const [pausedMid, setPausedMid] = useState(false);
-  const [elapsed, setElapsed] = useState(initialStage != null ? (cues[initialStage] ?? 0) : 0);
   const [now, setNow] = useState(() => Date.parse(payload.loadedAt));
-  const started = useRef(0);
-  const cursorRef = useRef<number | null>(null);
-  useEffect(() => {
-    cursorRef.current = cursor;
-  }, [cursor]);
 
   // LIVE: artifacts that were not in the previous payload are marked fresh for a few seconds.
   const [arrivals, setArrivals] = useState<{ seen: Record<string, true>; at: Record<string, number> }>(() => ({
@@ -457,113 +801,192 @@ export default function DiscoveryView({
   }, [live, router]);
 
   useEffect(() => {
-    if (initialStage != null) scrollToStage(initialStage >= tail ? "band" : d.stages[initialStage].key, false);
-    // Only on first mount: later changes come from the replay controls.
+    if (initialStage != null && !startDone) scrollToStage(initialStage >= tail ? "band" : d.stages[initialStage].key, false);
+    // Only on first mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const goTo = useCallback(
-    (i: number | null, scrollKey?: string) => {
-      if (i == null) {
-        setCursor(null);
-        setSelectedKey(defaultSelection(d));
-        setTimeout(() => window.scrollTo({ top: 0, behavior: reducedMotion() ? "auto" : "smooth" }), 60);
-        return;
-      }
-      setCursor(toCursor(i));
-      const stage = d.stages[i];
-      if (stage.artifactKeys[0]) setSelectedKey(stage.artifactKeys[0]);
-      scrollToStage(scrollKey ?? (i >= tail ? "band" : stage.key));
-    },
-    [d, tail, toCursor],
-  );
+  const unitStage = (i: number): Stage => d.stages[Math.min(i, total - 1)];
+  const unitKey = (i: number) => (i >= tail ? "band" : d.stages[i].key);
+  const linesFor = useCallback((i: number) => (i >= tail ? [] : workLines(d.stages[i], d)), [d, tail]);
 
-  // REPLAY clock: reveal stages on their cues.
+  // The console clock: think (list what the agent saved) → reveal the stage → read → next agent.
   useEffect(() => {
-    if (!playing) return;
-    const id = setInterval(() => {
-      const t = (performance.now() - started.current) / 1000;
-      setElapsed(t);
-      if (t >= end) {
-        setPlaying(false);
-        return;
-      }
-      const target = t >= overview ? null : toCursor(cues.reduce((acc, c, i) => (t >= c ? i : acc), 0));
-      if (cursorRef.current !== target) {
-        cursorRef.current = target;
-        goTo(target);
-      }
-    }, 250);
-    return () => clearInterval(id);
-  }, [playing, goTo, cues, overview, end, toCursor]);
+    if (phase !== "running" || paused) return;
+    let t: ReturnType<typeof setTimeout>;
+    if (revealed >= units) {
+      t = setTimeout(() => {
+        setPhase("done");
+        scrollToStage("summary");
+      }, READ_MS);
+    } else if (step === "read") {
+      t = setTimeout(() => {
+        setStep("think");
+        setLines(0);
+        requestAnimationFrame(() => document.getElementById("agent-working")?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "nearest" }));
+      }, revealed === 0 ? 300 : READ_MS);
+    } else if (lines < linesFor(revealed).length) {
+      const lastHuman = lines > 0 && linesFor(revealed)[lines - 1].kind === "human";
+      t = setTimeout(() => setLines((l) => l + 1), lines === 0 ? FIRST_LINE_MS : lastHuman ? HUMAN_MS : LINE_MS);
+    } else {
+      t = setTimeout(() => {
+        const i = revealed;
+        setRevealed(i + 1);
+        setStep("read");
+        const k = unitStage(i).artifactKeys[0];
+        if (k && i < tail) setSelectedKey(k);
+        scrollToStage(unitKey(i));
+      }, lines === 0 ? FIRST_LINE_MS + REVEAL_MS : linesFor(revealed)[lines - 1]?.kind === "human" ? HUMAN_MS : REVEAL_MS);
+    }
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, paused, revealed, step, lines, units, linesFor]);
 
-  const play = useCallback(() => {
-    if (playing) {
-      setPlaying(false);
-      setPausedMid(true);
+  const run = useCallback(() => {
+    setPhase("running");
+    setRevealed(0);
+    setStep("read");
+    setLines(0);
+    setPaused(false);
+    setSelectedKey(null);
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  // Stepper: Next reveals the next stage at once, Previous hides the last one. Both pause the console.
+  const next = useCallback(() => {
+    setPaused(true);
+    if (revealed >= units) {
+      setPhase("done");
+      scrollToStage("summary");
       return;
     }
-    const from = elapsed > 0 && elapsed < end ? elapsed : 0;
-    started.current = performance.now() - from * 1000;
-    if (from === 0) goTo(0);
-    setElapsed(from);
-    setPausedMid(false);
-    setPlaying(true);
-  }, [playing, elapsed, end, goTo]);
+    const i = revealed;
+    setPhase("running");
+    setRevealed(i + 1);
+    setStep("read");
+    setLines(0);
+    const k = unitStage(i).artifactKeys[0];
+    if (k && i < tail) setSelectedKey(k);
+    scrollToStage(unitKey(i));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealed, units, tail]);
+  const previous = useCallback(() => {
+    setPaused(true);
+    setPhase("running");
+    setStep("read");
+    setLines(0);
+    const i = Math.max(1, phase === "done" ? units : revealed - 1);
+    setRevealed(i);
+    const k = unitStage(i - 1).artifactKeys[0];
+    if (k && i - 1 < tail) setSelectedKey(k);
+    scrollToStage(unitKey(i - 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealed, units, tail, phase]);
 
-  const step = useCallback(
-    (delta: number) => {
-      setPlaying(false);
-      setPausedMid(false);
-      const pos = cursor == null ? (delta > 0 ? -1 : units.length) : units.indexOf(toCursor(cursor));
-      const next = units[Math.min(units.length - 1, Math.max(0, pos + delta))];
-      setElapsed(cues[next] ?? 0);
-      goTo(next);
-    },
-    [cursor, units, cues, goTo, toCursor],
-  );
+  // Back to the landing page: the run resets, the hero and the start button return.
+  const home = useCallback(() => {
+    setPhase("idle");
+    setRevealed(0);
+    setStep("read");
+    setLines(0);
+    setPaused(false);
+    setSelectedKey(defaultSelection(d));
+    window.scrollTo({ top: 0 });
+    if (window.location.search) window.history.replaceState(null, "", window.location.pathname);
+  }, [d]);
+  useEffect(() => {
+    window.addEventListener("tiempo:home", home);
+    return () => window.removeEventListener("tiempo:home", home);
+  }, [home]);
 
-  const restart = useCallback(() => {
-    setPlaying(false);
-    setPausedMid(false);
-    setElapsed(0);
-    goTo(0);
-  }, [goTo]);
+  const skip = useCallback(() => {
+    setPhase("done");
+    setRevealed(units);
+    setPaused(false);
+    setSelectedKey(defaultSelection(d));
+    scrollToStage("summary");
+  }, [units, d]);
 
   useEffect(() => {
     if (mode !== "replay") return;
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       const el = e.target as HTMLElement;
-      // Text fields and the inspector keep their own keys; the replay shortcuts work everywhere else.
-      if (el.closest("input, textarea, select, [contenteditable=true], #inspector")) return;
-      if (e.key === "ArrowRight") step(1);
-      else if (e.key === "ArrowLeft") step(-1);
-      else if (e.key === " " && !el.closest("button, a")) {
+      if (el.closest("input, textarea, select, button, a, [contenteditable=true], #inspector")) return;
+      if (e.key === " " && phase === "running") {
         e.preventDefault();
-        play();
-      } else if (e.key === "Home") restart();
-      else if (e.key === "Escape") {
-        setPlaying(false);
-        setPausedMid(false);
-        goTo(null);
-      } else return;
+        setPaused((p) => !p);
+      } else if (e.key === "ArrowRight" && phase !== "idle") next();
+      else if (e.key === "ArrowLeft" && phase !== "idle") previous();
+      else if (e.key === "Escape" && phase === "running") skip();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mode, step, play, restart, goTo]);
+  }, [mode, phase, skip, next, previous]);
 
-  const recorded = d.stages.filter((s) => s.recorded).length;
+  // Scroll spy for the section bar.
+  const [inView, setInView] = useState<string>("");
+  useEffect(() => {
+    const ids = [...d.stages.slice(0, Math.min(revealed, tail)).map((s) => `stage-${s.key}`), ...(revealed > tail ? ["stage-band"] : []), "overview"];
+    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => Boolean(el));
+    const io = new IntersectionObserver(
+      (entries) => {
+        const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (hit) setInView(hit.target.id);
+      },
+      { rootMargin: "-25% 0px -65% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [d.stages, tail, revealed, phase]);
+
   const ago = Math.max(0, Math.round((now - Date.parse(payload.loadedAt)) / 1000));
   const evidence = latestEvidence(d);
   const headline = headlineOf(d);
   const errors = d.issues.filter((i) => i.level === "error");
-  const position = cursor == null ? "Overview" : cursor >= tail ? "Next in the loop" : `Stage ${cursor + 1} of ${total}`;
+  const working = phase === "running" && step === "think" && revealed < units;
+
+  // Everything the console has shown so far, by key, display id, full id and experiment id ("EXP-001 result" → "EXP-001").
+  const revealedIds = useMemo(() => {
+    const ids = new Set<string>();
+    d.stages.slice(0, Math.min(revealed, tail)).forEach((s) =>
+      s.artifactKeys.forEach((k) => {
+        const a = d.artifacts[k];
+        ids.add(k);
+        if (!a) return;
+        ids.add(a.id);
+        if (a.fullId) ids.add(a.fullId);
+        ids.add(a.id.split(" ")[0]);
+      }),
+    );
+    return ids;
+  }, [d, revealed, tail]);
+  const done = phase === "done";
+  const isRevealed = useCallback((id: string) => done || revealedIds.has(id), [done, revealedIds]);
+
+  // A sentence for the inspector: which experiment an artifact belongs to, or what a critique concluded.
+  const explain = useCallback(
+    (key: string): string | null => {
+      const a = d.artifacts[key];
+      if (!a) return null;
+      const critique = [...d.baselineCritiques, ...d.followUps.flatMap((f) => f.critiques)].find((c) => c.artifact.key === key);
+      if (critique) return critique.plain;
+      const expId = a.sourceExperiment ?? a.id.split(" ")[0];
+      const exp = [d.baseline, ...d.followUps.map((f) => f.experiment)].find((e) => e?.experimentId === expId);
+      return exp ? `Part of ${exp.experimentId}: ${exp.plain.title}` : null;
+    },
+    [d],
+  );
 
   const ui = useMemo(
-    () => ({ selectedKey, select: setSelectedKey, fresh, artifacts: d.artifacts, commit: payload.commit }),
-    [selectedKey, fresh, d.artifacts, payload.commit],
+    () => ({ selectedKey, select: setSelectedKey, fresh, artifacts: d.artifacts, commit: payload.commit, isRevealed }),
+    [selectedKey, fresh, d.artifacts, payload.commit, isRevealed],
   );
+
+  const navItem = (current: boolean) =>
+    `flex h-9 items-center gap-2 rounded-full pr-3 pl-1.5 text-body-sm font-semibold whitespace-nowrap transition-colors duration-[120ms] ${
+      current ? "bg-white text-gray-900 shadow-[0_0_0_1px_var(--color-gray-200)]" : "text-gray-700 hover:bg-white/70 hover:text-gray-900"
+    }`;
 
   return (
     <DiscoveryUiContext.Provider value={ui}>
@@ -573,42 +996,135 @@ export default function DiscoveryView({
       >
         Skip to discovery stages
       </a>
-      <header className="sticky top-0 z-40 flex h-20 items-center gap-4 bg-gray-100 px-4 md:gap-6 md:px-8 lg:top-[var(--frame)] lg:rounded-tr-2xl">
-        {/* Replay is the only mode with a control; LIVE stays reachable for the team at /?mode=live. */}
-        <Link href="/" className="mr-auto rounded-sm text-gray-900" aria-label="tiemPO, replay from the start">
-          <Wordmark className="text-[26px] leading-none sm:text-[30px]" />
+      <header className="sticky top-0 z-40 flex min-h-20 flex-wrap items-center gap-x-4 gap-y-2 bg-gray-100 px-4 py-3 md:gap-x-6 md:px-8 lg:top-[var(--frame)] lg:rounded-tr-2xl">
+        {/* On desktop the sidebar carries the wordmark; the bar is for moving through the run. */}
+        <Link
+          href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            home();
+          }}
+          className="rounded-sm text-gray-900 lg:hidden"
+          aria-label="tiemPO, back to home"
+        >
+          <Wordmark className="text-[26px] leading-none" />
         </Link>
-        {mode === "replay" ? (
-          <div className="flex items-center gap-1" role="group" aria-label="Replay controls">
-            <span className="hidden sm:contents">
-              <GhostButton label="Previous stage (←)" onClick={() => step(-1)}>
-                <ChevronLeft aria-hidden size={18} strokeWidth={2} />
-              </GhostButton>
-            </span>
-            <button
-              type="button"
-              onClick={play}
-              title={playing ? "Pause the discovery replay (Space)" : "Start the discovery replay (Space)"}
-              className="flex h-10 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold whitespace-nowrap text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
-            >
-              {playing ? <Pause aria-hidden size={15} strokeWidth={2.5} /> : <Play aria-hidden size={15} strokeWidth={2.5} />}
-              {playing ? "Pause" : pausedMid ? "Resume" : "Start discovery"}
-            </button>
-            <GhostButton label="Next stage (→)" onClick={() => step(1)}>
-              <ChevronRight aria-hidden size={18} strokeWidth={2} />
-            </GhostButton>
-            <span className="ml-3 hidden min-w-[9.5rem] text-body-sm font-semibold text-gray-900 tabular md:block">
-              {/* Only the stage is announced; the ticking clock stays silent. */}
-              <span aria-live="polite">{position}</span>
-              {(playing || elapsed > 0) && cursor != null && (
-                <span className="block text-caption font-medium text-gray-700">
-                  {clock(elapsed)} / {clock(end)}
-                </span>
+        {phase !== "idle" && (
+          <nav aria-label="Sections" className="order-last -mx-1 w-full overflow-x-auto md:order-none md:mx-0 md:w-auto md:flex-1">
+            <ol className="flex items-center gap-1 px-1 py-1 md:px-0">
+              {d.stages.map((s, i) => {
+                const unit = Math.min(i, tail);
+                const available = unit < revealed;
+                const target = i >= tail ? "stage-band" : `stage-${s.key}`;
+                const current = available && inView === target && i <= tail;
+                return (
+                  <li key={s.key}>
+                    {available ? (
+                      <a
+                        href={`#${target}`}
+                        aria-current={current ? "location" : undefined}
+                        title={`${s.number} · ${s.title}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (s.artifactKeys[0]) setSelectedKey(s.artifactKeys[0]);
+                          scrollToStage(i >= tail ? "band" : s.key);
+                        }}
+                        className={navItem(current)}
+                      >
+                        <span
+                          aria-hidden
+                          className={`flex size-6 items-center justify-center rounded-[5px] text-caption font-bold tabular ${
+                            s.recorded ? TYPE[s.type].solid : "bg-gray-50 text-gray-700 outline-1 outline-dashed -outline-offset-1 outline-gray-400"
+                          }`}
+                        >
+                          {s.number}
+                        </span>
+                        {s.shortTitle}
+                      </a>
+                    ) : (
+                      <span className="flex h-9 items-center gap-2 rounded-full pr-3 pl-1.5 text-body-sm font-semibold whitespace-nowrap text-gray-400" aria-disabled>
+                        <span aria-hidden className="flex size-6 items-center justify-center rounded-[5px] text-caption font-bold tabular outline-1 outline-dashed -outline-offset-1 outline-gray-300">
+                          {s.number}
+                        </span>
+                        {s.shortTitle}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+              {phase === "done" && (
+                <li>
+                  <a
+                    href="#overview"
+                    aria-current={inView === "overview" ? "location" : undefined}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToStage("summary");
+                    }}
+                    className={`${navItem(inView === "overview")} pl-3`}
+                  >
+                    Summary
+                  </a>
+                </li>
               )}
-            </span>
+            </ol>
+          </nav>
+        )}
+        {mode === "replay" ? (
+          <div className="ml-auto flex items-center gap-1" role="group" aria-label="Run controls">
+            {phase === "idle" && (
+              <button
+                type="button"
+                onClick={run}
+                className="flex h-10 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold whitespace-nowrap text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+              >
+                <Play aria-hidden size={15} strokeWidth={2.5} />
+                Start investigation
+              </button>
+            )}
+            {phase !== "idle" && (
+              <GhostButton label="Back to home" onClick={home}>
+                <House aria-hidden size={16} strokeWidth={2} />
+                <span className="hidden 2xl:inline">Home</span>
+              </GhostButton>
+            )}
+            {phase !== "idle" && (
+              <GhostButton label="Previous step (←)" onClick={previous} disabled={revealed <= 1 && phase !== "done"}>
+                <ChevronLeft aria-hidden size={16} strokeWidth={2.25} />
+                <span className="hidden 2xl:inline">Previous</span>
+              </GhostButton>
+            )}
+            {phase === "running" && (
+              <>
+                <GhostButton label={paused ? "Play (Space)" : "Pause (Space)"} onClick={() => setPaused((p) => !p)}>
+                  {paused ? <Play aria-hidden size={14} strokeWidth={2.5} /> : <Pause aria-hidden size={14} strokeWidth={2.5} />}
+                  <span className="hidden 2xl:inline">{paused ? "Play" : "Pause"}</span>
+                </GhostButton>
+                <GhostButton label="Next step (→)" onClick={next}>
+                  <span className="hidden 2xl:inline">Next</span>
+                  <ChevronRight aria-hidden size={16} strokeWidth={2.25} />
+                </GhostButton>
+                <GhostButton label="Show the full record (Esc)" onClick={skip}>
+                  <FastForward aria-hidden size={14} strokeWidth={2.5} />
+                  <span className="hidden 2xl:inline">Skip to end</span>
+                </GhostButton>
+              </>
+            )}
+            {phase === "done" && (
+              <button
+                type="button"
+                onClick={run}
+                title="Run the investigation again"
+                aria-label="Run the investigation again"
+                className="flex h-9 items-center gap-2 rounded-full bg-white pr-3 pl-3 2xl:pr-4 text-body-sm font-semibold whitespace-nowrap text-blue-700 ring-1 ring-blue-300 transition-colors duration-[120ms] hover:bg-blue-50 active:bg-blue-100"
+              >
+                <RotateCcw aria-hidden size={14} strokeWidth={2.5} />
+                <span className="hidden 2xl:inline">Run again</span>
+              </button>
+            )}
           </div>
         ) : (
-          <span className="hidden items-center gap-2 text-body-sm font-semibold text-gray-900 sm:flex">
+          <span className="ml-auto hidden items-center gap-2 text-body-sm font-semibold text-gray-900 sm:flex">
             {live ? (
               <>
                 <span aria-hidden className="size-2 animate-pulse rounded-full bg-green-500" />
@@ -625,136 +1141,112 @@ export default function DiscoveryView({
         )}
       </header>
 
-      <main className="space-y-8 px-4 pb-12 md:px-8">
-        <section
-          aria-labelledby="thesis"
-          className="grid gap-6 rounded-xl bg-white p-6 md:p-8 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-center xl:gap-10"
-        >
-          <div>
-            {/* The headline is the latest evidence in the engine's own words, so it updates when a new result lands. */}
-            {/* The headline is the latest scientific update in the artifact's own words, so it changes when a new result lands. */}
-            <h1 id="thesis" className="text-[26px] leading-[32px] font-extrabold sm:text-[30px] sm:leading-[36px] tracking-[-0.02em] text-balance text-gray-900">
-              {headline?.text ?? "No research question has been recorded yet."}
-            </h1>
-            {headline && (
-              <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-gray-700">
-                {headline.keys.map((k) => (
-                  <ArtifactChip key={k} artifactKey={k} />
-                ))}
-                {evidence?.sampleSize != null && <span className="tabular">n = {evidence.sampleSize.toLocaleString("en-US")}</span>}
-                <span aria-hidden className="text-gray-300">
-                  ·
-                </span>
-                <span>{payload.source}</span>
-              </p>
-            )}
-            {errors.length > 0 && (
-              <p role="alert" className="mt-3 flex items-start gap-2 text-body-sm font-semibold text-gray-900">
-                <TriangleAlert aria-hidden size={16} className="mt-0.5 shrink-0 text-yellow-700" />
-                {errors.length} artifact problem{errors.length === 1 ? "" : "s"}: {errors[0].message}
-              </p>
-            )}
-            <p className="mt-4 max-w-[64ch] text-[17px] leading-7 text-gray-700">
-              Agents examine the evidence, name what is uncertain, decide what is worth testing next; a deterministic engine runs the
-              experiment and humans approve each consequential step. Every stage below is read from a real artifact; any stage still
-              missing waits, named, for the agent that produces it.
-            </p>
-          </div>
-
-          <div className="border-t border-gray-200 pt-5 xl:border-t-0 xl:border-l xl:pt-0 xl:pl-10">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="text-title-card text-gray-900">Discovery loop</p>
-              <p className="text-body-sm font-semibold text-gray-900 tabular">
-                {recorded} of {total} recorded
-              </p>
-            </div>
-            <ol aria-label="Stages" className="mt-3 grid grid-cols-7 gap-1">
-              {d.stages.map((s, i) => (
-                <li key={s.key}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPlaying(false);
-                      setPausedMid(false);
-                      if (mode === "replay" && cursor != null) {
-                        setElapsed(cues[i] ?? 0);
-                        goTo(i, s.key);
-                      } else {
-                        if (s.artifactKeys[0]) setSelectedKey(s.artifactKeys[0]);
-                        scrollToStage(s.key);
-                      }
-                    }}
-                    aria-label={`Stage ${s.number}, ${s.title}: ${s.recorded ? "recorded" : "awaiting agents"}`}
-                    title={`${s.number} · ${s.title}`}
-                    className={`flex h-7 w-full items-center justify-center rounded-sm text-caption font-bold tabular transition-transform duration-[120ms] hover:-translate-y-0.5 ${
-                      s.recorded ? TYPE[s.type].solid : "bg-gray-50 text-gray-700 outline-1 outline-dashed -outline-offset-1 outline-gray-400"
-                    } ${cursor === i || (cursor != null && cursor >= tail && i >= tail) ? "shadow-[0_0_0_3px_var(--color-blue-300)]" : ""}`}
+      <main className="px-4 pb-12 md:px-8">
+        {phase === "idle" ? (
+          <Hero d={d} source={payload.source} onRun={run} onFull={skip} />
+        ) : (
+          <div className="space-y-6">
+            {d.sessions.length > 1 && (
+              <nav aria-label="Discovery sessions" className="flex flex-wrap items-center gap-2 text-caption text-gray-700">
+                Session:
+                {[undefined, ...d.sessions].map((s) => (
+                  <Link
+                    key={s ?? "all"}
+                    href={`/?${new URLSearchParams({ ...(mode === "live" ? { mode: "live" } : {}), ...(s ? { session: s } : {}) })}`}
+                    aria-current={session === s ? "page" : undefined}
+                    className={`rounded-full px-3 py-1 font-mono ${session === s ? "bg-blue-500 text-white" : "bg-white text-blue-600 ring-1 ring-blue-500 hover:bg-blue-50"}`}
                   >
-                    {s.number}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
+                    {s ?? "all"}
+                  </Link>
+                ))}
+              </nav>
+            )}
 
-        {d.sessions.length > 1 && (
-          <nav aria-label="Discovery sessions" className="flex flex-wrap items-center gap-2 text-caption text-gray-700">
-            Session:
-            {[undefined, ...d.sessions].map((s) => (
-              <Link
-                key={s ?? "all"}
-                href={`/?${new URLSearchParams({ ...(mode === "live" ? { mode: "live" } : {}), ...(s ? { session: s } : {}) })}`}
-                aria-current={session === s ? "page" : undefined}
-                className={`rounded-full px-3 py-1 font-mono ${session === s ? "bg-blue-500 text-white" : "bg-white text-blue-600 ring-1 ring-blue-500 hover:bg-blue-50"}`}
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
+              <div className="min-w-0 space-y-5">
+                {/* The researcher's prompt, as a console turn. */}
+                <section aria-label="Your question" className="ml-auto max-w-[44rem] rounded-xl bg-blue-500 p-5 text-white sm:p-6">
+                  <p className="text-caption font-semibold tracking-[0.04em] text-blue-100 uppercase">Research question handed to the agents</p>
+                  <p className="mt-2 text-body">{d.question.text}</p>
+                  <p className="mt-3 text-caption text-blue-100">
+                    {mode === "replay" ? `Replaying the recorded session · ${payload.source}` : payload.source}
+                  </p>
+                </section>
+
+                <ExperimentGuide exps={[...(d.baseline ? [d.baseline] : []), ...d.followUps.map((f) => f.experiment)]} />
+
+                <section id="stages" tabIndex={-1} aria-label="Discovery stages" className="focus:outline-none">
+                  <ol>
+                    {d.stages.slice(0, Math.min(revealed, tail)).map((s, i, shownStages) => {
+                      const isLast = i === shownStages.length - 1;
+                      return (
+                        <StageItem
+                          key={s.key}
+                          stage={s}
+                          d={d}
+                          shown
+                          active={phase === "running" && isLast && step === "read"}
+                          fresh={s.artifactKeys.some((k) => fresh.has(k))}
+                          animate={phase === "running" && isLast}
+                          lineFilled={!isLast || working}
+                          last={isLast && !working && revealed <= tail}
+                          listening={live}
+                        />
+                      );
+                    })}
+                    {revealed > tail && tail < total && (
+                      <NextInLoop stages={d.stages.slice(tail)} d={d} evidence={evidence} shown active={false} listening={live} />
+                    )}
+                    {working && <AgentWorking stage={unitStage(revealed)} d={d} lines={lines} paused={paused} />}
+                  </ol>
+                </section>
+
+                {phase === "done" && (
+                  <div id="stage-summary" className="stage-enter scroll-mt-28 space-y-5">
+                    <Overview
+                      d={d}
+                      headline={headline}
+                      source={payload.source}
+                      sampleSize={evidence?.sampleSize ?? null}
+                      errors={errors.map((e) => e.message)}
+                    />
+                    <KeyResults d={d} />
+                    <div className="flex flex-wrap items-center justify-center gap-3 py-4">
+                      <button
+                        type="button"
+                        onClick={home}
+                        className="flex h-11 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+                      >
+                        <House aria-hidden size={16} strokeWidth={2} />
+                        Back to home
+                      </button>
+                      <button
+                        type="button"
+                        onClick={run}
+                        className="flex h-11 items-center gap-2 rounded-full bg-white pr-5 pl-4 text-body font-semibold text-blue-700 ring-1 ring-blue-300 transition-colors duration-[120ms] hover:bg-blue-50"
+                      >
+                        <RotateCcw aria-hidden size={15} strokeWidth={2.5} />
+                        Run the investigation again
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div
+                id="inspector"
+                className="lg:sticky lg:top-[calc(var(--frame)+92px)] lg:max-h-[calc(100dvh-2*var(--frame)-92px)] lg:self-start lg:overflow-y-auto lg:pb-3"
               >
-                {s ?? "all"}
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] 2xl:grid-cols-[minmax(0,1fr)_380px]">
-          <section id="stages" tabIndex={-1} aria-label="Discovery stages" className="focus:outline-none">
-            <ol>
-              {d.stages.slice(0, tail).map((s, i) => {
-                const shown = cursor == null || i <= cursor;
-                const next = d.stages[i + 1];
-                const nextShown = cursor == null || i + 1 <= cursor;
-                return (
-                  <StageItem
-                    key={s.key}
-                    stage={s}
-                    d={d}
-                    shown={shown}
-                    active={cursor === i}
-                    fresh={s.artifactKeys.some((k) => fresh.has(k))}
-                    animate={cursor === i}
-                    lineFilled={Boolean(next && nextShown && next.recorded && s.recorded)}
-                    last={i === total - 1}
-                    listening={live}
-                  />
-                );
-              })}
-              {tail < total && (
-                <NextInLoop
-                  stages={d.stages.slice(tail)}
-                  d={d}
-                  evidence={evidence}
-                  shown={cursor == null || cursor >= tail}
-                  active={cursor != null && cursor >= tail}
-                  listening={live}
-                />
-              )}
-            </ol>
-          </section>
-          <div
-            id="inspector"
-            className="lg:sticky lg:top-[calc(var(--frame)+92px)] lg:max-h-[calc(100dvh-2*var(--frame)-92px)] lg:self-start lg:overflow-y-auto lg:pb-3"
-          >
-            <Inspector />
+                {selectedKey ? (
+                  <Inspector explain={explain} />
+                ) : (
+                  <p className="hidden rounded-lg bg-white/60 p-5 text-body-sm text-gray-700 ring-1 ring-gray-200 lg:block">
+                    Every artifact the agents save appears here with its file, hash and producer. Select any id to inspect it.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </main>
     </DiscoveryUiContext.Provider>
   );

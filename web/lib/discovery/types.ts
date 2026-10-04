@@ -43,8 +43,10 @@ export type ArtifactType =
 /** A status exactly as an artifact writes it, plus the tone the adapter assigned to it. */
 export type Tone = "good" | "warn" | "uncertain" | "neutral";
 export interface StatusView {
-  code: string;
+  code: string; // exactly as the artifact writes it
   tone: Tone;
+  label: string; // plain-language reading of the code, from the adapter's glossary
+  meaning: string | null; // one sentence on what the code means for a researcher
 }
 
 export interface Fact {
@@ -71,6 +73,7 @@ export interface ArtifactRef {
   sourceExperiment: string | null;
   facts: Fact[];
   links: string[]; // keys of linked artifacts
+  handoff: unknown; // an excerpt of the artifact's own JSON (long lists and text shortened, local paths removed)
 }
 
 export interface Interval {
@@ -146,6 +149,8 @@ export interface ExperimentView {
   datasetUnchanged: boolean | null;
   sampleSize: number | null;
   datasetVersion: string | null;
+  // The experiment for a reader outside the project, built from the spec, the decision that chose it and its result.
+  plain: { title: string; what: string; why: string | null; finding: string | null };
 }
 
 export interface SlopeView {
@@ -185,6 +190,7 @@ export interface CritiqueView {
   formalInference: string[];
   agent: string | null;
   model: string | null;
+  plain: string; // what this critique is and what it concluded, in plain words
 }
 
 /** H1–H4 as pre-registered, with the latest status the artifacts give them. */
@@ -342,6 +348,11 @@ export interface Stage {
   key: StageKey;
   number: number;
   title: string;
+  shortTitle: string; // for the section navigation
+  purpose: string; // the scientific question this stage answers
+  agent: string; // who produced the stage, as the run's console names it
+  working: string; // what that agent was doing, shown while the stage is being revealed
+  checks: string[]; // the validations its tools run before saving, as listed in the console
   type: ArtifactType;
   recorded: boolean;
   artifactKeys: string[]; // primary artifact first

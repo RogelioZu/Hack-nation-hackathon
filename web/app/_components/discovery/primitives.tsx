@@ -26,6 +26,8 @@ interface DiscoveryUi {
   fresh: Set<string>;
   artifacts: Record<string, ArtifactRef>;
   commit: string | null; // REPLAY snapshot commit, for "open at commit" links
+  // Console replay: whether an artifact (key, id or experiment id) has appeared yet. Later results stay hidden until then.
+  isRevealed: (idOrKey: string) => boolean;
 }
 
 export const DiscoveryUiContext = createContext<DiscoveryUi>({
@@ -34,6 +36,7 @@ export const DiscoveryUiContext = createContext<DiscoveryUi>({
   fresh: new Set(),
   artifacts: {},
   commit: null,
+  isRevealed: () => true,
 });
 
 export const useDiscoveryUi = () => useContext(DiscoveryUiContext);
@@ -159,21 +162,40 @@ const TONE: Record<StatusView["tone"], { box: string; icon: LucideIcon | null; i
   neutral: { box: "bg-gray-50 text-gray-700", icon: null, iconClass: "" },
 };
 
-/** A status exactly as the artifact writes it. The tone (set by the adapter) adds an icon; the words carry the meaning. */
-export function StatusTag({ status, large = false, className = "" }: { status: StatusView | null; large?: boolean; className?: string }) {
+/**
+ * A status in plain words, with the artifact's exact code beside it. The adapter sets the tone (icon), label and the
+ * one-line meaning shown on hover; `code={false}` keeps the code for screen readers and the tooltip only.
+ */
+export function StatusTag({
+  status,
+  large = false,
+  code = true,
+  className = "",
+}: {
+  status: StatusView | null;
+  large?: boolean;
+  code?: boolean;
+  className?: string;
+}) {
   if (!status) return null;
   const t = TONE[status.tone];
   const Icon = t.icon;
+  // A one-word code whose label is the same word ("Supported") is shown once; every other code stays visible beside its label.
+  const same = status.label.toUpperCase() === status.code.toUpperCase();
   return (
     <span
-      title={status.code}
-      className={`inline-flex max-w-full shrink-0 items-center gap-1.5 rounded-sm font-mono ${
-        large ? "min-h-10 px-3.5 py-1 text-body font-semibold" : "min-h-7 px-2 py-0.5 text-caption"
+      title={[status.code, status.meaning].filter(Boolean).join(" · ")}
+      className={`inline-flex max-w-full shrink-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-sm ${
+        large ? "min-h-10 px-3.5 py-1 text-body font-semibold" : "min-h-7 px-2 py-0.5 text-caption font-semibold"
       } ${t.box} ${className}`}
     >
       {Icon && <Icon aria-hidden size={large ? 17 : 13} strokeWidth={2.25} className={`shrink-0 ${t.iconClass}`} />}
-      {/* Long codes wrap rather than widen their container; the full code is never cut. */}
-      <span className="min-w-0 [overflow-wrap:anywhere]">{status.code}</span>
+      <span className="min-w-0 [overflow-wrap:anywhere]">{status.label}</span>
+      {!same && (
+        <span className={`min-w-0 font-mono font-normal opacity-70 [overflow-wrap:anywhere] ${large ? "text-caption" : "text-micro"} ${code ? "" : "sr-only"}`}>
+          {status.code}
+        </span>
+      )}
     </span>
   );
 }
@@ -332,4 +354,14 @@ export function plain(n: number, digits = 1): string {
 
 export function humanize(code: string): string {
   return code.replace(/_/g, " ").toLowerCase();
+}
+
+/** A short explanation for readers outside the project, shown before the technical detail it summarises. */
+export function PlainBox({ children, dark = false }: { children: ReactNode; dark?: boolean }) {
+  return (
+    <div className={`mb-5 rounded-md p-4 ${dark ? "bg-blue-800" : "bg-blue-50"}`}>
+      <p className={`text-caption font-semibold tracking-[0.04em] uppercase ${dark ? "text-blue-100" : "text-blue-700"}`}>In plain words</p>
+      <div className={`mt-1 text-body ${dark ? "text-white" : "text-gray-900"}`}>{children}</div>
+    </div>
+  );
 }

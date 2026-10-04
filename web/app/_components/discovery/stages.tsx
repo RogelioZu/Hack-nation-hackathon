@@ -18,7 +18,7 @@ import type {
 } from "@/lib/discovery/types";
 import ForestPlot from "./ForestPlot";
 import InteractionPlot from "./InteractionPlot";
-import { ArtifactChip, Awaiting, Inline, Pill, plain, signed, StatusTag, TypeMark, VerbatimList } from "./primitives";
+import { ArtifactChip, Awaiting, Inline, Pill, plain, signed, StatusTag, TypeMark, useDiscoveryUi, VerbatimList } from "./primitives";
 
 // Every value below comes from the DiscoveryRunViewModel; components carry layout and connective copy only.
 
@@ -89,6 +89,7 @@ export function StagePartSection({
 // --- 1 · Research question ---------------------------------------------------
 
 export function QuestionBody({ q }: { q: DiscoveryRunViewModel["question"] }) {
+  const { isRevealed } = useDiscoveryUi();
   return (
     <>
       <p className="max-w-[68ch] text-[18px] leading-7 font-medium text-gray-900">{q.text ?? "The research question is missing from the artifacts."}</p>
@@ -110,9 +111,16 @@ export function QuestionBody({ q }: { q: DiscoveryRunViewModel["question"] }) {
                   <span className="text-body text-gray-900">{h.title ? `${h.title}: ` : ""}{h.claim}</span>
                 </span>
                 <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-body-sm text-gray-700">
-                  <StatusTag status={h.status} />
-                  {h.statusSource && <span>in {h.statusSource}</span>}
-                  {h.assessment && <span className="basis-full">{h.assessment}</span>}
+                  {/* A status set by a later artifact appears only once that artifact has. */}
+                  {!h.statusSource || isRevealed(h.statusSource) ? (
+                    <>
+                      <StatusTag status={h.status} />
+                      {h.statusSource && <span>in {h.statusSource}</span>}
+                      {h.assessment && <span className="basis-full">{h.assessment}</span>}
+                    </>
+                  ) : (
+                    <span className="italic">Pre-registered · not yet evaluated in this run</span>
+                  )}
                 </span>
               </dd>
             </div>
@@ -296,6 +304,9 @@ function EvidenceCited({ items }: { items: CritiqueView["evidence"] }) {
 }
 
 export function CritiqueBody({ c, earlier, handedOn }: { c: CritiqueView; earlier: CritiqueView[]; handedOn: boolean }) {
+  // The verdict, its reason and the open questions carry the story; the critic's full review stays one click away.
+  const [full, setFull] = useState(false);
+  const details = c.pointEstimateObservations.length + c.formalInference.length + c.evidence.length + c.limitations.length + c.uncertainties.length + c.unsupported.length;
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -310,41 +321,56 @@ export function CritiqueBody({ c, earlier, handedOn }: { c: CritiqueView; earlie
           <Inline text={c.rationale} />
         </p>
       )}
-      {(c.pointEstimateObservations.length > 0 || c.formalInference.length > 0) && (
-        <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
-          <Section label="Point-estimate observations">
-            <VerbatimList items={c.pointEstimateObservations} initial={c.pointEstimateObservations.length} clamp={false} />
-          </Section>
-          <Section label="Formal inference">
-            <VerbatimList items={c.formalInference} initial={c.formalInference.length} clamp={false} />
-          </Section>
+      <Section label="What it leaves open" count={c.openQuestions.length} className="mt-5">
+        <VerbatimList items={c.openQuestions} initial={c.openQuestions.length} />
+        {handedOn && c.openQuestions.length > 0 && (
+          <p className="mt-3 inline-flex items-center gap-2 text-body-sm font-semibold text-blue-700">
+            <ArrowDown aria-hidden size={15} strokeWidth={2.25} />
+            These open questions are the input of the next stage.
+          </p>
+        )}
+      </Section>
+      {details > 0 && (
+        <button
+          type="button"
+          onClick={() => setFull((v) => !v)}
+          aria-expanded={full}
+          className="mt-5 text-body-sm font-semibold text-blue-600 hover:text-blue-700"
+        >
+          {full ? "Hide the critic's full review" : "Show the critic's full review"}
+          <span className="ml-1 font-normal text-gray-700">evidence cited, limitations, uncertainties, claims it rejects</span>
+        </button>
+      )}
+      {full && (
+        <div className="stage-enter">
+          {(c.pointEstimateObservations.length > 0 || c.formalInference.length > 0) && (
+            <div className="mt-5 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+              <Section label="Point-estimate observations">
+                <VerbatimList items={c.pointEstimateObservations} initial={c.pointEstimateObservations.length} clamp={false} />
+              </Section>
+              <Section label="Formal inference">
+                <VerbatimList items={c.formalInference} initial={c.formalInference.length} clamp={false} />
+              </Section>
+            </div>
+          )}
+          <div className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+            {c.evidence.length > 0 && (
+              <div className="sm:col-span-2">
+                <EvidenceCited items={c.evidence} />
+              </div>
+            )}
+            <Section label="Limitations" count={c.limitations.length}>
+              <VerbatimList items={c.limitations} />
+            </Section>
+            <Section label="Uncertainties" count={c.uncertainties.length}>
+              <VerbatimList items={c.uncertainties} />
+            </Section>
+            <Section label="Interpretations the critic rejects" count={c.unsupported.length} className="sm:col-span-2">
+              <VerbatimList items={c.unsupported} />
+            </Section>
+          </div>
         </div>
       )}
-      <div className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-        {c.evidence.length > 0 && (
-          <div className="sm:col-span-2">
-            <EvidenceCited items={c.evidence} />
-          </div>
-        )}
-        <Section label="Limitations" count={c.limitations.length}>
-          <VerbatimList items={c.limitations} />
-        </Section>
-        <Section label="Uncertainties" count={c.uncertainties.length}>
-          <VerbatimList items={c.uncertainties} />
-        </Section>
-        <Section label="Unsupported interpretations" count={c.unsupported.length} className="sm:col-span-2">
-          <VerbatimList items={c.unsupported} />
-        </Section>
-        <Section label="Untested questions" count={c.openQuestions.length} className="sm:col-span-2">
-          <VerbatimList items={c.openQuestions} initial={c.openQuestions.length} />
-          {handedOn && c.openQuestions.length > 0 && (
-            <p className="mt-3 inline-flex items-center gap-2 text-body-sm font-semibold text-blue-700">
-              <ArrowDown aria-hidden size={15} strokeWidth={2.25} />
-              These open questions are the input of the next stage.
-            </p>
-          )}
-        </Section>
-      </div>
       {earlier.length > 0 && (
         <div className="mt-4 flex flex-wrap items-center gap-2 text-caption text-gray-700">
           Earlier critiques of the same experiment:
@@ -456,12 +482,15 @@ export function HypothesesBody({ hs, reviews }: { hs: HypothesisView[]; reviews:
 // --- 5 · Candidate experiments --------------------------------------------------
 
 function ProposalCard({ p }: { p: ProposalView }) {
+  const { isRevealed } = useDiscoveryUi();
+  const ranAs = p.ranAs && isRevealed(p.ranAs) ? p.ranAs : null;
+  const current = p.current && isRevealed(p.current.asOf) ? p.current : null;
   return (
     <li className={`flex flex-col rounded-md p-4 ${p.formal ? "bg-white ring-1 ring-blue-800 ring-inset" : "bg-gray-50 ring-1 ring-gray-200 ring-inset"}`}>
       <div className="flex flex-wrap items-center gap-2">
         <ArtifactChip artifactKey={p.artifact.key} />
         <StatusTag status={p.role} />
-        {p.ranAs && <span className="text-caption font-semibold text-blue-800">Ran as {p.ranAs}</span>}
+        {ranAs && <span className="text-caption font-semibold text-blue-800">Ran as {ranAs}</span>}
       </div>
       {p.question && <p className="mt-3 text-title-card text-gray-900">{p.question}</p>}
       {p.estimand && (
@@ -480,17 +509,17 @@ function ProposalCard({ p }: { p: ProposalView }) {
           <span className="flex flex-wrap items-center gap-2 text-body-sm">
             <span className="text-gray-700">At planning</span>
             <StatusTag status={p.feasibilityAtPlanning} />
-            {p.current && (
+            {current && (
               <>
                 <ArrowRight aria-hidden size={14} className="text-gray-500" />
-                <span className="text-gray-700">{p.current.asOf} audit</span>
+                <span className="text-gray-700">{current.asOf} audit</span>
                 <span className="inline-flex items-center gap-1 font-semibold text-gray-900">
-                  {p.current.executable ? (
+                  {current.executable ? (
                     <CircleCheck aria-hidden size={14} className="text-green-600" />
                   ) : (
                     <TriangleAlert aria-hidden size={14} className="text-yellow-700" />
                   )}
-                  {p.current.executable ? "executable" : `missing ${p.current.missing.join(", ")}`}
+                  {current.executable ? "executable" : `missing ${current.missing.join(", ")}`}
                 </span>
               </>
             )}

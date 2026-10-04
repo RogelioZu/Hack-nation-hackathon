@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, CircleCheck, Copy, ExternalLink, TriangleAlert } from "lucide-react";
-import { ArtifactChip, TypeMark, useDiscoveryUi } from "./primitives";
+import { ArtifactChip, TYPE, TypeMark, useDiscoveryUi } from "./primitives";
 
 function CopyButton({ value, label }: { value: string; label: string }) {
   const [done, setDone] = useState(false);
@@ -62,7 +62,7 @@ function when(iso: string | null): string | null {
 }
 
 /** Provenance of the selected artifact: where it lives, its bytes, who produced it, what it links to. */
-export default function Inspector() {
+export default function Inspector({ explain }: { explain?: (key: string) => string | null }) {
   const { selectedKey, artifacts, commit } = useDiscoveryUi();
   const a = selectedKey ? artifacts[selectedKey] : null;
   // Experiments reproduce from their spec: the spec itself, or the spec linked to a result (one hop) or validation (two hops).
@@ -87,7 +87,18 @@ export default function Inspector() {
             </h2>
             <p className="mt-1 font-mono text-body font-semibold [overflow-wrap:anywhere] text-gray-900">{a.id}</p>
             {a.fullId && <p className="mt-1 font-mono text-caption break-all text-gray-700">{a.fullId}</p>}
-            <dl className="mt-4">
+            <div className="mt-4 rounded-md bg-blue-50 p-4">
+              <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">What this is</p>
+              <p className="mt-1 text-body-sm text-gray-900">{TYPE[a.type].meaning}</p>
+              {explain?.(a.key) && <p className="mt-2 text-body-sm text-gray-900">{explain(a.key)}</p>}
+            </div>
+            <details className="group mt-4">
+              <summary className="cursor-pointer list-none text-body-sm font-semibold text-blue-600 hover:text-blue-700">
+                <span className="group-open:hidden">Show technical details</span>
+                <span className="hidden group-open:inline">Hide technical details</span>
+                <span className="ml-1 font-normal text-gray-700">file, hash, producer, reproduction</span>
+              </summary>
+            <dl className="mt-3">
               <Row label="File">
                 <span className="flex items-start gap-1">
                   <span className="min-w-0 font-mono text-caption [overflow-wrap:anywhere]">
@@ -170,9 +181,10 @@ export default function Inspector() {
                 </Row>
               ))}
             </dl>
+            </details>
             {a.links.length > 0 && (
               <div className="mt-4 border-t border-gray-200 pt-4">
-                <p className="mb-2 text-caption font-semibold text-gray-700">Linked artifacts</p>
+                <p className="mb-2 text-caption font-semibold text-gray-700">Related</p>
                 <div className="flex flex-wrap gap-2">
                   {a.links.map((k) => (
                     <ArtifactChip key={k} artifactKey={k} />
