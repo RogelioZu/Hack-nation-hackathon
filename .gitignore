@@ -16,3 +16,4 @@ data/*
 # supabase local
 supabase/.branches
 supabase/.temp
+.venv-experiments/

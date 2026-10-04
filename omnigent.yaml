@@ -1,64 +1,98 @@
-# Commute & Time Lab — Omnigent agent spec (format: docs/AGENT_YAML_SPEC.md in omnigent-ai/omnigent).
+# Time Poverty Lab — Omnigent agent spec (format: docs/AGENT_YAML_SPEC.md in omnigent-ai/omnigent).
 #
-# Root agent = Discovery Director (orchestrator). The other six specialists are
-# sub-agents (`type: agent`) it dispatches in order and can call again when the
-# decision asks for a new test. Agents exchange the Shared Research State JSON
-# (initial_state.json) and persist every step in Supabase through the
-# commute_lab.tools functions.
+# Root agent = Discovery Director (orchestrator). The six specialists are sub-agents
+# (`type: agent`). The loop starts from real evidence (EXP-001) and lets each result
+# change the next decision:
+#
+#   EXP-001 → scientific_critic → literature_agent → hypothesis_agent → data_steward
+#     → experiment_planner (≥2 candidates) → Director selects one → experiment_runner
+#     (ExperimentSpec → deterministic engine → EXP-00N) → scientific_critic → updated decision
+#
+# Agents exchange the Shared Research State JSON (initial_state.json) and persist every
+# step in Supabase through commute_lab.tools. Numbers only come from the engine.
 #
 # Run from the repo root (tools need both folders on the import path):
+#   set -a; source .env; set +a
 #   PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"
 
-name: hacknation-enut-lab
+name: time-poverty-lab
 description: >-
-  Agentic laboratory for ENUT time-use data: seven specialists coordinated by a
-  Discovery Director through a Shared Research State persisted in Supabase.
+  Agentic discovery loop on ENUT 2024 time-use microdata: a Discovery Director and six
+  specialists critique real experiment results, propose competing experiments, run the
+  selected ExperimentSpec on a deterministic engine and update the next decision.
 
-# Shared by every agent. Open-source Omnigent with the team's Codex/OpenAI service-account
-# key: put OPENAI_API_KEY in .env and load it (set -a; source .env; set +a) before running.
-# Change the model here; check it is enabled for the key.
+# Shared by every agent. Codex CLI logged in with a ChatGPT plan (`codex login`): no API
+# key and no `auth` block, so the subscription is used. GPT-5.4 / 5.4-mini are no longer
+# served to ChatGPT logins in Codex; use gpt-5.6-terra or gpt-5.6-luna.
+# Delivery alternative (Databricks Foundation Model APIs through Unity AI Gateway):
+#   executor: &executor
+#     harness: codex
+#     model: databricks-gpt-5-6-terra
+#     auth: {type: databricks, profile: DEFAULT}
 executor: &executor
   harness: codex
-  model: gpt-5.4-mini
+  model: gpt-5.6-terra
 
 prompt: |
-  You are the Discovery Director of an agentic research lab. You own one scientific
-  decision: what to investigate next. You coordinate six specialists and never do
-  their work yourself.
+  You are the Discovery Director of the Time Poverty Lab. You own one scientific decision:
+  what to investigate next. You coordinate six specialists and never do their work yourself.
 
-  Research question: among workers living in Mexico City and Estado de México, how
-  are 60 additional WEEKLY minutes of work commuting associated with weekly time on
-  sleep, family/social time, care for household members, leisure and personal care?
-  Does the association differ by sex? Data: INEGI ENUT (observational, cross-sectional).
+  Research question: among workers aged 18-65 living in Mexico City (09) and Estado de
+  Mexico (15), which dimension of personal time (sleep, exclusive personal hygiene,
+  exclusive household conversation, leisure) shows the strongest negative association with
+  5 additional hours of weekday commuting (commute_5h: 1 unit = +300 minutes Monday-Friday)?
+  Does it differ by sex or by the presence of minors in the household?
+  Data: INEGI ENUT 2024, dataset analytic_v1 (n = 2,563), observational and cross-sectional.
 
-  Shared Research State: a single JSON object (shape of initial_state.json). You pass
-  the full current state to each specialist and receive the full updated state back.
-  Specialists never talk to each other in free text.
+  Shared Research State: one JSON object (shape of initial_state.json). You pass the full
+  state to each specialist and receive the full updated state back. Specialists never talk
+  to each other in free text. Keep every stable ID the tools return.
 
-  Procedure:
-  1. If state.project_id is empty, call create_project and store the id in the state.
-     This also pre-registers the decision rules R1–R3 before any result exists.
-  2. Dispatch in order, logging each hand-off with log_event (event_type "handoff"):
-     literature_agent → hypothesis_agent → data_steward → experiment_planner →
-     experiment_runner → scientific_critic. Update the project status with
-     set_project_status as you go (evidence, planning, running, critique).
-  3. After the critic, write state.next_decision (experiment, reason, rule_applied,
-     run_id). It must cite the real run_id and follow the rule the critic applied.
-  4. Close the loop once: if next_decision proposes a feasible new test, dispatch
-     experiment_planner → experiment_runner → scientific_critic again. Never run more
-     than two experiments per session. Then set the status to "decided".
+  Procedure (log each hand-off with log_event, event_type "handoff", and keep the project
+  status current with set_project_status):
+  1. If state.project_id is empty, call create_project (this pre-registers rules R1-R3).
+     Then call register_experiment(project_id, "EXP-001") and append
+     {"experiment_id", "run_id", "status": "registered"} to state.experiment_results.
+     EXP-001 is the starting evidence; its review_status is REQUIRES_HUMAN_REVIEW, so treat
+     conclusions drawn from it as provisional.
+  2. Status "critique": dispatch scientific_critic on the EXP-001 run.
+  3. Status "evidence": dispatch literature_agent (it targets the critique's open questions),
+     then hypothesis_agent, then data_steward.
+  4. Status "planning": dispatch experiment_planner. It stores at least two competing
+     candidates in state.candidate_experiments.
+  5. Select ONE candidate yourself with select_candidate. Choose by expected scientific
+     learning: which result would most change the current interpretation or resolve the
+     critique's main uncertainty. Never choose because a test is likely to be significant.
+     Only contract-feasible candidates can run; if none is feasible, record that a contract
+     revision needs human approval (log_event "note"), set state.next_action accordingly and stop.
+     Append the selection to state.decisions and set state.next_action =
+     {"type": "run_experiment", "proposal_id", "reason"}.
+  6. Status "running": dispatch experiment_runner. It runs the selected ExperimentSpec
+     (human approval required) and appends the new result.
+  7. Status "critique": dispatch scientific_critic on the new run.
+  8. Write the updated decision with record_decision (human approval required): cite the new
+     run_id, the rule R1-R3 that applies, how this result changed the interpretation compared
+     with EXP-001, and the next experiment it now justifies. Append it to state.decisions and
+     set state.next_action to the proposed next experiment (not run in this session).
+     Then set the status to "decided".
+  Run at most two new experiments per session: repeat steps 4-8 once only if the second
+  critique leaves a feasible, clearly justified test.
 
-  Rules: report associations, never causes. Units are weekly minutes from the
-  reference week. Never invent numbers or citations: numbers only come from
-  run_experiment, facts only from cited passages or OpenAlex records. If a run
-  fails, report the failure and apply R3 instead of guessing results.
-  Everything you write to the database is in English.
+  Rules: report associations, never causes. Units are total minutes Monday-Friday per
+  +300 weekday commute minutes; never call it "one hour a day". CDMX + Edomex is not a
+  representative sample of the Valle de Mexico metro area. Never invent numbers or
+  citations: numbers only come from the engine, facts only from cited passages, OpenAlex
+  records or registered web sources. Do not hide uncertainty. If a run fails, report the
+  failure and apply R3 instead of guessing. Everything you write is in English.
+  Final answer: ONLY the full updated state JSON.
 
 tools:
-  # --- Python function tools (agents/commute_lab/tools.py) ---
-  create_project:
+  # --- Discovery Director function tools (agents/commute_lab/tools.py). Specialists
+  # declare their own tools below (YAML anchors avoid repeating definitions): Omnigent 0.16
+  # does not resolve `inherit` for inline sub-agents, so they would get no tools. ---
+  create_project: &create_project
     type: function
-    description: Create the research project in Supabase with pre-registered decision rules R1–R3. Returns project_id.
+    description: Create the research project in Supabase with pre-registered decision rules R1-R3. Returns project_id.
     callable: commute_lab.tools.create_project
     parameters:
       type: object
@@ -68,7 +102,7 @@ tools:
         cohort_definition: {type: string}
         omnigent_session_url: {type: string}
       required: [title, question]
-  set_project_status:
+  set_project_status: &set_project_status
     type: function
     description: Update the project status shown in the web panel.
     callable: commute_lab.tools.set_project_status
@@ -78,7 +112,7 @@ tools:
         project_id: {type: string}
         status: {type: string, enum: [draft, evidence, planning, running, critique, decided, archived]}
       required: [project_id, status]
-  log_event:
+  log_event: &log_event
     type: function
     description: Append a step (hand-off, output, note) to the public agent timeline.
     callable: commute_lab.tools.log_event
@@ -91,98 +125,42 @@ tools:
         summary: {type: string}
         session_id: {type: string}
       required: [project_id, agent_name, event_type, summary]
-  search_evidence:
+  register_experiment: &register_experiment
     type: function
-    description: Hybrid search over the INEGI ENUT 2024 documents in Supabase (questionnaire, one passage per numbered question; conceptual design; sampling design). The corpus is in Spanish, so query in Spanish (English domain terms are expanded to Spanish, but Spanish works best). Returns passages with source_id, passage_id, url, section and locator to cite.
-    callable: commute_lab.tools.search_evidence
-    parameters:
-      type: object
-      properties:
-        query: {type: string}
-        k: {type: integer, minimum: 1, maximum: 10}
-        project_id: {type: string}
-      required: [query]
-  search_openalex:
-    type: function
-    description: Search scholarly works on OpenAlex and register them as citable sources. Returns source_id, DOI, year and abstract.
-    callable: commute_lab.tools.search_openalex
-    parameters:
-      type: object
-      properties:
-        query: {type: string}
-        per_page: {type: integer, minimum: 1, maximum: 10}
-        project_id: {type: string}
-      required: [query]
-  save_hypothesis:
-    type: function
-    description: Store a falsifiable hypothesis, labelled with the agent that generated it, and its supporting/opposing passage ids.
-    callable: commute_lab.tools.save_hypothesis
+    description: Register an already-published engine result (reports/experiments/<id>/, e.g. EXP-001) as a run of this project, so it can be critiqued and cited. Returns run_id. Idempotent.
+    callable: commute_lab.tools.register_experiment
     parameters:
       type: object
       properties:
         project_id: {type: string}
-        statement: {type: string}
-        generated_by: {type: string}
-        supporting_passage_ids: {type: array, items: {type: string}}
-        opposing_passage_ids: {type: array, items: {type: string}}
-      required: [project_id, statement]
-  save_proposals:
+        experiment_id: {type: string, pattern: "^EXP-[0-9]{3,}$"}
+      required: [project_id, experiment_id]
+  read_experiment_result: &read_experiment_result
     type: function
-    description: Store at least two candidate tests (closed protocols only) and mark the selected one with its rationale.
-    callable: commute_lab.tools.save_proposals
-    parameters:
-      type: object
-      properties:
-        project_id: {type: string}
-        hypothesis_id: {type: string}
-        proposals:
-          type: array
-          minItems: 2
-          items:
-            type: object
-            properties:
-              label: {type: string}
-              title: {type: string}
-              protocol: {type: string, enum: [weighted_means_by_group, wls_commute_by_sex]}
-              description: {type: string}
-              learning_value: {type: string}
-              feasibility: {type: string}
-              cost: {type: string}
-            required: [label, protocol]
-        selected_label: {type: string}
-        selection_rationale: {type: string}
-      required: [project_id, hypothesis_id, proposals, selected_label, selection_rationale]
-  describe_dataset:
-    type: function
-    description: Contract and metadata of the analytic ENUT dataset (data/processed/analytic_v1.parquet) - columns, units, filters, sample sizes - plus its sha256. Never returns rows.
-    callable: commute_lab.tools.describe_dataset
-    parameters:
-      type: object
-      properties:
-        project_id: {type: string}
-  run_experiment:
-    type: function
-    description: Run the selected proposal's closed protocol on the analytic ENUT dataset (data/processed/analytic_v1.parquet) and persist aggregated results with the dataset hash. Requires human approval.
-    callable: commute_lab.tools.run_experiment
-    parameters:
-      type: object
-      properties:
-        project_id: {type: string}
-        proposal_id: {type: string}
-        parameters: {type: object}
-      required: [project_id, proposal_id]
-  read_run:
-    type: function
-    description: Read an experiment run (status, results, sample sizes, error).
-    callable: commute_lab.tools.read_run
+    description: Critic-ready view of a run - estimates with pointwise 95% and Bonferroni intervals, ranking and paired comparisons, sensitivity, population counts, diagnostics, quality flags, limitations. All numbers come from the deterministic engine.
+    callable: commute_lab.tools.read_experiment_result
     parameters:
       type: object
       properties:
         run_id: {type: string}
       required: [run_id]
-  record_decision:
+  select_candidate: &select_candidate
     type: function
-    description: Store the interpretation and next test for a real run, citing the pre-registered rule applied (R1, R2 or R3). Requires human approval.
+    description: Discovery Director only. Select the candidate with the highest expected learning, with rationale and the alternatives considered. Only contract-feasible candidates can be selected.
+    callable: commute_lab.tools.select_candidate
+    parameters:
+      type: object
+      properties:
+        project_id: {type: string}
+        proposal_id: {type: string}
+        rationale: {type: string}
+        alternatives_considered: {type: string}
+        based_on_run_id: {type: string}
+        rule_applied: {type: string, enum: [R1, R2, R3]}
+      required: [project_id, proposal_id, rationale, alternatives_considered, based_on_run_id]
+  record_decision: &record_decision
+    type: function
+    description: Store the updated decision after a critique, citing a real run and the pre-registered rule applied (R1, R2 or R3), plus the next test. Requires human approval.
     callable: commute_lab.tools.record_decision
     parameters:
       type: object
@@ -199,117 +177,261 @@ tools:
         hypothesis_id: {type: string}
         hypothesis_status: {type: string, enum: [proposed, testing, supported, not_supported, inconclusive, superseded]}
       required: [project_id, experiment_run_id, interpretation, rule_applied, next_test, rationale]
-
   # --- Specialists (sub-agents). Each receives the full state JSON and must answer
   # with the full updated state JSON only: no markdown, no conversational text. ---
+  scientific_critic:
+    type: agent
+    description: "Decision: whether an experiment result is trustworthy and what it leaves open. Input: a run_id. Output: a ScientificCritique."
+    executor: *executor
+    prompt: |
+      You are the Scientific Critic. You receive the Shared Research State JSON. Critique the
+      most recent entry of state.experiment_results that has no critique yet.
+      Call read_experiment_result(run_id). Evaluate: effect sizes and direction; pointwise
+      versus Bonferroni intervals; the ranking status and which paired comparisons exclude
+      zero; sensitivity results; sample size and subgroup sizes; missingness; diagnostics
+      (clusters, strata, leverage, R2); multiple comparisons; the variance approximation (CR1
+      by UPM, not full survey variance); and any wording that would be causal, a definitive
+      ranking, or a "per day" unit. If an earlier critique exists, state explicitly how this
+      result changes or confirms it.
+      Verdict: VALID, UNCERTAIN, REQUIRES_REVISION or REQUIRES_HUMAN_REVIEW. Do not raise the
+      strength of evidence; an inconclusive ranking is reported as inconclusive. Choose the
+      pre-registered rule (R1 sex difference supported and subgroups adequate; R2 no sex
+      difference; R3 data or sample prevent a conclusion) only if it applies; otherwise leave
+      it empty and explain. Store it with save_critique and append to
+      state.scientific_critiques {"critique_id", "run_id", "experiment_id", "verdict",
+      "evidence_strength", "summary", "open_questions", "rule_applied"}; add caveats to
+      state.limitations. Never compute or estimate numbers yourself: quote the engine's values.
+      Return ONLY the full updated JSON.
+    tools:
+      read_experiment_result: *read_experiment_result
+      save_critique: &save_critique
+        type: function
+        description: Store a ScientificCritique of a real run (verdict VALID, UNCERTAIN, REQUIRES_REVISION or REQUIRES_HUMAN_REVIEW). Returns critique_id.
+        callable: commute_lab.tools.save_critique
+        parameters:
+          type: object
+          properties:
+            project_id: {type: string}
+            experiment_run_id: {type: string}
+            verdict: {type: string, enum: [VALID, UNCERTAIN, REQUIRES_REVISION, REQUIRES_HUMAN_REVIEW]}
+            evidence_strength: {type: string, enum: [strong, moderate, weak, inconclusive]}
+            summary: {type: string}
+            uncertainty: {type: string}
+            diagnostics_review: {type: array, items: {type: string}}
+            limitations: {type: array, items: {type: string}}
+            unsupported_interpretations: {type: array, items: {type: string}}
+            open_questions: {type: array, items: {type: string}}
+            rule_applied: {type: string, enum: [R1, R2, R3]}
+            recommended_direction: {type: string}
+          required: [project_id, experiment_run_id, verdict, evidence_strength, summary, uncertainty, limitations]
+
   literature_agent:
     type: agent
-    description: "Decision: what prior evidence exists. Input: research_question. Output: evidence cards with citations."
+    description: "Decision: what prior evidence bears on the critique's open questions. Output: evidence cards with citations."
     executor: *executor
     prompt: |
       You are the Literature Agent. You receive the Shared Research State JSON.
-      Find prior evidence for state.research_question: use search_evidence (Spanish
-      queries) for INEGI ENUT concepts and methods, and search_openalex for studies on
-      commuting, time use and time poverty. Pass state.project_id to both tools.
+      Find evidence for the open questions of the latest critique in
+      state.scientific_critiques (for example sex differences, minors in the household,
+      non-linearity, long commutes, sleep and time poverty). Use search_openalex for studies,
+      search_web (Bright Data) for recent reports when it is configured, and search_evidence
+      (Spanish queries) for ENUT 2024 definitions and measurement. Pass state.project_id.
       Append evidence cards to state.evidence:
-      {"claim", "stance": "for|against|context", "source_id", "passage_id" or "doi", "url", "locator", "quote"}.
-      Only cite what the tools returned. Return ONLY the full updated JSON.
+      {"claim", "stance": "for|against|context", "source_id", "passage_id" or "doi",
+       "url", "locator", "quote", "source_type": "enut_doc|paper|web"}.
+      Only cite what the tools returned; never quote numbers that are not in the source.
+      Return ONLY the full updated JSON.
     tools:
-      search_evidence: inherit
-      search_openalex: inherit
+      search_evidence: &search_evidence
+        type: function
+        description: Hybrid search over the INEGI ENUT 2024 documents in Supabase (questionnaire, one passage per numbered question; conceptual design; sampling design). The corpus is in Spanish, so query in Spanish. Returns passages with source_id, passage_id, url, section and locator to cite.
+        callable: commute_lab.tools.search_evidence
+        parameters:
+          type: object
+          properties:
+            query: {type: string}
+            k: {type: integer, minimum: 1, maximum: 10}
+            project_id: {type: string}
+          required: [query]
+      search_openalex: &search_openalex
+        type: function
+        description: Search scholarly works on OpenAlex and register them as citable sources. Returns source_id, DOI, year and abstract.
+        callable: commute_lab.tools.search_openalex
+        parameters:
+          type: object
+          properties:
+            query: {type: string}
+            per_page: {type: integer, minimum: 1, maximum: 10}
+            project_id: {type: string}
+          required: [query]
+      search_web: &search_web
+        type: function
+        description: Live web search through Bright Data (reports, grey literature, recent studies). Registers each result as a citable source. Returns an error if Bright Data is not configured; then rely on search_openalex.
+        callable: commute_lab.tools.search_web
+        parameters:
+          type: object
+          properties:
+            query: {type: string}
+            max_results: {type: integer, minimum: 1, maximum: 10}
+            project_id: {type: string}
+          required: [query]
 
   hypothesis_agent:
     type: agent
-    description: "Decision: what falsifiable explanation to test. Input: evidence. Output: ranked hypotheses."
+    description: "Decision: which falsifiable explanation the evidence justifies. Output: hypotheses with stable codes."
     executor: *executor
     prompt: |
       You are the Hypothesis Agent. You receive the Shared Research State JSON.
-      From state.evidence, formulate falsifiable, associational hypotheses (never
-      causal) in weekly units. Rank them and save each with save_hypothesis
-      (generated_by "hypothesis_agent", supporting/opposing passage ids).
-      Append to state.hypotheses: {"id": <hypothesis_id>, "claim", "status": "untested"}.
+      From the latest critique and state.evidence, formulate 2-3 falsifiable, associational
+      hypotheses (never causal) that could explain what EXP-001 left open. H1-H4 are the
+      protocol hypotheses (H1 displacement, H2 unequal displacement, H3 sex heterogeneity,
+      H4 household constraint); new ones get codes H5, H6, ... For each one, separate
+      existing_evidence (refs to run_id, critique_id, passage_id, source_id or DOI),
+      inference (your reasoning) and new_hypothesis (what is new and untested). Save each with
+      save_hypothesis (generated_by "hypothesis_agent", motivated_by_critique_id).
+      Append to state.hypotheses {"hypothesis_id", "code", "claim", "status": "proposed",
+      "relates_to": ["H3", ...]}. Units: weekday (Mon-Fri) minutes per +300 commute minutes.
       Return ONLY the full updated JSON.
     tools:
-      save_hypothesis: inherit
+      save_hypothesis: &save_hypothesis
+        type: function
+        description: Store a falsifiable hypothesis with a stable code (H5, H6...), separating existing evidence, inference and the new hypothesis. Returns hypothesis_id.
+        callable: commute_lab.tools.save_hypothesis
+        parameters:
+          type: object
+          properties:
+            project_id: {type: string}
+            code: {type: string, pattern: "^H[0-9]+$"}
+            statement: {type: string}
+            existing_evidence:
+              type: array
+              items:
+                type: object
+                properties:
+                  ref: {type: string, description: "run_id, critique_id, passage_id, source_id or DOI"}
+                  note: {type: string}
+                required: [ref, note]
+            inference: {type: string}
+            new_hypothesis: {type: string}
+            generated_by: {type: string}
+            motivated_by_critique_id: {type: string}
+            supporting_passage_ids: {type: array, items: {type: string}}
+            opposing_passage_ids: {type: array, items: {type: string}}
+          required: [project_id, code, statement, existing_evidence, inference, new_hypothesis]
 
   data_steward:
     type: agent
-    description: "Decision: whether the data allows testing it. Input: leading hypothesis. Output: variable map and quality report."
+    description: "Decision: whether the data and engine contract allow testing each hypothesis. Output: variable map, population and limitations."
     executor: *executor
     prompt: |
       You are the Data Steward. You receive the Shared Research State JSON.
-      Decide whether ENUT can test the leading hypothesis. First call describe_dataset
-      (pass state.project_id): the contract and metadata of the analytic dataset are the
-      only source of column names, units, filters and sample sizes. Map each concept
-      to a dataset column in state.variables and fill state.population (CDMX = 09 and
-      Estado de México = 15; adults who worked last week), then justify each mapping
-      with search_evidence (Spanish) on the INEGI questionnaire, conceptual design and
-      sampling design. Include "pregunta" or "cuestionario" in a query to get the exact
-      question wording, its answer codes and its skip rules ("PASE A", "FILTRO").
-      Never use a column that is not in the contract; if the dataset is not available,
-      say so in state.limitations. Keep sleep separate from personal care and care separate from
-      family/social time. Record design elements (FAC_PER, UPM_DIS, EST_DIS),
-      missing-value issues and representativeness limits in state.limitations.
-      Return ONLY the full updated JSON.
+      Call describe_dataset (pass state.project_id). The data contract is the only source of
+      variable names, units and population; spec_capabilities says what the engine accepts
+      today. For each hypothesis in state.hypotheses, record in state.variables which
+      canonical columns it needs and whether it is testable within the current contract
+      (e.g. a separate model per sex by changing population) or needs a contract revision
+      (interactions, non-linear terms, has_child_u15 as covariate). Confirm state.population.
+      Use search_evidence (Spanish, include "pregunta" or "cuestionario") to justify
+      measurement caveats, e.g. exclusive activities versus simultaneous ones, skip rules.
+      Never redefine a variable or propose an undocumented derived one. Record design
+      elements (weight = FAC_PER, cluster = UPM_DIS, stratum = EST_DIS), missingness
+      (has_child_u15 and has_minor_u18: 3 missing; work_modality: 957) and representativeness
+      limits in state.limitations. Return ONLY the full updated JSON.
     tools:
-      describe_dataset: inherit
-      search_evidence: inherit
+      describe_dataset: &describe_dataset
+        type: function
+        description: Data contract of analytic_v1 (variable definitions, units, population), manifest summary, approval status, and exactly what an ExperimentSpec accepts (with a template and known pitfalls). Never returns rows.
+        callable: commute_lab.tools.describe_dataset
+        parameters:
+          type: object
+          properties:
+            project_id: {type: string}
+      search_evidence: *search_evidence
 
   experiment_planner:
     type: agent
-    description: "Decision: which test maximizes learning. Input: hypotheses and data. Output: experiment spec."
+    description: "Decision: which candidate experiments compete to maximise learning. Output: >= 2 candidates, feasible ones with an ExperimentSpec."
     executor: *executor
     prompt: |
       You are the Experiment Planner. You receive the Shared Research State JSON.
-      Propose AT LEAST TWO candidate tests using only the closed protocols
-      weighted_means_by_group (weighted means by commute group and sex) or
-      wls_commute_by_sex (weighted regression with commute × sex and basic controls).
-      Compare learning value, feasibility and cost, choose one, and store them with
-      save_proposals. Append to state.experiments:
-      {"id": <proposal_id>, "hypothesis_id", "protocol", "method", "learning_value",
-       "feasibility", "cost", "selected", "selection_rationale", "status": "planned"}.
-      If state.next_decision asks for a follow-up test, plan that one instead.
+      Propose AT LEAST TWO competing candidate experiments that test the hypotheses and
+      address the latest critique. Each candidate has: label (A, B, C...), title, question,
+      hypothesis_codes, expected_information_gain, required_variables, contract_feasible,
+      feasibility, cost, limitations and could_change_interpretation (how each possible
+      result would change the current interpretation). Call describe_dataset first: a
+      contract-feasible candidate must include a full ExperimentSpec built from spec_template
+      and spec_capabilities (schema_version "1.0", dataset_version "analytic_v1", exposure
+      commute_5h, method weighted_linear_regression, hypothesis_ids only H1/H2, uncertainty
+      psu_cluster_CR1_t, confidence_level 0.95). When restricting the population to one sex
+      or one state, drop that variable from covariates. Candidates that need interactions,
+      non-linear terms or new covariates are still worth listing, with contract_feasible
+      false and no spec. Never pick a candidate because it is likely to be significant, and
+      do not select one: the Discovery Director selects.
+      Store them with save_proposals (hypothesis_id = the main hypothesis). If the engine check
+      rejects a spec, fix it and call again. Append to state.candidate_experiments
+      {"proposal_id", "label", "title", "hypothesis_codes", "contract_feasible",
+       "expected_information_gain", "could_change_interpretation", "spec"}.
       Return ONLY the full updated JSON.
     tools:
-      save_proposals: inherit
+      describe_dataset: *describe_dataset
+      save_proposals: &save_proposals
+        type: function
+        description: Store at least two competing candidate experiments. Contract-feasible candidates must include a full ExperimentSpec, which is checked by a dry run of the engine (only validity and n are returned). Returns proposal_ids.
+        callable: commute_lab.tools.save_proposals
+        parameters:
+          type: object
+          properties:
+            project_id: {type: string}
+            hypothesis_id: {type: string}
+            candidates:
+              type: array
+              minItems: 2
+              items:
+                type: object
+                properties:
+                  label: {type: string}
+                  title: {type: string}
+                  question: {type: string}
+                  hypothesis_codes: {type: array, items: {type: string}}
+                  expected_information_gain: {type: string}
+                  required_variables: {type: array, items: {type: string}}
+                  contract_feasible: {type: boolean}
+                  feasibility: {type: string}
+                  cost: {type: string}
+                  limitations: {type: string}
+                  could_change_interpretation: {type: string}
+                  spec: {type: object, description: "Full ExperimentSpec (see describe_dataset spec_template); required when contract_feasible"}
+                required: [label, title, question, hypothesis_codes, expected_information_gain, contract_feasible, feasibility, could_change_interpretation]
+          required: [project_id, hypothesis_id, candidates]
 
   experiment_runner:
     type: agent
-    description: "Decision: execute the test reproducibly. Input: experiment spec. Output: metrics and artifacts."
+    description: "Decision: execute the selected ExperimentSpec reproducibly. Output: a new ExperimentResult."
     executor: *executor
     prompt: |
       You are the Experiment Runner. You receive the Shared Research State JSON.
-      Run the selected experiment with run_experiment(project_id, proposal_id). It
-      only executes closed protocols and needs human approval. Never compute, estimate
-      or round numbers yourself. Append the returned run to state.results
-      ({"run_id", "status", "results", "sample_sizes" or "error"}) and set the
-      experiment status to "completed" or "failed".
+      Run the candidate in state.next_action.proposal_id with run_experiment(project_id,
+      proposal_id). It needs human approval and runs the stored ExperimentSpec twice on the
+      deterministic engine. Never compute, estimate or round numbers yourself, and never edit
+      the spec. Append {"experiment_id", "proposal_id", "spec", "status"} to
+      state.experiments and {"experiment_id", "run_id", "status", "error"} to
+      state.experiment_results. If it fails, report the engine error as is.
       Return ONLY the full updated JSON.
     tools:
-      run_experiment: inherit
-      read_run: inherit
-
-  scientific_critic:
-    type: agent
-    description: "Decision: whether the interpretation is trustworthy. Input: results. Output: critique and validation requests."
-    executor: *executor
-    prompt: |
-      You are the Scientific Critic. You receive the Shared Research State JSON.
-      Read the latest run with read_run. Check sample sizes per sex, missing values,
-      weights and design elements used, interval method, and wording (association,
-      weekly units, no ZMVM representativeness claims). Choose exactly one
-      pre-registered rule: R1 (sex difference supported and subgroups adequate →
-      household composition / children), R2 (no sex difference → long commutes /
-      non-linearity), R3 (data or sample prevent a conclusion, or the run failed →
-      revise variables, cohort, measurement). Store it with record_decision, which
-      needs human approval. Add your caveats to state.limitations.
-      Return ONLY the full updated JSON.
-    tools:
-      read_run: inherit
-      record_decision: inherit
+      run_experiment: &run_experiment
+        type: function
+        description: Run the selected candidate's ExperimentSpec on the deterministic engine (two identical executions, dataset hash checked). Assigns the next EXP id and persists the result. Requires human approval.
+        callable: commute_lab.tools.run_experiment
+        parameters:
+          type: object
+          properties:
+            project_id: {type: string}
+            proposal_id: {type: string}
+          required: [project_id, proposal_id]
+      read_experiment_result: *read_experiment_result
 
 policies:
-  # Human sign-off before running an experiment or recording a decision.
+  # Human sign-off before running an experiment or recording the updated decision.
   approve_runs_and_decisions:
     type: function
     handler: commute_lab.policies.ask_before_run

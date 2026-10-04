@@ -1,12 +1,31 @@
 {
   "project_id": "",
-  "research_question": "",
-  "population": {},
-  "hypotheses": [],
+  "research_question": "Among workers aged 18-65 living in Mexico City and Estado de Mexico, which dimension of personal time (sleep, exclusive personal hygiene, exclusive household conversation, leisure) shows the strongest negative association with 5 additional hours of weekday commuting (commute_5h: +300 minutes Monday-Friday)? Does the association differ by sex or by the presence of minors in the household?",
+  "dataset_version": "analytic_v1",
+  "population": {
+    "source": "approved_analytic_v1",
+    "states": ["09", "15"],
+    "age_min": 18,
+    "age_max": 65,
+    "sexes": ["male", "female"],
+    "expected_n": 2563,
+    "definition": "Active workers (P5_1 = 1 or P5_2 in 1-6), not absent in the reference week, with resolved commuting; weights FAC_PER, clusters UPM_DIS, strata EST_DIS"
+  },
   "evidence": [],
+  "hypotheses": [
+    {"hypothesis_id": "", "code": "H1", "claim": "Higher weekday commuting is associated with less time in at least one personal-time dimension", "status": "tested_in_EXP-001"},
+    {"hypothesis_id": "", "code": "H2", "claim": "The magnitude of the association differs across sleep, hygiene, household conversation and leisure", "status": "tested_in_EXP-001"},
+    {"hypothesis_id": "", "code": "H3", "claim": "The association differs between men and women", "status": "untested"},
+    {"hypothesis_id": "", "code": "H4", "claim": "The association differs by presence of children or minors in the household", "status": "untested"}
+  ],
   "variables": {},
-  "experiments": [],
-  "results": [],
+  "experiments": [
+    {"experiment_id": "EXP-001", "proposal_id": null, "spec": "experiments/EXP-001/spec.json", "status": "completed"}
+  ],
+  "experiment_results": [],
+  "scientific_critiques": [],
   "limitations": [],
-  "next_decision": {}
+  "candidate_experiments": [],
+  "decisions": [],
+  "next_action": {"type": "critique", "experiment_id": "EXP-001", "reason": "Start the discovery loop from the real EXP-001 result"}
 }

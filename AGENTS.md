@@ -78,7 +78,8 @@ Entregables: repositorio, configuraciones y políticas de agentes, código y res
 | Motor de experimentos | Python ≥ 3.11, pandas + pyarrow + numpy + scipy + pydantic (tests: statsmodels) → `src/experiments/` |
 | Web | Next.js 16 App Router + TypeScript + Tailwind 4 → `web/` (despliegue en Vercel) |
 | Embeddings | `intfloat/multilingual-e5-small`, 384 dimensiones, CPU |
-| LLM de los agentes | Omnigent de código abierto, harness `codex` con `gpt-5.4-mini` y la llave `OPENAI_API_KEY` (service account del equipo) cargada desde `.env` (commit `84207bb`; ver [Decisiones abiertas](#decisiones-abiertas)) |
+| LLM de los agentes | Omnigent de código abierto, harness `codex` con `gpt-5.6-terra` y la sesión de ChatGPT de `codex login` (sin API key). Alternativa para la entrega: Databricks Foundation Model APIs vía Unity AI Gateway (comentada en `omnigent.yaml`; ver [Decisiones abiertas](#decisiones-abiertas)) |
+| Búsqueda web en vivo | Bright Data SERP API (tool opcional `search_web` del Literature Agent; `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE`) |
 | Web desplegada | Vercel, proyecto `commute-time-lab` → https://commute-time-lab.vercel.app |
 
 ```
@@ -126,14 +127,17 @@ src/experiments/           motor determinista (sin LLM): run_experiment(Experime
 scripts/
   run_experiment.py        CLI: corre el spec dos veces, exige resultados idénticos y publica en reports/
   validate_experiment_engine.py  valida el motor solo con analytic_v1 (hash, manifiesto, esquema, métodos, tests, EXP-001)
+  check_experiment_spec.py  verificación en seco de un spec propuesto por agentes (solo validez y n, nunca coeficientes)
 requirements-experiments.txt     dependencias del motor, autocontenidas y con versiones fijadas
 .gitattributes             LF forzado en fuentes y metadatos; bytes exactos para manifiesto y result.json de EXP-001
 experiments/EXP-001/       spec.json (+ copia de result.json)
 reports/experiments/EXP-001/  result.json, summary.md (en español), spec.json, validation.json, engine_validation.json
 reports/audit/             auditoría ENUT 2024 y validaciones de las fases 2A y 2B
+reports/discovery/<project_id>/  críticas, hipótesis, candidatos y decisiones de cada sesión agéntica (JSON)
+.venv-experiments/         intérprete aislado del motor (Python 3.12 + requirements-experiments.txt; ignorado por git)
 tests/                     test_experiment_schemas.py, test_experiment_runner.py, test_exp001.py
 agents/
-  commute_lab/tools.py     11 tools que persisten en Supabase (create_project … record_decision)
+  commute_lab/tools.py     15 tools que persisten en Supabase y llaman al motor por subproceso (create_project … record_decision)
   commute_lab/policies.py  ask_before_run: pide aprobación humana para run_experiment y record_decision
 web/
   lib/supabase.ts          cliente de solo lectura (clave publishable, solo servidor)
@@ -163,7 +167,7 @@ Todas las PK son `uuid`. Las tablas hijas se borran en cascada con `projects`. L
 
 ### Contrato de resultados (`experiment_runs.results`)
 
-> ⚠️ **Desfasado respecto al motor.** El resultado canónico ahora es `ExperimentResult` (`src/experiments/schemas.py`, `metadata/experiment_contract.schema.json`). Tiene estimaciones por modelo (`adjusted`, `unadjusted`, sensibilidad), intervalos puntuales y Bonferroni, `ranking`, diagnósticos, limitaciones y procedencia. **Pendiente:** decidir cómo se guarda en Supabase (el `ExperimentResult` completo en `results`, o un resumen + `artifact_paths` hacia `reports/experiments/<id>/`) y adaptar `web/lib/types.ts`. Hasta entonces, la forma de abajo es la que dibuja la web.
+> **Resuelto (2026-10-03).** El resultado canónico es `ExperimentResult` (`src/experiments/schemas.py`) y vive completo en `reports/experiments/<id>/result.json`. En Supabase, `experiment_runs` guarda: `parameters` = el `ExperimentSpec` completo, `artifact_paths` = rutas de spec/result/summary/validation, `results` = la forma de abajo (que dibuja la web, solo modelos ajustados) **más** la clave `engine` con la vista compacta para el crítico (estimaciones con IC puntual y Bonferroni, ranking y comparaciones pareadas, sensibilidad, conteos, diagnósticos, flags, limitaciones). Sin matrices de covarianza.
 
 La web dibuja esta forma (ver `web/lib/types.ts`). Los textos de `label`, `method`, `units` y `notes` van **en inglés**, porque se muestran en la web:
 
@@ -194,32 +198,29 @@ La web dibuja esta forma (ver `web/lib/types.ts`). Los textos de `label`, `metho
 
 ## 7. Arquitectura de agentes (Omnigent)
 
-Arquitectura definida por el equipo en `omnigent.yaml` (commits `bda27fc` y `b9e6e74`).
+Arquitectura definida por el equipo en `omnigent.yaml` (commits `bda27fc` y `b9e6e74`), adaptada al motor de experimentos y al ciclo de descubrimiento de §7.5.
 
-> **Estado (2026-10-03):** §7.1–7.3 describen lo que está implementado en `omnigent.yaml` y `agents/commute_lab/`, que todavía es anterior al motor de experimentos. §7.4 y §7.5 describen el **objetivo de la fase actual**. Donde chocan, gana el objetivo: hay que adaptar el código y los prompts.
+> **Estado (2026-10-03):** `omnigent.yaml`, `initial_state.json` y `agents/commute_lab/` ya implementan el ciclo de §7.5 sobre el motor real. Las tools se probaron de punta a punta contra Supabase sin LLM. **Falta la primera sesión real con el LLM.**
 
 ### 7.1 Restricción central: el Shared Research State
 
 Los agentes **NO** se comunican por chat de texto libre. Se comunican **exclusivamente** recibiendo, modificando y devolviendo **un único objeto JSON**: el *Shared Research State*. El prompt de sistema de cada especialista obliga a que su salida sea estrictamente ese objeto JSON, sin markdown ni texto conversacional. Omnigent no tiene una política `enforce_json_output`; la regla vive en los prompts.
 
-Esquema actual (`initial_state.json`):
+Esquema actual (`initial_state.json`, ya trae la pregunta, la población, H1–H4 y EXP-001 como punto de partida):
 
 ```json
 {
-  "project_id": "String (uuid en Supabase; lo llena el Director con create_project)",
-  "research_question": "String",
-  "population": "Object",
-  "hypotheses": [
-    { "id": "String", "claim": "String", "status": "untested | tested" }
-  ],
-  "evidence": ["Array of evidence cards"],
-  "variables": "Object mapping concepts to data columns",
-  "experiments": [
-    { "id": "String", "hypothesis_id": "String", "method": "String", "status": "String" }
-  ],
-  "results": ["Array of metrics and artifacts"],
-  "limitations": ["Array of strings"],
-  "next_decision": { "experiment": "String", "reason": "String" }
+  "project_id": "uuid (lo llena el Director con create_project)",
+  "research_question": "String", "dataset_version": "analytic_v1", "population": {"…": "como en ExperimentSpec"},
+  "evidence": [{"claim", "stance", "source_id", "passage_id|doi", "url", "locator", "quote", "source_type"}],
+  "hypotheses": [{"hypothesis_id", "code": "H1…H4 protocolo, H5+ agentes", "claim", "status", "relates_to"}],
+  "variables": {}, "limitations": [],
+  "experiments": [{"experiment_id", "proposal_id", "spec", "status"}],
+  "experiment_results": [{"experiment_id", "run_id", "status", "error"}],
+  "scientific_critiques": [{"critique_id", "run_id", "experiment_id", "verdict", "evidence_strength", "summary", "open_questions", "rule_applied"}],
+  "candidate_experiments": [{"proposal_id", "label", "title", "hypothesis_codes", "contract_feasible", "expected_information_gain", "could_change_interpretation", "spec"}],
+  "decisions": [{"decision_id", "type", "…"}],
+  "next_action": {"type": "critique | run_experiment | …", "…": "…"}
 }
 ```
 
@@ -229,22 +230,25 @@ Omnigent gestiona el enrutamiento. Cada agente es dueño de **una decisión cien
 
 | # | Agente (`name`) | Decisión científica | Entrada | Salida en el estado | Herramientas (`commute_lab.tools`) | Persistencia en Supabase |
 |---|---|---|---|---|---|---|
-| 1 | Literature Agent (`literature_agent`) | Qué evidencia previa existe | `research_question` | `evidence[]` (tarjetas + citas) | `search_evidence` (RAG INEGI), `search_openalex` | `sources` (los papers de OpenAlex se registran como `paper`), `passages` |
-| 2 | Hypothesis Agent (`hypothesis_agent`) | Qué explicación falsable probar | `evidence` | `hypotheses[]` ordenadas | `save_hypothesis` | `hypotheses` |
-| 3 | Data Steward (`data_steward`) | Si los datos permiten probarla | hipótesis líder | `variables`, `population` y `limitations` (reporte de calidad) | `describe_dataset`, `search_evidence` | Va en el estado JSON; los nombres de columna salen del contrato del dataset analítico |
-| 4 | Experiment Planner (`experiment_planner`) | Qué prueba maximiza el aprendizaje | hipótesis + datos | `experiments[]` (status `planned`) | `save_proposals` (exige ≥2 y protocolos cerrados) | `experiment_proposals`, una `selected` con `selection_rationale` |
-| 5 | Experiment Runner (`experiment_runner`) | Ejecutar la prueba de forma reproducible | especificación del experimento | `results[]`; experimento `completed`/`failed` | `run_experiment` (requiere aprobación), `read_run` | `experiment_runs` |
-| 6 | Scientific Critic (`scientific_critic`) | Si la interpretación es confiable | `results` | `limitations[]` + regla aplicada | `read_run`, `record_decision` (requiere aprobación) | `decisions`, estado de `hypotheses` |
-| 7 | Discovery Director (raíz del spec) | Qué investigar después | estado completo | `project_id`, `next_decision` | `create_project`, `set_project_status`, `log_event` + los 6 sub-agentes | `projects`, `agent_events` |
+| 1 | Scientific Critic (`scientific_critic`) | Si un resultado es confiable y qué deja abierto | `run_id` de `experiment_results` | `scientific_critiques[]` (veredicto, fuerza, preguntas abiertas, regla) + `limitations[]` | `read_experiment_result`, `save_critique` | `decisions` (`decided_by = scientific_critic`, `interpretation` con prefijo `[VERDICT]`) |
+| 2 | Literature Agent (`literature_agent`) | Qué evidencia responde a las preguntas abiertas | crítica + pregunta | `evidence[]` (tarjetas + citas) | `search_evidence` (RAG INEGI), `search_openalex`, `search_web` (Bright Data, opcional) | `sources` (`paper` para OpenAlex, `report` para web), `passages` |
+| 3 | Hypothesis Agent (`hypothesis_agent`) | Qué explicación falsable probar | crítica + evidencia | `hypotheses[]` con código estable (H5+) | `save_hypothesis` (separa evidencia existente, inferencia e hipótesis nueva) | `hypotheses` (`statement` con prefijo `[H5]`) |
+| 4 | Data Steward (`data_steward`) | Si los datos y el contrato permiten probarla | hipótesis | `variables`, `population`, `limitations` | `describe_dataset`, `search_evidence` | Va en el estado JSON |
+| 5 | Experiment Planner (`experiment_planner`) | Qué candidatos compiten | hipótesis + crítica + contrato | `candidate_experiments[]` (≥2; los factibles con `ExperimentSpec`) | `describe_dataset`, `save_proposals` (verificación en seco del spec) | `experiment_proposals` (`protocol` = `weighted_linear_regression` o `requires_contract_revision`) |
+| 6 | Experiment Runner (`experiment_runner`) | Ejecutar el spec elegido de forma reproducible | `next_action.proposal_id` | `experiments[]`, `experiment_results[]` | `run_experiment` (requiere aprobación), `read_experiment_result` | `experiment_runs` + `experiments/EXP-NNN/` + `reports/experiments/EXP-NNN/` |
+| 7 | Discovery Director (raíz del spec) | Qué investigar después | estado completo | `project_id`, `decisions[]`, `next_action` | `create_project`, `set_project_status`, `log_event`, `register_experiment`, `read_experiment_result`, `select_candidate`, `record_decision` (requiere aprobación) + los 6 sub-agentes | `projects`, `decisions`, `agent_events` |
 
 Todas las tools escriben una fila en `agent_events`, que la web muestra como línea de tiempo.
 
-**Orquestación en `omnigent.yaml`.** El Discovery Director es el agente raíz. Los otros 6 son sub-agentes (`type: agent`) que el Director invoca en orden; cada uno hereda (`inherit`) solo sus tools. Después del crítico, el Director puede repetir **una vez** planner → runner → critic si `next_decision` propone una prueba factible (máximo 2 experimentos por sesión):
+**Orquestación en `omnigent.yaml`.** El Discovery Director es el agente raíz. Los otros 6 son sub-agentes (`type: agent`) que el Director invoca en orden. Cada sub-agente **declara sus propias tools** (con anclas YAML para no repetirlas): en Omnigent 0.16 `tools: {x: inherit}` dentro de un sub-agente inline **no se traduce** y el sub-agente se queda sin tools. Como máximo 2 experimentos nuevos por sesión:
 
 ```
-Director → literature_agent → hypothesis_agent → data_steward → experiment_planner
-        → experiment_runner → scientific_critic → Director (next_decision)
-        └─(si aplica, una vez)→ experiment_planner → experiment_runner → scientific_critic → Director
+Director: create_project → register_experiment(EXP-001)
+  → scientific_critic (EXP-001) → literature_agent → hypothesis_agent → data_steward
+  → experiment_planner (≥2 candidatos) → Director: select_candidate (por aprendizaje esperado)
+  → experiment_runner (ExperimentSpec → motor → EXP-00N) → scientific_critic (EXP-00N)
+  → Director: record_decision (decisión actualizada + next_action)
+  └─(si la crítica deja una prueba factible y justificada, una vez)→ planner → Director → runner → critic → Director
 ```
 
 ### 7.3 Cómo se conecta el estado JSON con Supabase
@@ -257,20 +261,15 @@ El **JSON es el contrato de mensajes** entre agentes durante la sesión. **Supab
 | `population` | `projects.cohort_definition` | El Data Steward la confirma contra el diccionario |
 | `evidence[]` | `sources` + `passages` | Cada tarjeta debe llevar `source_id`, `passage_id` (o DOI), `url`, `locator` y la cita textual |
 | `hypotheses[]` | `hypotheses` | `claim` → `statement`; `untested` → `proposed`; `tested` → `supported`·`not_supported`·`inconclusive` |
-| `variables` | `experiment_runs.parameters.variables` | El runner los pasa como parámetros del protocolo |
-| `experiments[]` | `experiment_proposals` + `experiment_runs` | El planner propone ≥2; el runner crea el run de la elegida |
-| `results[]` | `experiment_runs.results` | Debe cumplir el [contrato de resultados](#contrato-de-resultados-experiment_runsresults) |
+| `variables` | Solo en el estado JSON | Lo arma el Data Steward a partir de `describe_dataset` |
+| `experiments[]`, `experiment_results[]` | `experiment_runs` (`parameters` = spec completo) | EXP-001 entra con `register_experiment`; los nuevos con `run_experiment` |
+| `scientific_critiques[]` | `decisions` (`decided_by = scientific_critic`) | El JSON completo va en `agent_events.output_refs.critique` y en `reports/discovery/<project_id>/critiques/` |
+| `candidate_experiments[]` | `experiment_proposals` | Detalle completo (spec, verificación del motor) en `output_refs.candidates` y `reports/discovery/<project_id>/candidates/<proposal_id>.json`; `run_experiment` lee el spec de ahí |
+| `decisions[]` | `decisions` (`decided_by = discovery_director`) | Selección (`select_candidate`) y decisión actualizada (`record_decision`); también en `reports/discovery/<project_id>/decisions/` |
 | `limitations[]` | `decisions.limitations` | También el reporte de calidad del Data Steward |
-| `next_decision` | `decisions.next_test` / `rationale` / `rule_applied` | Debe citar el `experiment_run_id` real y la regla R1–R3 aplicada |
+| `next_action` | `decisions.next_test` / `rationale` / `rule_applied` | Debe citar el `experiment_run_id` real |
 
-**Extensiones aplicadas al esquema JSON** (aditivas):
-- `project_id` en `initial_state.json`.
-- Las reglas R1–R3 se guardan en `projects.decision_rules` al llamar a `create_project`.
-- `experiments[]` lleva además `protocol`, `learning_value`, `feasibility`, `cost`, `selected` y `selection_rationale`.
-- `evidence[]` lleva `claim`, `stance`, `source_id`, `passage_id` o `doi`, `url`, `locator` y `quote`.
-- `next_decision` lleva además `rule_applied` y `run_id`.
-
-Los prompts de `omnigent.yaml` definen estas formas.
+No hubo migración nueva: los objetos estructurados que no caben en las columnas existentes viajan en `agent_events.output_refs` (jsonb) y en `reports/discovery/`. Los prompts de `omnigent.yaml` definen las formas exactas.
 
 ### 7.4 Reglas de los agentes
 
@@ -298,8 +297,9 @@ ExperimentSpec  →  src.experiments.runner.run_experiment(spec)  →  Experimen
 - **Consecuencia para la planeación:** con el contrato actual sí se puede estimar el mismo modelo **por separado en subpoblaciones** (por sexo, estado o rango de edad) cambiando `population`. **No** se pueden pedir interacciones (Commute × Sex), términos no lineales, splines, categorías de traslado, modelos de dos partes, `has_child_u15`/`has_minor_u18` como covariables ni las hipótesis H3/H4. Para eso hay que **revisar el contrato** (esquema + método + tests + `docs/EXPERIMENT_ENGINE.md`) y pasar por aprobación humana. El Planner debe declarar esa factibilidad en cada candidato; un candidato que exija revisión del contrato no se ejecuta sin ella.
 - El motor verifica el SHA256 del parquet antes y después, corre cada spec dos veces y exige resultados idénticos. Escribe `result.json`, `summary.md`, `spec.json` y `validation.json` en `reports/experiments/<id>/`. Los fallos lanzan `ExperimentError` con código y mensaje; nunca devuelve un resultado exitoso parcial.
 - `ExperimentResult.review_status` siempre es `REQUIRES_HUMAN_REVIEW`. `EXPERIMENT_COMPLETED` es un estado técnico, no una aprobación científica.
-- **Brecha actual:** la tool `run_experiment` de `agents/commute_lab/tools.py` todavía espera protocolos cerrados en `analysis/enut/protocols.py` (`weighted_means_by_group`, `wls_commute_by_sex`), que **nunca se implementaron y quedan reemplazados por el motor**. Hay que reescribir la tool para que reciba un `ExperimentSpec`, llame a `src.experiments.runner.run_experiment` y persista el resultado y su procedencia en `experiment_runs`. Lo mismo `save_proposals`, que valida contra esa lista vieja.
-- `describe_dataset` lee archivos hermanos `data/processed/analytic_v1.*`. El contrato y el manifiesto ahora están en `docs/DATA_CONTRACT.md` y `metadata/analytic_v1_manifest.json`: hay que apuntarla ahí. **Nunca devuelve filas.**
+- **Conexión tools ↔ motor:** las tools corren dentro del proceso de Omnigent, pero el motor corre en su propio intérprete (`EXPERIMENT_PYTHON`, por defecto `.venv-experiments/bin/python`) con las versiones fijadas de `requirements-experiments.txt`. `save_proposals` verifica cada spec factible con `scripts/check_experiment_spec.py` (esquema + ejecución en seco; devuelve solo validez y `n`, así que el Planner no ve coeficientes antes de elegir). `run_experiment` solo acepta la propuesta seleccionada, asigna el siguiente `EXP-NNN` libre, escribe `experiments/EXP-NNN/spec.json` y llama a `scripts/run_experiment.py` (dos ejecuciones idénticas + hash del parquet). Nunca sobrescribe un experimento existente.
+- Restringir la población a un sexo (o a un estado) y dejar `sex` (o `state`) como covariable da `RANK_DEFICIENT`: hay que quitarla. Correr un modelo por sexo es una comparación descriptiva, no una prueba formal de interacción.
+- `describe_dataset` devuelve `docs/DATA_CONTRACT.md`, un resumen del manifiesto, la aprobación de la fase 3, lo que acepta el `ExperimentSpec` y la plantilla de EXP-001. **Nunca devuelve filas.**
 - Cada llamada a herramienta escribe una fila en `agent_events`. La política `commute_lab.policies.ask_before_run` devuelve **ASK** (aprobación humana) antes de `run_experiment` y de `record_decision`. Hay además un tope de 150 llamadas por sesión.
 - Los textos que los agentes guardan (en el JSON y en Supabase) van **en inglés**, porque los muestra la web.
 - La sesión se inicia desde Omnigent y se guarda `projects.omnigent_session_url`. Un botón "Start research" (Route Handler del servidor → API de Omnigent) se agrega **solo después** de que el ciclo funcione. Nunca llamar a Omnigent desde el navegador con credenciales.
@@ -399,14 +399,17 @@ uv run python -m rag.ingest                       # ingiere rag/corpus.json (--d
 uv run python -m rag.search "tiempo de traslado al trabajo" -k 5
 uv run python -m rag.eval                         # QA de recuperación: hit@1, hit@5, MRR, ruido
 
-# Motor de experimentos (desde la raíz; Python 3.12 en un entorno aislado)
-pip install -r requirements-experiments.txt
+# Motor de experimentos (desde la raíz; Python 3.12 en un entorno aislado, el que usan las tools)
+uv python install 3.12 && uv venv -p 3.12 .venv-experiments
+uv pip install -p .venv-experiments/bin/python -r requirements-experiments.txt
 python scripts/validate_experiment_engine.py        # validación completa del motor; escribe reports/experiments/EXP-001/engine_validation.json
 PYTHONPATH=. python -m unittest discover -s tests   # solo los 16 tests (tests/ no es paquete)
 python scripts/run_experiment.py experiments/EXP-001/spec.json   # corre 2 veces y REESCRIBE reports/experiments/EXP-001/
 
 # Omnigent (desde la raíz; las tools necesitan agents/ y analysis/ en el path)
 uv tool install "omnigent[databricks]"            # o: pip install "omnigent[databricks]"
+npm install -g @openai/codex && codex login       # LLM: sesión de ChatGPT (sin API key)
+set -a; source .env; set +a                       # Supabase y, si se usa, Bright Data
 PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"
 # Validar el spec sin credenciales de modelo:
 PYTHONPATH=agents:analysis python -c "from pathlib import Path; from omnigent.spec import load; print(load(Path('omnigent.yaml')).name)"
@@ -423,8 +426,8 @@ npx next typegen && npx tsc --noEmit && npm run lint && npm run build
 | 0–1 | AGENTS.md, esqueleto del repo, vincular Supabase, preflight de Omnigent | Acceso real a BD + orquestador ✅/❌ |
 | 1–3 | Migraciones, RLS, seed, ingesta + búsqueda RAG | `hybrid_search` devuelve pasajes con cita |
 | 3–4.5 | Panel Next.js lee la BD (`/research/[id]`) | La web muestra estado real de la BD |
-| 4.5–6.5 | ✅ Pipeline ENUT → `analytic_v1` aprobado → motor determinista → EXP-001 ejecutado (2026-10-03). ⏳ Falta conectar el motor a la tool `run_experiment` → `experiment_runs` | **Resultado real persistido** |
-| 6.5–8 | **Fase actual.** Capa agéntica (§7.5): crítico sobre EXP-001 → hipótesis → candidatos → elección → nuevo `ExperimentSpec` → motor → crítica → decisión. Primera sesión real de Omnigent | **Decisión dependiente del resultado guardada** |
+| 4.5–6.5 | ✅ Pipeline ENUT → `analytic_v1` aprobado → motor determinista → EXP-001 ejecutado → motor conectado a la tool `run_experiment` → `experiment_runs` (2026-10-03) | **Resultado real persistido** |
+| 6.5–8 | **Fase actual.** ✅ Capa agéntica (§7.5) implementada en `omnigent.yaml` + tools y probada sin LLM. ⏳ Primera sesión real de Omnigent | **Decisión dependiente del resultado guardada** |
 | 8–9 | El panel muestra el ciclo completo; reejecutar para reproducibilidad; cronometrar manual vs asistido | Reproducción y medición honestas |
 | 9–10 | Desplegar en Vercel, README, grabar demo de 2 minutos | Entrega completa |
 
@@ -483,14 +486,22 @@ Demo (2 min, en inglés): problema y pregunta (15 s) → agentes y fuentes (25 s
 | 2026-10-03 | No hay secuencia fija de experimentos: EXP-002 lo elige el sistema (crítico → hipótesis → ≥2 candidatos → Director) según el aprendizaje esperado. No linealidad y diferencia por sexo son candidatos, no decisiones | Requisito del track: la evidencia debe cambiar la siguiente decisión |
 | 2026-10-03 | El Shared Research State se amplía (§7.5) con `dataset_version`, `experiment_results`, `scientific_critiques`, `candidate_experiments`, `decisions` y `next_action`, todos con IDs estables | Trazabilidad de cada decisión a la evidencia |
 | 2026-10-03 | Agentes en Omnigent de código abierto con harness `codex` y `gpt-5.4-mini` (`OPENAI_API_KEY`). Reemplaza `databricks-claude-sonnet-4-6` | Decisión del equipo (commit `84207bb`): llave de service account disponible |
+| 2026-10-03 | Executor `codex` con `gpt-5.6-terra` y login de ChatGPT (`codex login`), sin `OPENAI_API_KEY`. Reemplaza `gpt-5.4-mini`. Databricks FMAPI/Unity AI Gateway queda comentado como alternativa de entrega | GPT-5.4 y 5.4-mini dejaron de estar disponibles en Codex con login de ChatGPT el 2026-08-31; decisión del usuario de usar su plan de ChatGPT |
+| 2026-10-03 | Ciclo nuevo: EXP-001 → crítico → literatura → hipótesis → Data Steward → ≥2 candidatos → el **Director** elige (`select_candidate`) → runner (spec → motor) → crítico → decisión actualizada. El Planner ya no elige | La elección debe ser del Director y trazable a la crítica (§7.5) |
+| 2026-10-03 | Sin migración: spec completo en `experiment_runs.parameters`, vista compacta en `results.engine`, críticas/candidatos/decisiones completos en `agent_events.output_refs` y `reports/discovery/<project_id>/` | No hay `SUPABASE_DB_URL` ni CLI con sesión para aplicar DDL; las columnas existentes alcanzan para la web |
+| 2026-10-03 | El motor corre por subproceso en `.venv-experiments` (Python 3.12, versiones fijadas), no dentro de Omnigent | Omnigent corre en Python 3.14 con otras versiones de pandas/numpy; el motor debe usar el runtime registrado en la procedencia |
+| 2026-10-03 | Tool `search_web` con Bright Data (opcional) para el Literature Agent | Evidencia externa en vivo además de OpenAlex y el RAG de INEGI; si no está configurada, devuelve error y el agente sigue con OpenAlex |
+| 2026-10-03 | Los sub-agentes declaran sus tools directamente (anclas YAML), no con `inherit` | Omnigent 0.16 descarta `InheritedTool` al traducir sub-agentes inline: con `inherit` los especialistas no tenían tools |
 
 ## Decisiones abiertas
 
-1. **Modelo de los agentes.** Desde `84207bb`, `executor` usa el harness `codex` con `gpt-5.4-mini` y `OPENAI_API_KEY`. Omnigent no lee `.env`: cargarla con `set -a; source .env; set +a`. Verificar que el modelo esté habilitado para la llave. El ancla `&executor` aplica a los 7 agentes. Confirmar con el equipo si el track exige Omnigent administrado por Databricks o acepta el de código abierto.
-2. **Empaquetado del motor.** ✅ Resuelto el 2026-10-03: un clon limpio instala `requirements-experiments.txt`, pasa el validador y reproduce EXP-001 con 0 diferencias numéricas, sin datos crudos ni `staging_v1` (ver `MEMORY.md` §5). Queda borrar `audit/` (duplicado) y `metadata/provenance.json` (vacío). **`omnigent.yaml` sigue sin validarse** con el executor `codex`: hacerlo con `omnigent.spec.load` en un entorno con Omnigent instalado. Es independiente de la reproducibilidad del motor.
+1. **Modelo de los agentes.** `executor` usa el harness `codex` con `gpt-5.6-terra` y la sesión de ChatGPT (`codex login`). Falta instalar la CLI de Codex en la máquina que corre Omnigent y confirmar que `gpt-5.6-terra` está en el plan (si no, `gpt-5.6-luna`). El ancla `&executor` aplica a los 7 agentes. Para la entrega en Databricks (Omnigent administrado → Sandbox → Unity AI Gateway → FMAPI) hay un executor alternativo comentado en `omnigent.yaml`; confirmar el nombre real del endpoint en el workspace.
+2. **Empaquetado del motor.** ✅ Resuelto el 2026-10-03 (ver `MEMORY.md` §5). Queda borrar `audit/` (duplicado) y `metadata/provenance.json` (vacío). `omnigent.yaml` ✅ validado con `omnigent.spec.load` (Omnigent 0.16.0) y todas las tools resuelven su `callable`.
 3. **Alcance de las políticas en sub-agentes.** Comprobar en la primera sesión real que el ASK también se dispara cuando un sub-agente (runner, critic) llama a la tool. Si no, mover esas llamadas al Director.
-4. **`ExperimentResult` en Supabase.** Decidir si `experiment_runs.results` guarda el resultado completo o un resumen + `artifact_paths`, y cómo se guardan `ScientificCritique` y los candidatos (¿`decisions` y `experiment_proposals` bastan, o hace falta una migración?).
-5. **Revisión humana de EXP-001.** Su `review_status` es `REQUIRES_HUMAN_REVIEW`. Definir si el ciclo agéntico puede usarlo como evidencia antes de esa revisión (marcado como provisional) o si la revisión es un paso del ciclo.
+4. **`ExperimentResult` en Supabase.** ✅ Resuelto sin migración (ver §5 y §7.3). Si se quiere consultar veredictos o specs por SQL, una migración aditiva (`decisions.verdict`, `experiment_proposals.spec`) sería lo siguiente; requiere `SUPABASE_DB_URL` o el MCP.
+5. **Revisión humana de EXP-001.** Su `review_status` es `REQUIRES_HUMAN_REVIEW`. Los prompts lo tratan como evidencia **provisional**; confirmar con el equipo si basta o si la revisión humana debe ser un paso del ciclo.
+7. **Bright Data.** `search_web` está implementada contra la SERP API (`POST https://api.brightdata.com/request`, `brd_json=1`) pero **no se ha probado con credenciales reales**. Probarla en cuanto haya token y zona.
+8. **`web/` no muestra aún las críticas ni el veredicto como campos propios**: se ven como filas de `decisions`. Adaptar el panel si da tiempo.
 6. **Ampliación del contrato.** Si el sistema elige un experimento que necesita interacciones, no linealidad o H3/H4, hay que revisar el contrato del motor con aprobación humana (§7.4).
 
 ## Para los commits

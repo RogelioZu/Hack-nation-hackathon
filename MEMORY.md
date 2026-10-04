@@ -19,9 +19,9 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 | Motor de experimentos (`src/experiments/`) | ✅ Determinista, `ExperimentSpec` → `ExperimentResult`, solo `weighted_linear_regression` con CR1 por UPM. Tests en `tests/` |
 | EXP-001 | ✅ `EXPERIMENT_COMPLETED`, `REQUIRES_HUMAN_REVIEW`, `INCONCLUSIVE_RANKING`. Resultados en `reports/experiments/EXP-001/` (ver §4) |
 | Motor de experimentos: empaquetado | ✅ Clon limpio verificado el 2026-10-03: `pip install -r requirements-experiments.txt`, validador PASS, EXP-001 con 0 diferencias numéricas, sin datos crudos ni `staging_v1` (§5). Pendiente: borrar `audit/` y `metadata/provenance.json`; validar `omnigent.yaml` en un entorno con Omnigent |
-| Tool `run_experiment` (`agents/commute_lab/tools.py`) | 🟡 **Desfasada**: sigue esperando `analysis/enut/protocols.py` (`weighted_means_by_group`, `wls_commute_by_sex`), que ya no se va a escribir. Hay que reescribirla para que reciba un `ExperimentSpec` y llame al motor. `save_proposals` valida contra la misma lista vieja y `describe_dataset` busca `data/processed/analytic_v1.*` en vez de `docs/` + `metadata/` |
-| Capa agéntica de descubrimiento | ⏳ **Fase actual.** Scientific Critic, Hypothesis Agent, Experiment Planner, Discovery Director y orquestación Omnigent sobre la evidencia de EXP-001 (ver `AGENTS.md` §7.5). Nada implementado aún |
-| Agentes Omnigent | 🟡 `omnigent.yaml` reescrito con el formato real y **validado con `omnigent.spec.load`** (Omnigent 0.16). Las 11 tools de `agents/commute_lab/` están implementadas; 10 se probaron contra Supabase. Los prompts y `initial_state.json` todavía describen la pregunta y el estado viejos (60 min semanales, protocolos cerrados). Desde `84207bb` usan Omnigent de código abierto con harness `codex`, `gpt-5.4-mini` y `OPENAI_API_KEY` (hay que revalidar el spec con `omnigent.spec.load`). **Falta la primera sesión real** |
+| Tools (`agents/commute_lab/tools.py`) | ✅ Reescritas el 2026-10-03: 15 tools conectadas al motor real (`run_experiment` → `scripts/run_experiment.py` en `.venv-experiments`; `save_proposals` verifica specs en seco con `scripts/check_experiment_spec.py`). Smoke test completo contra Supabase sin LLM (ver §5) |
+| Capa agéntica de descubrimiento | ✅ Implementada en `omnigent.yaml` + `initial_state.json`: EXP-001 → crítico → literatura → hipótesis → Data Steward → ≥2 candidatos → el Director elige → runner → crítico → decisión actualizada (`AGENTS.md` §7.2). ⏳ Falta la primera sesión real con LLM |
+| Agentes Omnigent | 🟡 `omnigent.yaml` **validado con `omnigent.spec.load`** (Omnigent 0.16.0) y cada agente tiene solo sus tools. Executor: harness `codex` con `gpt-5.6-terra` y login de ChatGPT. **La CLI `codex` no está instalada en esta máquina**: `npm install -g @openai/codex && codex login`. Bright Data (`search_web`) sin credenciales todavía |
 | Papers de OpenAlex | 🟡 `search_openalex` funciona y registra cada paper en `sources` (`kind = 'paper'`, solo metadatos y resumen, sin pasajes) |
 | Despliegue en Vercel | ✅ https://commute-time-lab.vercel.app (producción, pública) |
 | Repo | ✅ Historia local fusionada con `origin/main` (GitHub `RogelioZu/Hack-nation-hackathon`) |
@@ -126,7 +126,11 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - Las function tools reciben los argumentos del LLM como kwargs, y el resultado se convierte con `str()`. Por eso las tools devuelven JSON (`json.dumps`).
   - No llamar `agents` a un paquete propio: es el import del SDK `openai-agents`, que Omnigent instala.
   - Para el validador se usó un venv temporal con `omnigent[databricks]` 0.16.0 y Python 3.12, fuera del repo.
-- **Smoke test de las tools**: se probaron las 10 contra Supabase con un proyecto temporal `[SMOKE TEST]`, borrado al final (la cascada limpia todo; los `sources` de OpenAlex se borraron a mano). `run_experiment` hoy siempre termina en `failed` con el motivo "Analytic dataset data/processed/analytic_v1.parquet is not available yet", que es lo esperado.
+- **Smoke test de las tools** (2026-10-03, sin LLM): proyecto temporal `[SMOKE TEST]` → `register_experiment(EXP-001)` (idempotente) → `save_critique` → `save_hypothesis` → `save_proposals` (rechaza un spec `RANK_DEFICIENT`) → `select_candidate` (rechaza un candidato que exige revisar el contrato) → `run_experiment` (rechaza lo no seleccionado; corrió un spec real con id desechable `EXP-900`) → `record_decision`. Todo se borró al final (proyecto, `reports/discovery/<id>/`, `EXP-900`). Para repetirlo sin gastar `EXP-002`, parchear `tools._next_experiment_id`.
+- **`inherit` no funciona en sub-agentes inline** (Omnigent 0.16): `_agent_tool_to_sub_spec` solo traduce `AgentTool` y `FunctionTool` anidados y descarta `InheritedTool`. Con `tools: {x: inherit}` el sub-agente queda sin tools, y `omnigent.spec.load` no avisa. Comprobar con `load(...).sub_agents[i].local_tools`.
+- **Dos Pythons**: Omnigent está instalado con `uv tool` en Python 3.14 (trae supabase, httpx, sentence-transformers, pandas, pydantic) y ahí se importan las tools. El motor corre aparte en `.venv-experiments` (Python 3.12, `uv python install 3.12`; no había 3.12 en el sistema) para usar las versiones fijadas. `analysis/.venv` no existe en esta máquina.
+- **`.env` no tiene `SUPABASE_DB_URL`** (vacía): no se pueden aplicar migraciones por `psql`. La CLI `supabase` tampoco tiene sesión.
+- Restringir la población a un sexo con `sex` como covariable da `RANK_DEFICIENT` (lo mismo con `state`).
 
 ### Motor de experimentos: empaquetado (resuelto el 2026-10-03)
 - **Verificado desde un clon limpio** (`core.autocrlf=true`, sin `data/raw/` ni `data/interim/`, venv nuevo con solo `pip install -r requirements-experiments.txt`): 16 tests OK, `validate_experiment_engine.py` PASS, `run_experiment.py` reproduce EXP-001 con **0 diferencias en 1,801 valores numéricos**, y el SHA256 del parquet no cambia.
@@ -159,12 +163,11 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
 
 ## 7. Próximos pasos
 
-1. Borrar `audit/` y `metadata/provenance.json` (§5) y validar `omnigent.yaml` con `omnigent.spec.load` donde Omnigent esté instalado (es independiente del motor).
-2. **Conectar el motor a las tools:** reescribir `run_experiment` en `agents/commute_lab/tools.py` para que valide un `ExperimentSpec` y llame a `src.experiments.runner.run_experiment`. Actualizar `save_proposals` y `describe_dataset` (que exponga `docs/DATA_CONTRACT.md`, el manifiesto y los valores que acepta el esquema). Quitar las referencias a `analysis/enut/protocols.py`. El entorno de Omnigent necesita pandas, pyarrow, numpy, scipy y pydantic.
-3. **Capa agéntica** (`AGENTS.md` §7.5): estructuras `ScientificCritique`, hipótesis y candidatos con IDs estables, el Shared Research State ampliado y los prompts de crítico, Hypothesis Agent, Planner y Director. Arrancar desde `reports/experiments/EXP-001/result.json`.
-4. Actualizar `omnigent.yaml` e `initial_state.json` a la pregunta, unidades y outcomes de `analytic_v1`, y validar con `omnigent.spec.load`.
-5. Decidir cómo se guarda `ExperimentResult` en Supabase y adaptar `web/lib/types.ts` ([Decisiones abiertas](AGENTS.md#decisiones-abiertas) 4).
-6. Cargar `OPENAI_API_KEY` (`set -a; source .env; set +a`) y verificar que `gpt-5.4-mini` esté habilitado → primera sesión real: `PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"`. Comprobar que el ASK salta cuando un sub-agente llama a `run_experiment` o `record_decision`.
-7. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).
-8. Decidir sobre `rls_auto_enable()` (ver §2).
-9. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.
+1. **Primera sesión real**: `npm install -g @openai/codex && codex login` (plan de ChatGPT), luego `set -a; source .env; set +a` y `PYTHONPATH=agents:analysis omnigent run omnigent.yaml -p "$(cat initial_state.json)"`. Si `gpt-5.6-terra` no está en el plan, cambiar a `gpt-5.6-luna` en el ancla `&executor`. Comprobar que el ASK salta cuando un sub-agente llama a `run_experiment` y que el ciclo produce EXP-002 elegido por el Director.
+2. Probar `search_web` con `BRIGHTDATA_API_TOKEN` + `BRIGHTDATA_SERP_ZONE` reales.
+3. Panel web: mostrar críticas (veredicto), candidatos A/B con su factibilidad y la decisión actualizada; hoy salen como filas genéricas de `decisions`/`experiment_proposals`.
+4. Borrar `audit/` y `metadata/provenance.json` (§5).
+5. Para la entrega en Databricks: confirmar el endpoint (`databricks-gpt-5-6-terra` u otro) y activar el executor alternativo comentado en `omnigent.yaml`.
+6. RAG: si el eval o el uso real lo piden, agregar reranker multilingüe o filtro por `source_kind` (ver §3).
+7. Decidir sobre `rls_auto_enable()` (ver §2).
+8. Redeployar la web cuando cambie `web/`, o conectar el repo de GitHub a Vercel.
