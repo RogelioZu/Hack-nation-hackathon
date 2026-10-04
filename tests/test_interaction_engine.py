@@ -222,3 +222,85 @@ class CapabilityAndCompatibility(unittest.TestCase):
         s = ExperimentSpec.model_validate(data)
         self.assertNotIn("interaction", s.model_dump())
         self.assertEqual(canonical_json(s.model_dump()), canonical_json(copy.deepcopy(data)))
+
+
+def run_synthetic(s, frame):
+    """run_experiment on synthetic data; load_approved is replaced, analytic_v1 is only hashed."""
+    from unittest.mock import patch
+    from src.experiments.runner import run_experiment, sha
+
+    frame = frame.assign(active_worker=True, employment_reference_week_absent=False)
+    variables = sorted(set(frame.columns) - {"person_id"})
+    manifest = {"canonical_variables": variables, "feature_definitions": {v: {} for v in variables}}
+    digest = sha(ROOT / "data/processed/analytic_v1.parquet")
+    with patch("src.experiments.runner.load_approved", return_value=(frame, manifest, digest, set(variables))):
+        return run_experiment(s)
+
+
+class OutputSemantics(unittest.TestCase):
+    """Interaction-aware result text and summary.md, on synthetic data (no real scientific result)."""
+
+    @classmethod
+    def setUpClass(cls):
+        from src.experiments.report import render_summary
+
+        # Equal true slopes plus noise: the interaction interval includes zero (checked below).
+        cls.result = run_synthetic(spec(covariates=("work_weekday_min", "age", "sex")),
+                                   synthetic(slope_ref=-2.0, slope_cmp=-2.0, noise=40.0))
+        cls.summary = render_summary(cls.result)
+        cls.r = cls.result.interactions[0]
+
+    def test_a_summary_has_interaction_section(self):
+        r = self.r
+        self.assertIn("## Interacción (exposición × moderador)", self.summary)
+        self.assertIn("Moderador: **sex**", self.summary)
+        self.assertIn("Grupo de referencia: **male**", self.summary)
+        self.assertIn("Grupo de comparación: **female**", self.summary)
+        for label, s in [("grupo de referencia (sex = male)", r.reference_group_slope),
+                         ("grupo de comparación (sex = female)", r.comparison_group_slope),
+                         ("diferencia de pendientes (female − male)", r.interaction)]:
+            self.assertIn(f"{label} | {s.estimate:.3f} | {s.standard_error:.3f} | "
+                          f"[{s.interval.lower:.3f}, {s.interval.upper:.3f}] |", self.summary)
+        self.assertIn(f"Estado de la interacción: **{r.interpretation_status}**", self.summary)
+
+    def test_b_reference_group_slope_is_labeled(self):
+        self.assertNotIn("| Coeficiente |", self.summary)
+        self.assertIn("| Pendiente del grupo de referencia (sex = male) |", self.summary)
+        self.assertIn("no un coeficiente agrupado", self.summary)
+        self.assertIn("reference group sex = male", self.result.scientific_interpretation[0])
+        self.assertEqual(self.result.estimates[0].coefficient, self.r.reference_group_slope.estimate)
+
+    def test_c_h3_evaluated_but_inconclusive(self):
+        self.assertEqual(self.r.interpretation_status, "INCONCLUSIVE_INTERVAL_INCLUDES_ZERO")
+        self.assertEqual([h["id"] for h in self.result.inconclusive_hypotheses], ["H3"])
+        self.assertFalse(self.result.supported_hypotheses or self.result.unsupported_hypotheses)
+        self.assertIn("- Inconclusas: H3", self.summary)
+        self.assertIn("H1, H2 y H4 no se evaluaron.", self.summary)
+        self.assertNotRegex(self.summary, r"H3[^.\n]*no se evalu")
+        self.assertIn("No es evidencia de que no haya diferencia", self.summary)
+
+    def test_d_no_stale_interaction_text_after_interaction_run(self):
+        text = canonical_json(self.result.model_dump()) + self.summary
+        self.assertNotIn("interactions require a new approved specification", text)
+        self.assertNotIn("not evaluated in EXP-001", text)
+        self.assertNotIn("Does the association differ by sex?", text)
+        # Another moderator: the sex candidate stays, without the "unsupported" wording.
+        other = run_synthetic(spec(moderator="has_child_u15", reference=False, comparison=True, hypothesis_ids=["H4"]),
+                              synthetic(noise=5.0))
+        sex = [c for c in other.candidate_next_experiments if c["question"] == "Does the association differ by sex?"]
+        self.assertEqual(sex[0]["hypothesis"], "H3, not evaluated in EXP-900")
+        self.assertNotIn("interactions require a new approved specification", canonical_json(other.model_dump()))
+
+    def test_e_single_outcome_ranking_not_applicable(self):
+        from src.experiments.runner import RANKING_NOT_APPLICABLE, ranking
+
+        rank = self.result.ranking
+        self.assertEqual(rank["status"], RANKING_NOT_APPLICABLE)
+        self.assertEqual((rank["comparison_count"], rank["paired_comparisons"]), (0, []))
+        self.assertIsNone(rank["same_complete_case_persons"])
+        self.assertEqual(ranking([fit(synthetic(), spec())])["status"], RANKING_NOT_APPLICABLE)
+        for flag in ("INCONCLUSIVE_RANKING", "DISTINGUISHABLE_RANKING", RANKING_NOT_APPLICABLE, "MULTIPLE_COMPARISON_FAMILIES"):
+            self.assertNotIn(flag, self.result.quality_flags)
+        self.assertNotIn("INCONCLUSIVE_RANKING", canonical_json(self.result.model_dump()) + self.summary)
+        self.assertNotIn("Separate Bonferroni families", " ".join(self.result.limitations))
+        self.assertIn("Hay un solo outcome primario", self.summary)

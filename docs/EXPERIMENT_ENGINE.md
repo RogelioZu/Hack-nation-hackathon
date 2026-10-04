@@ -97,6 +97,10 @@ contrasts (individual coverage 99.1667%, family nominal 95%). A complete
 ranking is distinguishable only if every ordered difference excludes zero
 in the expected direction. Otherwise return INCONCLUSIVE_RANKING. If model
 samples differ, return inconclusive without fabricating paired contrasts.
+With a single primary outcome no cross-outcome ranking exists, so none is
+attempted: return NOT_APPLICABLE_SINGLE_OUTCOME (same keys, no paired
+contrasts, `same_complete_case_persons` null) and omit the ranking-status and
+MULTIPLE_COMPARISON_FAMILIES quality flags.
 H2 may have evidence of some differences without a resolved complete order.
 No interval overlap heuristic is used. Point order never identifies a
 definitive most-sacrificed outcome. No cross-family or cross-sensitivity
@@ -160,12 +164,21 @@ human-approved margin. The data remain observational and cross-sectional, so an 
 make causal inference valid, and CR1 remains an approximation, not full ENUT complex-survey variance.
 In moderated models the Estimate coefficient and the ranking refer to the reference-group slope.
 
+Reporting is interaction-aware and derived only from the result. In moderated models the
+scientific_interpretation labels the Estimate line as the reference-group slope and adds the
+comparison-group slope and interaction, and summary.md labels that column as the reference-group
+slope and adds an interaction section (moderator, both levels with n and FAC_PER totals, both group
+slopes, the interaction with SE and interval, the moderator main effect and the interpretation
+status). The hypotheses listed as not evaluated are the protocol hypotheses H1-H4 absent from the
+result's assessed hypotheses. The engine's sex-difference candidate is omitted when the experiment
+itself fitted the commute x sex interaction.
+
 Capabilities are published in metadata/experiment_engine_capabilities.json, generated from
 src/experiments/capabilities.py and checked by the validator. Synthetic tests
 (tests/test_interaction_engine.py) cover known and zero interactions, reference recoding, missing
 moderators, invalid specifications, single main effects, the covariance-derived comparison slope and
-agreement with statsmodels WLS + cluster CR1. No experiment has been run with this capability yet:
-HYP-005, HYP-007 and HYP-008 remain untested.
+agreement with statsmodels WLS + cluster CR1. EXP-002 (approved in REV-DEC-005-001) applies this
+capability to H3 / HYP-005 (commute x sex, sleep); HYP-007 and HYP-008 remain untested.
 
 ## Reproduction
 
