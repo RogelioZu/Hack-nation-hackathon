@@ -66,6 +66,102 @@
       "pointer": "/evidence_summary/5"
     },
     {
+      "evidence_id": "CRIT-EXP-002-002/evidence/1",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.reference_group_slope",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/0"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/10",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "hypotheses_evaluated_by_engine",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/9"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/11",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "prior_scientific_state.experiments[0].ranking_status",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/10"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/12",
+      "kind": "critique_inference",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.interaction_comparison_minus_reference",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/11"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/2",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "interactions.comparison_group_slope",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/1"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/3",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "estimates[0].ci95_pointwise, estimates[0].bonferroni_outcome_interval",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/2"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/4",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "ranking.status",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/3"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/5",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "sensitivity",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/4"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/6",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "sample_size, weighted_population",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/5"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/7",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "diagnostics_adjusted.adjusted:sleep_weekday_min",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/6"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/8",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "ranking.paired_comparisons",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/7"
+    },
+    {
+      "evidence_id": "CRIT-EXP-002-002/evidence/9",
+      "kind": "critique_observed_evidence",
+      "critique_id": "CRIT-EXP-002-002",
+      "source_field": "limitations[0]",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/evidence_summary/8"
+    },
+    {
       "evidence_id": "EXP-001/estimates/adjusted:household_conversation_weekday_min",
       "kind": "experiment_estimate",
       "experiment_id": "EXP-001",
@@ -300,6 +396,29 @@
           "field": "experiment_id"
         }
       ]
+    },
+    {
+      "critique_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "sha256": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
+      "scientific_status": "UNCERTAIN",
+      "references": [
+        {
+          "to": "EXP-002",
+          "relation": "interprets",
+          "field": "experiment_id"
+        },
+        {
+          "to": "HYP-005",
+          "relation": "assesses",
+          "field": "hypothesis_assessments[].hypothesis_id"
+        },
+        {
+          "to": "H3",
+          "relation": "assesses",
+          "field": "hypothesis_assessments[].protocol_hypothesis_id"
+        }
+      ]
     }
   ],
   "hypotheses": [
@@ -334,7 +453,10 @@
       "evaluated_in": [
         "EXP-002/hypotheses/H3"
       ],
-      "references": []
+      "references": [],
+      "assessed_in": [
+        "CRIT-EXP-002-002"
+      ]
     },
     {
       "hypothesis_id": "H4",
@@ -359,6 +481,9 @@
       "source": "agent",
       "approved_in": [
         "REV-001"
+      ],
+      "assessed_in": [
+        "CRIT-EXP-002-002"
       ]
     },
     {
@@ -500,7 +625,9 @@
       },
       "result_sha256": "63b279add6ab81bc73198ffdb9cb5c40aa66794a81e24fabe66d2812bc68f24e",
       "selected_by": [],
-      "critiques": [],
+      "critiques": [
+        "CRIT-EXP-002-002"
+      ],
       "authorized_by": [
         "REV-DEC-005-001"
       ]
@@ -999,12 +1126,72 @@
       "artifact": "reports/discovery/local/critiques/CRIT-EXP-001-001.json",
       "pointer": "/uncertainties/4",
       "text": "Linear specification assumes a constant slope across the commuting exposure range."
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/0",
+      "text": "Observational cross‑sectional design; associations do not imply causation"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/1",
+      "text": "FAC_PER‑weighted point estimates; variance method is an approximation"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/2",
+      "text": "Linear specification of commute exposure may miss non‑linear patterns"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/3",
+      "text": "Intervals that include zero are inconclusive and do not establish equivalence (no equivalence margin exists)"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/limitations/4",
+      "text": "CR1 PSU-cluster sandwich approximation, not full ENUT complex-survey variance"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/uncertainties/1",
+      "text": "High leverage observations retained (183), possibly influencing estimates"
+    },
+    {
+      "source_id": "CRIT-EXP-002-002",
+      "artifact": "reports/discovery/local/critiques/CRIT-EXP-002-002.json",
+      "pointer": "/uncertainties/2",
+      "text": "Limited power to detect interaction effects with sample size 2563"
     }
   ],
   "links": [
     {
       "from": "CRIT-EXP-001-001",
       "to": "EXP-001",
+      "relation": "interprets",
+      "field": "experiment_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "H3",
+      "relation": "assesses",
+      "field": "hypothesis_assessments[].protocol_hypothesis_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "HYP-005",
+      "relation": "assesses",
+      "field": "hypothesis_assessments[].hypothesis_id"
+    },
+    {
+      "from": "CRIT-EXP-002-002",
+      "to": "EXP-002",
       "relation": "interprets",
       "field": "experiment_id"
     },
@@ -1298,10 +1485,10 @@
       "EXP-001",
       "EXP-002"
     ],
-    "stage": "critique",
-    "agent": "scientific_critic",
+    "stage": "hypotheses",
+    "agent": "hypothesis_agent",
     "inputs": [
-      "EXP-002"
+      "CRIT-EXP-002-002"
     ]
   },
   "provenance": {
@@ -1318,6 +1505,7 @@
       "reports/discovery/local/candidates/PROP-008.json": "fea8f762641f3086602f17312ac60961f6d979773a9f19a7a094e3fa41a3b6a4",
       "reports/discovery/local/candidates/PROP-009.json": "c7cc09c48b7dafd42ecd8d52907f9e586bd336048157901cfcc8ddf9238fabca",
       "reports/discovery/local/critiques/CRIT-EXP-001-001.json": "e0d3a2e955f6d3ac57c61136b28de01e61535d68427be173d33c899770d8a181",
+      "reports/discovery/local/critiques/CRIT-EXP-002-002.json": "d16c77c51bb8ca3fd68a9379bd71a532bb11cf1deaf2adc2749338e4861dde76",
       "reports/discovery/local/decisions/DEC-001.json": "605b7e9f1e8ebca67a1e429308ceee6e67122c970031cb95580a97fac46f7766",
       "reports/discovery/local/decisions/DEC-002.json": "f599eede06360a9ea5c8a6a8dfbb8f389494f1d7317f76512c7607db574cd481",
       "reports/discovery/local/decisions/DEC-003.json": "3fa3106b06539cb4afdaf65defb363f8c3c03784e70257b528a188e1ddea1e60",
@@ -1335,8 +1523,8 @@
       "reports/experiments/EXP-002/spec.json": "e012bbf37b1ef81afc2a25a4ec4829d87c27aeed2a7ec437ec5e34ecbb3773d7",
       "reports/experiments/EXP-002/validation.json": "244f28b48d9e9534d982a8cd5a22cc42474b0e550e891dd5cdedd0c3e1d0c2ee"
     },
-    "inputs_sha256": "ed00a0df8011bcc634c6685a2a2bf7da5df39022d6a02d91089bc058a7a46647",
-    "generator_sha256": "d88361256d04de00f7dbd7451200dcf032d0ebb3c6110f69334bf80a2da5fd06",
+    "inputs_sha256": "b640466410b4e0f3cc4c06a55287605f213cea66c5aa95c865b34168b22c8190",
+    "generator_sha256": "a942004b7d9ef6ee6a169f229d4e049f65e2dda2984cf4d18c1aaf575c400685",
     "numbers_policy": "no scientific numbers are copied; resolve evidence pointers in the source artifact"
   },
   "validation": {
