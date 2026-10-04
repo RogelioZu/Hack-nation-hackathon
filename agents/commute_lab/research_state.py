@@ -82,7 +82,9 @@ REFS["review"] = [("approved_hypotheses[].hypothesis_id", frozenset({"hypothesis
                   ("approved_decision_id", frozenset({"decision"}), "approves")]
 EXECUTION_APPROVAL = "APPROVED_FOR_EXECUTION"
 # A decision may name the experiment it will produce before that experiment exists.
-FUTURE_REFS = {"decision": [("experiment_id", "executed_as"), ("resulting_experiment_id", "executed_as")]}
+FUTURE_REFS = {"decision": [("experiment_id", "executed_as"), ("resulting_experiment_id", "executed_as")],
+               # A decision approval names the experiment id it authorizes (pending until that experiment runs).
+               "review": [("approved_experiment.experiment_id_to_assign", "authorizes")]}
 ITEM_ID_FIELDS = ("evidence_id", "id", "ref", "critique_id", "hypothesis_id", "candidate_id", "proposal_id")
 # DiscoveryDecision status (agents/commute_lab/director_tools.py) -> pipeline stage it leads to.
 DECISION_STAGES = {"READY_TO_EXECUTE": ("run_experiment", "experiment_runner"),
@@ -454,6 +456,8 @@ def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | No
             by_id[link["to"]]["critiques"].append(link["from"])
         if link["relation"] == "executed_as" and link["to"] in by_id:
             by_id[link["to"]]["selected_by"].append(link["from"])
+        if link["relation"] == "authorizes" and link["to"] in by_id:
+            by_id[link["to"]].setdefault("authorized_by", []).append(link["from"])
     approvals = {}
     for link in b.links:
         if link["relation"] == "approves":
@@ -465,6 +469,8 @@ def build_state(root: Path = ROOT, workspace: str = "local", previous: dict | No
                                    if e.get("kind") == "engine_hypothesis_assessment" and e["hypothesis_id"] == h["hypothesis_id"])
     for e in experiments:
         e["critiques"], e["selected_by"] = sorted(set(e["critiques"])), sorted(set(e["selected_by"]))
+        if "authorized_by" in e:
+            e["authorized_by"] = sorted(set(e["authorized_by"]), key=_natural)
 
     # Artifacts indexed in the previous snapshot must keep their bytes (append-only sources).
     if previous:

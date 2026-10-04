@@ -31,7 +31,10 @@ class RepoState(unittest.TestCase):
         self.assertTrue(state["validation"]["valid"], state["validation"]["errors"])
         self.assertEqual(state["dataset"]["version"], "analytic_v1")
         self.assertEqual(state["dataset"]["population_n"], 2563)
-        self.assertEqual([e["experiment_id"] for e in state["experiments"]], ["EXP-001"])
+        # Every published engine result is discovered (EXP-001, then later approved experiments).
+        published = sorted(p.name for p in (ROOT / "reports" / "experiments").glob("EXP-*") if p.is_dir())
+        self.assertEqual([e["experiment_id"] for e in state["experiments"]], published)
+        self.assertEqual(published[0], "EXP-001")
         self.assertEqual(state["experiments"][0]["critiques"], [CRIT])
         self.assertEqual([h["hypothesis_id"] for h in state["hypotheses"]][:4], ["H1", "H2", "H3", "H4"])
         # Hypothesis Agent and Experiment Planner outputs are indexed; superseded/ subfolders are not.
@@ -42,7 +45,10 @@ class RepoState(unittest.TestCase):
         action = state["next_action"]
         self.assertIn(action["stage"], {"critique", "hypotheses", "candidate_experiments", "decision",
                                         "engine_extension", "human_review", "run_experiment"})
-        if state["decisions"]:
+        latest = state["experiments"][-1]
+        if not latest["critiques"]:  # a new result is critiqued before any further decision
+            self.assertEqual((action["stage"], action["inputs"]), ("critique", [latest["experiment_id"]]))
+        elif state["decisions"]:
             self.assertEqual(action["inputs"], [state["decisions"][-1]["decision_id"]])
 
     def test_deterministic_and_number_free(self):
@@ -145,6 +151,14 @@ class FutureArtifacts(unittest.TestCase):
         self.assertTrue(state["validation"]["valid"], state["validation"]["errors"])
         self.assertEqual(state["next_action"]["approved_in"], ["REV-DEC-001-001"])
         self.assertNotIn("human approval", state["next_action"]["requires"])
+
+    def test_decision_approval_authorizes_the_next_experiment(self):
+        save_artifact("reviews", {"review_id": "REV-DEC-001-001", "decision": "APPROVED_FOR_EXECUTION",
+                                  "approved_experiment": {"experiment_id_to_assign": "EXP-002"}}, self.root)
+        state = self.build()
+        self.assertTrue(state["validation"]["valid"], state["validation"]["errors"])
+        self.assertIn("PENDING_EXPERIMENT", [w["code"] for w in state["validation"]["warnings"]])
+        self.assertNotIn("EXP-002", [e["experiment_id"] for e in state["experiments"]])
 
     def test_candidate_with_supabase_style_proposal_id(self):
         save_artifact("hypotheses", hypothesis(), self.root)
