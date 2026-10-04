@@ -72,7 +72,7 @@ Agents do not chat. They exchange one **Shared Research State** JSON object and 
 
 ## Try it
 
-**1. Watch the replay (no setup).** Open https://commute-time-lab.vercel.app and press *Run discovery*. The agents take turns as in the recorded session, each listing the artifacts it saves before its result appears, and the conclusion arrives last. `/?view=full` opens the whole record at once.
+**1. Watch the replay (no setup).** Open https://commute-time-lab.vercel.app and press *Start guided discovery*. The agents take turns as in the recorded session: each runs its checks, saves its artifacts and waits at human approval gates before its result appears; *Inspect agent handoff* shows the real JSON it passed on. Previous, Play/Pause and Next step through the run, and the conclusion and key results arrive last. `/?view=full` opens the whole record at once.
 
 **2. Reproduce the numbers** (Python 3.12, from the repo root):
 

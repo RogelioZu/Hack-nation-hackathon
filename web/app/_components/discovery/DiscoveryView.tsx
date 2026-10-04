@@ -3,7 +3,28 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { ArrowRight, Check, FastForward, Hourglass, LoaderCircle, Pause, Play, RotateCcw, TriangleAlert, UserCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Bot,
+  Braces,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Cpu,
+  Database,
+  FastForward,
+  Hourglass,
+  LoaderCircle,
+  Pause,
+  Play,
+  RotateCcw,
+  ShieldCheck,
+  TriangleAlert,
+  UserCheck,
+  Waypoints,
+} from "lucide-react";
+import InteractionPlot from "./InteractionPlot";
 import Wordmark from "../Wordmark";
 import type { DiscoveryPayload, DiscoveryRunViewModel as Discovery, EvidenceView, Stage } from "@/lib/discovery/types";
 import Inspector from "./Inspector";
@@ -16,6 +37,7 @@ import {
   CritiqueBody,
   DecisionBody,
   DecisionHistory,
+  EvidenceBody,
   FollowUpBody,
   HypothesesBody,
   ProposalsBody,
@@ -33,6 +55,7 @@ const LINE_MS = 650;
 const REVEAL_MS = 700;
 const READ_MS = 2600;
 const MAX_LINES = 6;
+const HUMAN_MS = 1800; // a human gate stays open a little longer before it closes
 const LIVE_REFRESH_MS = 3000;
 const FRESH_MS = 8000;
 
@@ -230,6 +253,7 @@ function StageItem({
             <p className={`w-full max-w-[64ch] text-body-sm ${dark ? "text-blue-100" : "text-gray-700"}`}>{stage.purpose}</p>
           </header>
           {stage.recorded ? <StageBody stage={stage} d={d} listening={listening} /> : <Awaiting {...stage.awaiting} listening={listening} />}
+          {stage.recorded && <HandoffPanel stage={stage} d={d} dark={dark} />}
         </article>
       ) : (
         <div id={`stage-${stage.key}`} className="flex min-h-[68px] items-center gap-3 rounded-lg px-1 sm:min-h-[84px]">
@@ -357,19 +381,23 @@ function NextInLoop({
 
 // --- Console pieces ------------------------------------------------------------
 
-/** What an agent saved during its stage, in order, as the console lists it while the agent works. */
-function workLines(stage: Stage, d: Discovery) {
+type WorkLine = { key: string; kind: "check" | "artifact" | "human"; text: string; id?: string; path?: string };
+
+/** What an agent does during its stage, in order: the validations its tools run, then each artifact it saves. */
+function workLines(stage: Stage, d: Discovery): WorkLine[] {
   const seen = new Set<string>();
-  return stage.artifactKeys
+  const saved = stage.artifactKeys
     .map((k) => d.artifacts[k])
     .filter((a) => a && !seen.has(a.id) && seen.add(a.id))
     .slice(0, MAX_LINES)
-    .map((a) => ({ key: a.key, id: a.id, path: a.path, human: a.type === "REVIEW" }));
+    .map((a): WorkLine => ({ key: a.key, kind: a.type === "REVIEW" ? "human" : "artifact", text: a.label, id: a.id, path: a.path }));
+  return [...stage.checks.map((c, i): WorkLine => ({ key: `check-${i}`, kind: "check", text: c })), ...saved];
 }
 
-/** The agent at work: who, what it is doing, and each artifact as it lands. Never shows a result before the stage does. */
+/** The agent at work: who, what it is doing, each check and artifact as it lands, and human gates as they open and close. */
 function AgentWorking({ stage, d, lines, paused }: { stage: Stage; d: Discovery; lines: number; paused: boolean }) {
   const all = workLines(stage, d);
+  const shown = all.slice(0, lines);
   return (
     <li id="agent-working" className="relative grid scroll-mt-28 grid-cols-[32px_minmax(0,1fr)] gap-x-3 pb-5 sm:gap-x-5">
       <div className="pt-[18px] sm:pt-[22px]">
@@ -377,7 +405,7 @@ function AgentWorking({ stage, d, lines, paused }: { stage: Stage; d: Discovery;
           <LoaderCircle aria-hidden size={16} strokeWidth={2.25} className={paused ? "" : "animate-spin"} />
         </span>
       </div>
-      <div className="rounded-lg bg-white/70 p-5 ring-1 ring-gray-200 sm:p-6" aria-live="polite">
+      <div className="stage-enter rounded-lg bg-white p-5 ring-1 ring-blue-200 sm:p-6" aria-live="polite">
         <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-gray-900">
           <TypeMark type={stage.type} />
           {stage.agent}
@@ -388,20 +416,40 @@ function AgentWorking({ stage, d, lines, paused }: { stage: Stage; d: Discovery;
           {!paused && <span aria-hidden className="thinking-dots" />}
           {paused && <span className="ml-2 text-body-sm font-semibold text-gray-900">Paused</span>}
         </p>
-        {lines > 0 && (
-          <ul className="mt-4 space-y-1.5 border-t border-gray-200 pt-3">
-            {all.slice(0, lines).map((l) => (
-              <li key={l.key} className="stage-enter flex min-w-0 items-center gap-2 text-body-sm text-gray-700">
-                {l.human ? (
-                  <UserCheck aria-hidden size={15} strokeWidth={2} className="shrink-0 text-gray-900" />
-                ) : (
-                  <Check aria-hidden size={15} strokeWidth={2.5} className="shrink-0 text-green-600" />
-                )}
-                <span className="shrink-0 font-semibold text-gray-900">{l.human ? "Human approval" : "Saved"}</span>
-                <span className="shrink-0 font-mono text-caption text-gray-900">{l.id}</span>
-                <span className="min-w-0 truncate font-mono text-caption text-gray-500">{l.path}</span>
-              </li>
-            ))}
+        {shown.length > 0 && (
+          <ul className="mt-4 space-y-2 border-t border-gray-200 pt-3">
+            {shown.map((l, i) => {
+              const pending = i === shown.length - 1 && !paused;
+              return (
+                <li key={l.key} className="stage-enter flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-body-sm text-gray-700">
+                  {l.kind === "human" ? (
+                    pending ? (
+                      <Hourglass aria-hidden size={15} strokeWidth={2} className="shrink-0 text-yellow-700" />
+                    ) : (
+                      <UserCheck aria-hidden size={15} strokeWidth={2} className="shrink-0 text-gray-900" />
+                    )
+                  ) : pending && l.kind === "check" ? (
+                    <LoaderCircle aria-hidden size={15} strokeWidth={2.25} className="shrink-0 animate-spin text-blue-600" />
+                  ) : (
+                    <Check aria-hidden size={15} strokeWidth={2.5} className="shrink-0 text-green-600" />
+                  )}
+                  {l.kind === "check" && <span>{l.text}</span>}
+                  {l.kind === "artifact" && (
+                    <>
+                      <span className="font-semibold text-gray-900">Saved</span>
+                      <span className="font-mono text-caption text-gray-900">{l.id}</span>
+                      <span className="min-w-0 truncate font-mono text-caption text-gray-500">{l.path}</span>
+                    </>
+                  )}
+                  {l.kind === "human" && (
+                    <>
+                      <span className="font-semibold text-gray-900">{pending ? "Waiting for human approval" : "Approved by the project lead"}</span>
+                      <span className="font-mono text-caption text-gray-900">{l.id}</span>
+                    </>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
@@ -409,68 +457,232 @@ function AgentWorking({ stage, d, lines, paused }: { stage: Stage; d: Discovery;
   );
 }
 
-/** The opening screen: the approved question loaded into a composer, ready to hand to the agents. */
-function Composer({ d, source, onRun, onFull }: { d: Discovery; source: string; onRun: () => void; onFull: () => void }) {
+/** The real JSON each agent handed on, excerpted: agents exchange contracts, not chat. */
+function HandoffPanel({ stage, d, dark }: { stage: Stage; d: Discovery; dark: boolean }) {
+  const [open, setOpen] = useState(false);
+  const refs = stage.artifactKeys.map((k) => d.artifacts[k]).filter(Boolean);
+  const [active, setActive] = useState(refs[0]?.key ?? null);
+  if (!refs.length) return null;
+  const a = refs.find((r) => r.key === active) ?? refs[0];
   return (
-    <section aria-labelledby="composer-title" className="mx-auto flex min-h-[calc(100dvh-12rem)] max-w-3xl flex-col justify-center py-8">
-      <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Agentic discovery lab · ENUT 2024</p>
-      <h1 id="composer-title" className="mt-2 text-[30px] leading-[36px] font-extrabold tracking-[-0.02em] text-balance text-gray-900 sm:text-[36px] sm:leading-[42px]">
-        What should the lab investigate?
-      </h1>
-      <form
-        className="mt-6 rounded-xl bg-white p-4 shadow-[0_1px_0_var(--color-gray-200)] ring-1 ring-gray-200 focus-within:ring-2 focus-within:ring-blue-300 sm:p-5"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onRun();
-        }}
+    <div className={`mt-6 border-t pt-4 ${dark ? "border-blue-700" : "border-gray-200"}`}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className={`inline-flex items-center gap-2 rounded-full text-body-sm font-semibold ${dark ? "text-blue-100 hover:text-white" : "text-blue-600 hover:text-blue-700"}`}
       >
-        <label htmlFor="question" className="text-body-sm font-semibold text-gray-900">
-          Research question
-        </label>
-        <textarea
-          id="question"
-          readOnly
-          rows={5}
-          value={d.question.text ?? ""}
-          className="mt-2 w-full resize-none bg-transparent text-body text-gray-900 outline-none"
-        />
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-3 border-t border-gray-200 pt-3">
-          <ul className="flex flex-wrap gap-1.5">
+        <Braces aria-hidden size={15} strokeWidth={2.25} />
+        {open ? "Hide agent handoff" : "Inspect agent handoff"}
+      </button>
+      {open && (
+        <div className="stage-enter mt-3 overflow-hidden rounded-md bg-gray-900 text-gray-100">
+          <div className="flex flex-wrap gap-1 border-b border-gray-700 p-2">
+            {refs.map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => setActive(r.key)}
+                aria-pressed={r.key === a.key}
+                className={`rounded-sm px-2 py-1 font-mono text-caption ${r.key === a.key ? "bg-blue-500 text-white" : "text-gray-300 hover:bg-gray-700"}`}
+              >
+                {r.id}
+              </button>
+            ))}
+          </div>
+          <p className="px-4 pt-3 font-mono text-micro text-gray-400">
+            {a.path} · excerpt: long lists and text shortened
+          </p>
+          <pre className="max-h-96 overflow-auto px-4 pt-2 pb-4 font-mono text-caption leading-5 whitespace-pre-wrap [overflow-wrap:anywhere]">
+            {JSON.stringify(a.handoff, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const AGENTS: { name: string; producer: string; role: string }[] = [
+  { name: "Discovery Director", producer: "discovery_director", role: "Chooses what to investigate next" },
+  { name: "Scientific Critic", producer: "scientific_critic", role: "Judges reliability, names what is open" },
+  { name: "Hypothesis Agent", producer: "hypothesis_agent", role: "Proposes falsifiable explanations" },
+  { name: "Experiment Planner", producer: "experiment_planner", role: "Designs competing experiments" },
+  { name: "Experiment Runner", producer: "Deterministic engine", role: "Runs the approved spec on the engine" },
+  { name: "Literature Agent", producer: "literature_agent", role: "Retrieves cited evidence (INEGI, OpenAlex)" },
+  { name: "Data Steward", producer: "data_steward", role: "Checks the data can test the hypothesis" },
+];
+
+/** The landing: what the lab is, where the data comes from, how it works, and the question the agents will take on. */
+function Hero({ d, source, onRun, onFull }: { d: Discovery; source: string; onRun: () => void; onFull: () => void }) {
+  const producers = Object.values(d.artifacts).map((a) => a.producer ?? "");
+  const ran = (p: string) => producers.some((x) => x.includes(p));
+  const n = d.dataset?.populationN ?? d.baselineEvidence?.sampleSize ?? null;
+  const steps: { icon: typeof Database; title: string; text: string }[] = [
+    { icon: Clock, title: "The problem", text: "Long weekday commutes compete with the rest of a worker's day. Which part of personal time gives way?" },
+    { icon: Database, title: "Official data", text: "INEGI's National Time-Use Survey (ENUT 2024): Monday–Friday minutes per activity, with survey weights." },
+    { icon: Bot, title: "Agents decide", text: "Specialist agents critique results, propose hypotheses and choose the next experiment. They exchange JSON, not chat." },
+    { icon: Cpu, title: "Deterministic engine", text: "Only a fixed, tested statistics engine computes numbers: every run twice, on a hash-checked dataset." },
+    { icon: ShieldCheck, title: "Honest findings", text: "Every estimate carries its interval, and a human approves each consequential step. Inconclusive is a valid answer." },
+  ];
+  return (
+    <div className="space-y-6 py-2">
+      <section aria-labelledby="hero-title" className="rounded-xl bg-white p-6 sm:p-10">
+        <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Time Poverty Lab · Agentic scientific discovery</p>
+        <h1 id="hero-title" className="mt-3 max-w-[20ch] text-[34px] leading-[40px] font-extrabold tracking-[-0.025em] text-balance text-gray-900 sm:text-[48px] sm:leading-[54px]">
+          Agentic scientific discovery for urban time poverty
+        </h1>
+        <p className="mt-4 max-w-[62ch] text-[18px] leading-7 text-gray-700">
+          An autonomous lab where specialist AI agents, orchestrated with Omnigent, turn a research question into hypotheses,
+          choose the next experiment and run deterministic statistics on official microdata, with a human approving each
+          consequential step.
+        </p>
+        <ul className="mt-6 flex flex-wrap gap-2">
+          {[
+            { icon: Database, label: "Dataset", value: `INEGI ENUT 2024${n != null ? ` · n = ${n.toLocaleString("en-US")} workers` : ""} · CDMX & Edomex` },
+            { icon: Waypoints, label: "Orchestration", value: "Omnigent · Databricks model serving" },
+            { icon: ShieldCheck, label: "Paradigm", value: "Observational & cross-sectional · no causal claims" },
+          ].map(({ icon: Icon, label, value }) => (
+            <li key={label} className="flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-md bg-gray-50 px-3 py-2 text-body-sm ring-1 ring-gray-200 ring-inset">
+              <Icon aria-hidden size={16} strokeWidth={2} className="shrink-0 text-blue-600" />
+              <span className="font-semibold text-gray-900">{label}</span>
+              <span className="text-gray-700">{value}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+          <button
+            type="button"
+            onClick={onRun}
+            className="flex h-12 items-center gap-2 rounded-full bg-blue-500 pr-6 pl-5 text-[17px] font-semibold text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
+          >
+            <Play aria-hidden size={16} strokeWidth={2.5} />
+            Start guided discovery
+          </button>
+          <button type="button" onClick={onFull} className="text-body-sm font-semibold text-blue-600 hover:text-blue-700">
+            Skip to the full record <ArrowRight aria-hidden size={14} className="inline" />
+          </button>
+        </div>
+      </section>
+
+      <section aria-labelledby="how-title">
+        <h2 id="how-title" className="px-1 text-h4 text-gray-900">
+          How the lab works
+        </h2>
+        <ol className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          {steps.map(({ icon: Icon, title, text }, i) => (
+            <li key={title} className="rounded-lg bg-white p-5">
+              <p className="flex items-center gap-2 text-body font-semibold text-gray-900">
+                <span className="flex size-7 items-center justify-center rounded-sm bg-blue-50 text-caption font-bold text-blue-700 tabular">{i + 1}</span>
+                <Icon aria-hidden size={16} strokeWidth={2} className="text-blue-600" />
+                {title}
+              </p>
+              <p className="mt-2 text-body-sm text-gray-700">{text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+        <section aria-labelledby="question-title" className="rounded-xl bg-white p-6 sm:p-8">
+          <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">The question the agents will investigate</p>
+          <h2 id="question-title" className="sr-only">
+            Research question
+          </h2>
+          <p className="mt-3 text-[18px] leading-7 font-medium text-gray-900">{d.question.text}</p>
+          <ul className="mt-4 flex flex-wrap gap-1.5">
             {d.question.population.map((p) => (
               <li key={p} className="rounded-sm bg-gray-50 px-2 py-1 text-caption text-gray-700">
                 {p}
               </li>
             ))}
           </ul>
-          <button
-            type="submit"
-            autoFocus
-            className="flex h-11 items-center gap-2 rounded-full bg-blue-500 pr-5 pl-4 text-body font-semibold text-white transition-colors duration-[120ms] hover:bg-blue-600 active:bg-blue-700"
-          >
-            <Play aria-hidden size={15} strokeWidth={2.5} />
-            Run discovery
-          </button>
+          <p className="mt-4 text-body-sm text-gray-700">
+            Times are total Monday–Friday minutes; the exposure is five extra hours of weekday commuting (+300 minutes). The
+            guided discovery replays the recorded Omnigent session, step by step, from {source}.
+          </p>
+        </section>
+        <section aria-labelledby="agents-title" className="rounded-xl bg-white p-6 sm:p-8">
+          <h2 id="agents-title" className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">
+            The agents
+          </h2>
+          <ul className="mt-3 divide-y divide-gray-100">
+            {AGENTS.map((a) => (
+              <li key={a.name} className="flex items-start justify-between gap-3 py-2">
+                <span className="min-w-0">
+                  <span className="block text-body-sm font-semibold text-gray-900">{a.name}</span>
+                  <span className="block text-caption text-gray-700">{a.role}</span>
+                </span>
+                <span
+                  className={`shrink-0 rounded-sm px-2 py-0.5 text-micro font-semibold ${ran(a.producer) ? "bg-blue-50 text-blue-700" : "bg-gray-50 text-gray-700"}`}
+                >
+                  {ran(a.producer) ? "In this session" : "Implemented, not in this session"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/** After the run: the key estimates with their intervals, and the limits every reading must keep. */
+function KeyResults({ d }: { d: Discovery }) {
+  const f = d.followUps.find((x) => x.interactions.length);
+  const i = f?.interactions[0];
+  return (
+    <section aria-labelledby="results-title" className="rounded-xl bg-white p-6 md:p-8">
+      <p className="text-caption font-semibold tracking-[0.04em] text-blue-700 uppercase">Results and statistical rigor</p>
+      <h2 id="results-title" className="mt-2 text-h3 text-gray-900">
+        What the engine estimated
+      </h2>
+      {d.baseline && d.baselineEvidence && (
+        <div className="mt-5">
+          <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-gray-900">
+            <ArtifactChip artifactKey={d.baselineEvidence.artifact.key} /> Four time-use outcomes
+          </p>
+          <EvidenceBody ev={d.baselineEvidence} />
         </div>
-      </form>
-      <p className="mt-4 text-body-sm text-gray-700">
-        Seven agents take turns: they examine the evidence, name what is uncertain, choose the next experiment and update the
-        lab&rsquo;s state. Figures come only from the deterministic engine. This replays the recorded Omnigent session from{" "}
-        {source}.
-      </p>
-      <button type="button" onClick={onFull} className="mt-3 self-start text-body-sm font-semibold text-blue-600 hover:text-blue-700">
-        Skip to the full record <ArrowRight aria-hidden size={14} className="inline" />
-      </button>
+      )}
+      {f && i && (
+        <div className="mt-8 border-t border-gray-200 pt-6">
+          <p className="flex flex-wrap items-center gap-2 text-body font-semibold text-gray-900">
+            {f.experiment.result && <ArtifactChip artifactKey={f.experiment.result.key} />} Does the sleep association differ by {i.moderator}?
+          </p>
+          <div className="mt-4">
+            <InteractionPlot i={i} />
+          </div>
+          {i.interpretation && <p className="mt-4 text-body text-gray-900">{i.interpretation}</p>}
+        </div>
+      )}
+      <div className="mt-8 rounded-md border-l-4 border-yellow-400 bg-gray-50 p-5">
+        <p className="flex items-center gap-2 text-body font-semibold text-gray-900">
+          <TriangleAlert aria-hidden size={16} className="text-yellow-700" />
+          How to read these numbers
+        </p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-body-sm text-gray-900">
+          <li>ENUT is observational and cross-sectional: these are associations, never causal effects.</li>
+          <li>
+            Uncertainty uses survey weights (FAC_PER) with PSU-clustered CR1 errors. This approximates, and does not fully reconstruct,
+            ENUT&rsquo;s complex-survey variance.
+          </li>
+          <li>Coverage is Mexico City and the State of Mexico at state level; not a representative sample of the metropolitan area.</li>
+          <li>Both experiments still await expert human review.</li>
+        </ul>
+      </div>
     </section>
   );
 }
 
-function GhostButton({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) {
+function GhostButton({ label, onClick, children, disabled = false }: { label: string; onClick: () => void; children: ReactNode; disabled?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
       title={label}
-      className="flex h-9 shrink-0 items-center gap-2 rounded-full px-3 text-body-sm font-semibold whitespace-nowrap text-gray-900 transition-colors duration-[120ms] hover:bg-white active:bg-gray-200"
+      aria-label={label}
+      disabled={disabled}
+      className="flex h-9 shrink-0 items-center gap-1.5 rounded-full px-3 text-body-sm font-semibold whitespace-nowrap text-gray-900 transition-colors duration-[120ms] hover:bg-white active:bg-gray-200 disabled:pointer-events-none disabled:text-gray-400"
     >
       {children}
     </button>
@@ -570,7 +782,8 @@ export default function DiscoveryView({
         requestAnimationFrame(() => document.getElementById("agent-working")?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "nearest" }));
       }, revealed === 0 ? 300 : READ_MS);
     } else if (lines < linesFor(revealed).length) {
-      t = setTimeout(() => setLines((l) => l + 1), lines === 0 ? FIRST_LINE_MS : LINE_MS);
+      const lastHuman = lines > 0 && linesFor(revealed)[lines - 1].kind === "human";
+      t = setTimeout(() => setLines((l) => l + 1), lines === 0 ? FIRST_LINE_MS : lastHuman ? HUMAN_MS : LINE_MS);
     } else {
       t = setTimeout(() => {
         const i = revealed;
@@ -579,7 +792,7 @@ export default function DiscoveryView({
         const k = unitStage(i).artifactKeys[0];
         if (k && i < tail) setSelectedKey(k);
         scrollToStage(unitKey(i));
-      }, lines === 0 ? FIRST_LINE_MS + REVEAL_MS : REVEAL_MS);
+      }, lines === 0 ? FIRST_LINE_MS + REVEAL_MS : linesFor(revealed)[lines - 1]?.kind === "human" ? HUMAN_MS : REVEAL_MS);
     }
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -594,6 +807,37 @@ export default function DiscoveryView({
     setSelectedKey(null);
     window.scrollTo({ top: 0 });
   }, []);
+
+  // Stepper: Next reveals the next stage at once, Previous hides the last one. Both pause the console.
+  const next = useCallback(() => {
+    setPaused(true);
+    if (revealed >= units) {
+      setPhase("done");
+      scrollToStage("summary");
+      return;
+    }
+    const i = revealed;
+    setPhase("running");
+    setRevealed(i + 1);
+    setStep("read");
+    setLines(0);
+    const k = unitStage(i).artifactKeys[0];
+    if (k && i < tail) setSelectedKey(k);
+    scrollToStage(unitKey(i));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealed, units, tail]);
+  const previous = useCallback(() => {
+    setPaused(true);
+    setPhase("running");
+    setStep("read");
+    setLines(0);
+    const i = Math.max(1, phase === "done" ? units : revealed - 1);
+    setRevealed(i);
+    const k = unitStage(i - 1).artifactKeys[0];
+    if (k && i - 1 < tail) setSelectedKey(k);
+    scrollToStage(unitKey(i - 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revealed, units, tail, phase]);
 
   const skip = useCallback(() => {
     setPhase("done");
@@ -612,11 +856,13 @@ export default function DiscoveryView({
       if (e.key === " " && phase === "running") {
         e.preventDefault();
         setPaused((p) => !p);
-      } else if (e.key === "Escape" && phase === "running") skip();
+      } else if (e.key === "ArrowRight" && phase !== "idle") next();
+      else if (e.key === "ArrowLeft" && phase !== "idle") previous();
+      else if (e.key === "Escape" && phase === "running") skip();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [mode, phase, skip]);
+  }, [mode, phase, skip, next, previous]);
 
   // Scroll spy for the section bar.
   const [inView, setInView] = useState<string>("");
@@ -744,15 +990,25 @@ export default function DiscoveryView({
         )}
         {mode === "replay" ? (
           <div className="ml-auto flex items-center gap-1" role="group" aria-label="Run controls">
+            {phase !== "idle" && (
+              <GhostButton label="Previous step (←)" onClick={previous} disabled={revealed <= 1 && phase !== "done"}>
+                <ChevronLeft aria-hidden size={16} strokeWidth={2.25} />
+                <span className="hidden 2xl:inline">Previous</span>
+              </GhostButton>
+            )}
             {phase === "running" && (
               <>
-                <GhostButton label={paused ? "Resume (Space)" : "Pause (Space)"} onClick={() => setPaused((p) => !p)}>
+                <GhostButton label={paused ? "Play (Space)" : "Pause (Space)"} onClick={() => setPaused((p) => !p)}>
                   {paused ? <Play aria-hidden size={14} strokeWidth={2.5} /> : <Pause aria-hidden size={14} strokeWidth={2.5} />}
-                  {paused ? "Resume" : "Pause"}
+                  <span className="hidden 2xl:inline">{paused ? "Play" : "Pause"}</span>
+                </GhostButton>
+                <GhostButton label="Next step (→)" onClick={next}>
+                  <span className="hidden 2xl:inline">Next</span>
+                  <ChevronRight aria-hidden size={16} strokeWidth={2.25} />
                 </GhostButton>
                 <GhostButton label="Show the full record (Esc)" onClick={skip}>
                   <FastForward aria-hidden size={14} strokeWidth={2.5} />
-                  Skip to end
+                  <span className="hidden 2xl:inline">Skip to end</span>
                 </GhostButton>
               </>
             )}
@@ -787,7 +1043,7 @@ export default function DiscoveryView({
 
       <main className="px-4 pb-12 md:px-8">
         {phase === "idle" ? (
-          <Composer d={d} source={payload.source} onRun={run} onFull={skip} />
+          <Hero d={d} source={payload.source} onRun={run} onFull={skip} />
         ) : (
           <div className="space-y-6">
             {d.sessions.length > 1 && (
@@ -810,7 +1066,7 @@ export default function DiscoveryView({
               <div className="min-w-0 space-y-5">
                 {/* The researcher's prompt, as a console turn. */}
                 <section aria-label="Your question" className="ml-auto max-w-[44rem] rounded-xl bg-blue-500 p-5 text-white sm:p-6">
-                  <p className="text-caption font-semibold tracking-[0.04em] text-blue-100 uppercase">You asked</p>
+                  <p className="text-caption font-semibold tracking-[0.04em] text-blue-100 uppercase">Research question handed to the agents</p>
                   <p className="mt-2 text-body">{d.question.text}</p>
                   <p className="mt-3 text-caption text-blue-100">
                     {mode === "replay" ? `Replaying the recorded session · ${payload.source}` : payload.source}
@@ -844,7 +1100,7 @@ export default function DiscoveryView({
                 </section>
 
                 {phase === "done" && (
-                  <div id="stage-summary" className="stage-enter scroll-mt-28">
+                  <div id="stage-summary" className="stage-enter scroll-mt-28 space-y-5">
                     <Overview
                       d={d}
                       headline={headline}
@@ -852,6 +1108,7 @@ export default function DiscoveryView({
                       sampleSize={evidence?.sampleSize ?? null}
                       errors={errors.map((e) => e.message)}
                     />
+                    <KeyResults d={d} />
                   </div>
                 )}
               </div>

@@ -73,6 +73,7 @@ export interface ArtifactRef {
   sourceExperiment: string | null;
   facts: Fact[];
   links: string[]; // keys of linked artifacts
+  handoff: unknown; // an excerpt of the artifact's own JSON (long lists and text shortened, local paths removed)
 }
 
 export interface Interval {
@@ -348,6 +349,7 @@ export interface Stage {
   purpose: string; // the scientific question this stage answers
   agent: string; // who produced the stage, as the run's console names it
   working: string; // what that agent was doing, shown while the stage is being revealed
+  checks: string[]; // the validations its tools run before saving, as listed in the console
   type: ArtifactType;
   recorded: boolean;
   artifactKeys: string[]; // primary artifact first

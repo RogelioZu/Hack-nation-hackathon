@@ -96,7 +96,8 @@ const run = bundle.run;
   const external = [];
   for (const f of sources) {
     const t = (await readFile(f, "utf8")).replace(/\/\/.*$/gm, "");
-    if (/fetch\(|DATABRICKS|serving-endpoints|localhost:6767|from ["']omnigent|supabase/i.test(t)) external.push(path.relative(webDir, f));
+    // Calls and credentials, not the product copy that names the platforms ("Databricks model serving").
+    if (/fetch\(|DATABRICKS_|databricks\.com|serving-endpoints|localhost:6767|from ["']omnigent|supabase/i.test(t)) external.push(path.relative(webDir, f));
   }
   check("C", "replay reads the bundle; no agent, Databricks or network call", load.includes('from "@/data/discovery-run.json"') && external.length === 0, external.join(", ") || "bundle import only");
 }

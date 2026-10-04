@@ -119,6 +119,28 @@ export function statusOf(code: unknown): StatusView | null {
 }
 const status = (code: unknown, fallback: string): StatusView => statusOf(code) ?? statusOf(fallback)!;
 
+/**
+ * A readable excerpt of an artifact's JSON for the "agent handoff" view: the real structure and values, with long
+ * arrays and strings shortened and machine-local paths removed. Never rewrites a value it keeps.
+ */
+function excerpt(v: unknown, depth = 0): unknown {
+  if (typeof v === "string") {
+    const s = v.replace(/(\/home\/|\/Users\/|[A-Z]:\\Users\\)[^\s"']*/g, "<local path>");
+    return s.length > 200 ? `${s.slice(0, 200)}…` : s;
+  }
+  if (v == null || typeof v !== "object") return v;
+  if (depth >= 3) return Array.isArray(v) ? `[${v.length} items]` : "{…}";
+  if (Array.isArray(v)) {
+    const head = v.slice(0, 2).map((x) => excerpt(x, depth + 1));
+    return v.length > 2 ? [...head, `… ${v.length - 2} more`] : head;
+  }
+  const entries = Object.entries(v as Record<string, unknown>);
+  const out: Record<string, unknown> = {};
+  entries.slice(0, 18).forEach(([k, x]) => (out[k] = excerpt(x, depth + 1)));
+  if (entries.length > 18) out["…"] = `${entries.length - 18} more fields`;
+  return out;
+}
+
 /** Strings, or objects carrying a statement under one of the usual keys, flattened to text. */
 function texts(v: unknown): string[] {
   if (v == null) return [];
@@ -233,6 +255,7 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
       sourceExperiment: extra.sourceExperiment ?? null,
       facts: extra.facts ?? [],
       links: [],
+      handoff: excerpt(a.data),
     };
     artifacts[r.key] = r;
     return r;
@@ -946,54 +969,61 @@ export function normalizeDiscoveryRun(raw: RawArtifact[]): DiscoveryRunViewModel
     awaiting,
   });
   // What each stage answers, in a researcher's terms; the short title feeds the section navigation.
-  const STAGE_COPY: Record<Stage["key"], { short: string; purpose: string; agent: string; working: string }> = {
+  const STAGE_COPY: Record<Stage["key"], { short: string; purpose: string; agent: string; working: string; checks: string[] }> = {
     question: {
       short: "Question",
       purpose: "What the lab set out to learn, for whom, and with which data.",
       agent: "Discovery Director",
       working: "Registering the question, the population and the pre-registered hypotheses",
+      checks: ["Loading initial_state.json", "Verifying the analytic_v1 SHA-256 against its manifest"],
     },
     baseline: {
       short: baseline?.experimentId ?? "Evidence",
       purpose: "What the first experiment estimated, and how certain it is.",
       agent: "Experiment Runner · deterministic engine",
       working: "Running the first experiment twice on the hash-checked dataset",
+      checks: ["Validating the ExperimentSpec against the strict schema", "Running the spec twice and requiring identical results"],
     },
     critique: {
       short: "Critique",
       purpose: "Is that result reliable, and what does it leave open?",
       agent: "Scientific Critic",
       working: "Checking uncertainty, diagnostics and claims the evidence does not support",
+      checks: ["Checking every decimal against the result artifact", "Rejecting causal wording and ranking overclaims"],
     },
     planning: {
       short: "Planning",
       purpose: "Which falsifiable explanations are worth testing, and which experiments could test them?",
       agent: "Hypothesis Agent · Experiment Planner",
       working: "Proposing falsifiable hypotheses and competing experiments",
+      checks: ["Validating hypotheses: falsifiable, new, with an uncertainty criterion", "Auditing each proposal against the engine capabilities"],
     },
     decision: {
       short: "Decision",
       purpose: "Which experiment teaches the most next, and can the engine run it?",
       agent: "Discovery Director",
       working: "Weighing the candidates by expected learning and engine capability",
+      checks: ["Re-auditing engine capabilities for every candidate", "Ranking candidates by expected learning, not by likely significance"],
     },
     followup: {
       short: followUps[0]?.experiment.experimentId ?? "New experiment",
       purpose: "What the chosen experiment found, and what the critic makes of it.",
       agent: "Experiment Runner · Scientific Critic",
       working: "Running the approved experiment and critiquing its result",
+      checks: ["Hash-checking the dataset before and after the run", "Running the approved spec twice and requiring identical results"],
     },
     update: {
       short: "Update",
       purpose: "How the lab's scientific state changed because of the new result.",
       agent: "Scientific Critic",
       working: "Updating hypothesis statuses from the new evidence",
+      checks: ["Reading the critique's hypothesis assessments", "Recording the status change with its source"],
     },
   };
   const stage = (number: number, key: Stage["key"], title: string, type: ArtifactType, awaiting: Awaiting, own: string[], parts: StagePart[] = []): Stage => {
     const artifactKeys = [...new Set([...own, ...parts.flatMap((p) => p.artifactKeys)])];
     const copy = STAGE_COPY[key];
-    return { key, number, title, shortTitle: copy.short, purpose: copy.purpose, agent: copy.agent, working: copy.working, type, recorded: artifactKeys.length > 0, artifactKeys, awaiting, parts };
+    return { key, number, title, shortTitle: copy.short, purpose: copy.purpose, agent: copy.agent, working: copy.working, checks: copy.checks, type, recorded: artifactKeys.length > 0, artifactKeys, awaiting, parts };
   };
 
   const planningParts = [
