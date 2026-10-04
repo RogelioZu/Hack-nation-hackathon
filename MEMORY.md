@@ -289,6 +289,7 @@ Memoria compartida del proyecto. Complementa a `AGENTS.md`: allí están las reg
   - `omnigent run … -p "…" < /dev/null` corre un turno y termina; el transcript está en `GET http://127.0.0.1:6767/v1/sessions/<id>/items` y las llamadas HTTP en `~/.omnigent/logs/runner/`.
   - En esta máquina Linux, `~/.omnigent/config.yaml` (provider `databricks-serving`) se creó el 2026-10-04; `DATABRICKS_TOKEN` (PAT) está en `.env`.
   - **Vercel empaqueta las rutas literales que lee el servidor**: con `existsSync(path.join(root, "initial_state.json"))` el trazado de archivos metió en la función los artefactos commiteados, y `/?mode=live` en producción se rotulaba "reports/ on this machine". Por eso `load.ts` desactiva LIVE si existe `process.env.VERCEL`. Probar en local con `VERCEL=1 npx next start`.
+  - **Scroll del replay:** `scrollIntoView({behavior: "smooth"})` se sentía trabado (tirones de ~200 ms en distancias cortas, ~250 px/frame en las largas). `DiscoveryView.tsx` usa `glideTo` (rAF, ease-in-out de 450–950 ms, destino recalculado cada frame, salto previo si el viaje supera 1.25 pantallas, se cancela con rueda/touch/teclas). Medir con un registrador de `scrollY` por frame en `/?start=1`. Los decimales de 2+ dígitos en `app/**/*.tsx` hacen fallar la prueba A: escribirlos como fracción.
 
 ### Vercel
 - Cuenta Hobby. El proyecto `commute-time-lab` está en el scope `roger-1592` (`team_37NrEuZAkgRsRYTKpMCwC5j9`).

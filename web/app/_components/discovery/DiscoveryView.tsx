@@ -86,6 +86,68 @@ function reducedMotion() {
   return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+// One scroll animation at a time, driven by requestAnimationFrame instead of the browser's native smooth scroll (which
+// nudged short distances in ~200 ms and raced long ones at ~250 px a frame, so the replay felt jerky):
+//   · an ease-in-out glide whose length grows gently with distance;
+//   · a long trip first jumps to near its target, so it never races past stages the reader has already seen;
+//   · the target is re-read every frame, so content that is still arriving (a stage sliding in) cannot throw it off;
+//   · the reader's own wheel, touch or scroll keys cancel it at once.
+let glide: number | null = null;
+let stopGlide: (() => void) | null = null;
+const SCROLL_KEYS = new Set(["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "]);
+
+function glideTo(target: () => number) {
+  stopGlide?.();
+  const maxY = () => document.documentElement.scrollHeight - window.innerHeight;
+  const clamp = (y: number) => Math.max(0, Math.min(maxY(), y));
+  const end = clamp(target());
+  let from = window.scrollY;
+  if (Math.abs(end - from) < 2) return;
+  if (reducedMotion()) {
+    window.scrollTo({ top: end, behavior: "instant" });
+    return;
+  }
+  const lead = (window.innerHeight * 5) / 4; // one and a quarter viewports
+  if (Math.abs(end - from) > lead) {
+    from = end - Math.sign(end - from) * lead;
+    window.scrollTo({ top: from, behavior: "instant" });
+  }
+  const duration = Math.min(950, 450 + Math.abs(end - from) * 0.4);
+  const ease = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - (-2 * p + 2) ** 3 / 2);
+  const onKey = (e: KeyboardEvent) => SCROLL_KEYS.has(e.key) && stop();
+  const stop = () => {
+    if (glide != null) cancelAnimationFrame(glide);
+    glide = null;
+    stopGlide = null;
+    window.removeEventListener("wheel", stop);
+    window.removeEventListener("touchstart", stop);
+    window.removeEventListener("keydown", onKey);
+  };
+  window.addEventListener("wheel", stop, { passive: true });
+  window.addEventListener("touchstart", stop, { passive: true });
+  window.addEventListener("keydown", onKey);
+  stopGlide = stop;
+  const start = performance.now();
+  const frame = (now: number) => {
+    const p = Math.min(1, (now - start) / duration);
+    window.scrollTo({ top: from + (clamp(target()) - from) * ease(p), behavior: "instant" });
+    if (p < 1) glide = requestAnimationFrame(frame);
+    else stop();
+  };
+  glide = requestAnimationFrame(frame);
+}
+
+/** Glides an element just into view, like scrollIntoView({block: "nearest"}), honouring its scroll-margin-top. */
+function glideIntoView(el: HTMLElement) {
+  const margin = Number.parseFloat(getComputedStyle(el).scrollMarginTop || "0");
+  glideTo(() => {
+    const r = el.getBoundingClientRect();
+    if (r.top < margin) return window.scrollY + r.top - margin;
+    if (r.bottom > window.innerHeight - 24) return window.scrollY + Math.min(r.bottom - window.innerHeight + 24, r.top - margin);
+    return window.scrollY;
+  });
+}
+
 /**
  * Brings a stage into view once it is laid out (a stage that just revealed has no height on the first frame): centred
  * when it fits, else from its top (below the sticky header, via scroll-margin) so its title and lead are on screen.
@@ -96,8 +158,17 @@ function scrollToStage(key: string, smooth = true) {
     const el = document.getElementById(`stage-${key}`);
     const height = el?.getBoundingClientRect().height ?? 0;
     if (el && height > 0) {
-      const fits = height <= window.innerHeight - Number.parseFloat(getComputedStyle(el).scrollMarginTop || "0");
-      el.scrollIntoView({ behavior: smooth && !reducedMotion() ? "smooth" : "auto", block: fits ? "center" : "start" });
+      const margin = Number.parseFloat(getComputedStyle(el).scrollMarginTop || "0");
+      const fits = height <= window.innerHeight - margin;
+      const target = () => {
+        const r = el.getBoundingClientRect();
+        return window.scrollY + (fits ? r.top - (window.innerHeight - r.height) / 2 : r.top - margin);
+      };
+      if (smooth) glideTo(target);
+      else {
+        stopGlide?.();
+        window.scrollTo({ top: target(), behavior: "instant" });
+      }
     } else if (tries++ < 30) {
       requestAnimationFrame(attempt);
     }
@@ -823,7 +894,10 @@ export default function DiscoveryView({
       t = setTimeout(() => {
         setStep("think");
         setLines(0);
-        requestAnimationFrame(() => document.getElementById("agent-working")?.scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "nearest" }));
+        requestAnimationFrame(() => {
+          const el = document.getElementById("agent-working");
+          if (el) glideIntoView(el);
+        });
       }, revealed === 0 ? 300 : READ_MS);
     } else if (lines < linesFor(revealed).length) {
       const lastHuman = lines > 0 && linesFor(revealed)[lines - 1].kind === "human";
@@ -849,6 +923,7 @@ export default function DiscoveryView({
     setLines(0);
     setPaused(false);
     setSelectedKey(null);
+    stopGlide?.();
     window.scrollTo({ top: 0 });
   }, []);
 
@@ -891,6 +966,7 @@ export default function DiscoveryView({
     setLines(0);
     setPaused(false);
     setSelectedKey(defaultSelection(d));
+    stopGlide?.();
     window.scrollTo({ top: 0 });
     if (window.location.search) window.history.replaceState(null, "", window.location.pathname);
   }, [d]);
